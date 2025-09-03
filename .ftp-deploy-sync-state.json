@@ -1,0 +1,61 @@
+{
+    "description": "DO NOT DELETE THIS FILE. This file is used to keep track of which files have been synced in the most recent deployment. If you delete this file a resync will need to be done (which can take a while) - read more: https://github.com/SamKirkland/FTP-Deploy-Action",
+    "version": "1.0.0",
+    "generatedTime": 1756876637126,
+    "data": [
+        {
+            "type": "file",
+            "name": "package.json",
+            "size": 837,
+            "hash": "d8db033ddacc9389cd63406d33016c96831b752c25f5d72a5a20128a85d0b56e"
+        },
+        {
+            "type": "folder",
+            "name": "pb_hooks"
+        },
+        {
+            "type": "file",
+            "name": "pb_hooks/pocketpages.pb.js",
+            "size": 23,
+            "hash": "83f80163c8424e9245990124ea42a8b74425828cf66395cb680498225d26f275"
+        },
+        {
+            "type": "folder",
+            "name": "pb_hooks/pages"
+        },
+        {
+            "type": "folder",
+            "name": "pb_hooks/pages/login"
+        },
+        {
+            "type": "file",
+            "name": "pb_hooks/pages/index.ejs",
+            "size": 474,
+            "hash": "a8b1326773731195c5991468c61b5692c78c561f6ee10d8c3d954769753afa50"
+        },
+        {
+            "type": "file",
+            "name": "pb_hooks/pages/app.tailwind.css",
+            "size": 59,
+            "hash": "cc1a7ad0d019ddb1d32d0ecb588ba0ac26ce41d8625dd6c366348b25f83a28ec"
+        },
+        {
+            "type": "file",
+            "name": "pb_hooks/pages/app.css",
+            "size": 55378,
+            "hash": "13322804a702e6e3d26bc252f1621015aed9b548c049c64a2c3774cdf5e8b3ad"
+        },
+        {
+            "type": "file",
+            "name": "pb_hooks/pages/+layout.ejs",
+            "size": 1926,
+            "hash": "1d696b12f5a63c6fefe46f6827009d7d7963d7074f9d699c2a87660f05ad962a"
+        },
+        {
+            "type": "file",
+            "name": "pb_hooks/pages/login/index.ejs",
+            "size": 523,
+            "hash": "ec579806546f584346880959847532bef7e3a0535249068eabb7a5b04f5f5211"
+        }
+    ]
+}
