@@ -4,7 +4,7 @@ module.exports = function (api) {
         siteName: "Justin's Blog",
         navigation: [
             // { title: 'Home', url: '/' },
-            { title: 'Blog Posts', url: '/blog/posts' },
+            { title: 'My Blog Posts', url: '/blog/posts' },
         ],
     }
 }

@@ -1,7 +1,7 @@
 {
     "description": "DO NOT DELETE THIS FILE. This file is used to keep track of which files have been synced in the most recent deployment. If you delete this file a resync will need to be done (which can take a while) - read more: https://github.com/SamKirkland/FTP-Deploy-Action",
     "version": "1.0.0",
-    "generatedTime": 1756938324482,
+    "generatedTime": 1756942549631,
     "data": [
         {
             "type": "file",
@@ -24,14 +24,10 @@
             "name": "pb_hooks/pages"
         },
         {
-            "type": "folder",
-            "name": "pb_hooks/common"
-        },
-        {
             "type": "file",
             "name": "pb_hooks/pages/index.ejs",
-            "size": 580,
-            "hash": "d2a2dd61d5a298170aa2d129288ae6cf2acc475409fac33dc1b466e25cca1efc"
+            "size": 587,
+            "hash": "003342bbdf748e0a198eb99d08cd2f5be9c0fb9572e4918e801da1d59b4e48fb"
         },
         {
             "type": "folder",
@@ -51,9 +47,15 @@
         },
         {
             "type": "file",
+            "name": "pb_hooks/pages/+load.js",
+            "size": 293,
+            "hash": "f0d78932f18a6fc64ad5b4a9b17989422852e1b2ab5a504cd3925ff1aa5dafce"
+        },
+        {
+            "type": "file",
             "name": "pb_hooks/pages/+layout.ejs",
-            "size": 2522,
-            "hash": "ef4dcadf9aea7df04f0f8c22a781f4ff3448a4636f6e255de8567a9b40ec96c9"
+            "size": 2928,
+            "hash": "83de6d19b9a237d94cd5d69989620d76b660e8b055319bd6ee85aa762e6a004a"
         },
         {
             "type": "folder",
@@ -62,8 +64,8 @@
         {
             "type": "file",
             "name": "pb_hooks/pages/blog/index.ejs",
-            "size": 279,
-            "hash": "c63719d7a8805548eb0de721b8fedd9d8ceeae42d9a55dc35b7f9ddb0690a508"
+            "size": 31,
+            "hash": "7f7647f4157b4ab3dc33787299c8d703feb80863b2f59ff2ca18cc4a9c093ea9"
         },
         {
             "type": "file",
@@ -73,21 +75,9 @@
         },
         {
             "type": "file",
-            "name": "pb_hooks/pages/blog/posts/[postid].ejs",
-            "size": 17,
-            "hash": "7267284a3e97c60fc01e389de736108c4b277a3d0bc715a201b5e544a79d838f"
-        },
-        {
-            "type": "file",
-            "name": "pb_hooks/common/types.ts",
-            "size": 0,
-            "hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
-        },
-        {
-            "type": "file",
-            "name": "pb_hooks/common/constants.ts",
-            "size": 0,
-            "hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            "name": "pb_hooks/pages/blog/posts/[postId].ejs",
+            "size": 365,
+            "hash": "b787c54664bacaed6f1cee7c27c737297b4477ff08f2e6f9f80b79412c8a9005"
         }
     ]
 }

@@ -1,4 +1,6 @@
-<% const example = "nice" %>
+<script server>
+    const example = "nice" 
+</script>
 
 <!doctype html>
 <html lang="en" data-theme="cupcake">
@@ -39,7 +41,7 @@
                     <div class="hidden flex-none lg:block">
                         <ul class="menu menu-horizontal">
                             <!-- Navbar menu content here -->
-                            <% data.navigation.forEach(item => { %>
+                            <% data.navigation?.forEach(item => { %>
                                 <li>
                                     <a href="<%= item.url %>"><%= item.title %></a>
                                 </li>
@@ -57,7 +59,7 @@
                 ></label>
                 <ul class="menu bg-base-200 min-h-full w-80 p-4">
                     <!-- Sidebar content here -->
-                    <% data.navigation.forEach(item => { %>
+                    <% data.navigation?.forEach(item => { %>
                         <li>
                             <a href="<%= item.url %>"><%= item.title %></a>
                         </li>
