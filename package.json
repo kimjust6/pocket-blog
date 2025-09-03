@@ -1,14 +1,14 @@
 {
-  "name": "pocketpages-starter-daisyui",
+  "name": "justins-blog",
   "private": true,
   "version": "0.0.2",
   "scripts": {
-    "dev:css": "tailwindcss -i ./pb_hooks/pages/app.tailwind.css -o ./pb_hooks/pages/app.css --watch"
+    "dev": "tailwindcss -i ./pb_hooks/pages/app.tailwind.css -o ./pb_hooks/pages/app.css --watch"
   },
-  "description": "A starter project for PocketPages with DaisyUI",
+  "description": "Justin's personal blog using PocketPages and DaisyUI.",
   "author": {
-    "name": "Ben Allfree",
-    "github": "benallfree"
+    "name": "Justin Kim",
+    "github": "kimjust6"
   },
   "repository": {
     "type": "git",
@@ -16,8 +16,9 @@
   },
   "keywords": [
     "pocketpages",
-    "starter",
-    "daisyui"
+    "blog",
+    "daisyui",
+    "justin kim"
   ],
   "devDependencies": {
     "@tailwindcss/typography": "^0.5.16",
