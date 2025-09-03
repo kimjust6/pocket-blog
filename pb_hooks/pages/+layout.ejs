@@ -1,9 +1,11 @@
+<% const example = "nice" %>
+
 <!doctype html>
 <html lang="en" data-theme="cupcake">
     <head>
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <title>Justin's Blog</title>
+        <title><%= data.siteName %></title>
         <link href="<%=asset('/app.css')%>" rel="stylesheet" />
     </head>
     <body>
@@ -37,7 +39,11 @@
                     <div class="hidden flex-none lg:block">
                         <ul class="menu menu-horizontal">
                             <!-- Navbar menu content here -->
-                            <li><a href="/blogs">Blogs</a></li>
+                            <% data.navigation.forEach(item => { %>
+                                <li>
+                                    <a href="<%= item.url %>"><%= item.title %></a>
+                                </li>
+                            <% }) %>
                         </ul>
                     </div>
                 </div>
@@ -51,7 +57,11 @@
                 ></label>
                 <ul class="menu bg-base-200 min-h-full w-80 p-4">
                     <!-- Sidebar content here -->
-                    <li><a href="/blogs">Blogs</a></li>
+                    <% data.navigation.forEach(item => { %>
+                        <li>
+                            <a href="<%= item.url %>"><%= item.title %></a>
+                        </li>
+                    <% }) %>
                 </ul>
             </div>
         </div>
