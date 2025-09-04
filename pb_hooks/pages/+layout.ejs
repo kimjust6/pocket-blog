@@ -4,6 +4,7 @@
 
     //consts
     const Constants = {
+        sitename: "Justin's Blog",
         navigation: [
             // { title: 'Home', url: '/' },
             { title: 'Blog Posts', url: '/blog/posts' },
@@ -24,11 +25,11 @@
     }).mount()
 </script>
 <!doctype html>
-<html lang="en" data-theme="cupcake">
+<html lang="en" data-theme="cupcake" v-scope="Constants">
     <head>
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <title><%= data.siteName %></title>
+        <title>{{ sitename }}</title>
         <link href="<%=asset('/app.css')%>" rel="stylesheet" />
     </head>
     <body>
@@ -36,8 +37,9 @@
             <input id="my-drawer-3" type="checkbox" class="drawer-toggle" />
             <div class="drawer-content flex flex-col">
                 <!-- Navbar -->
-                <div class="navbar bg-base-300 w-full fixed">
+                <nav class="navbar bg-base-300 w-full fixed">
                     <div class="flex-none lg:hidden">
+                        <!-- hamburger icon -->
                         <label
                             for="my-drawer-3"
                             aria-label="open sidebar"
@@ -58,20 +60,19 @@
                             </svg>
                         </label>
                     </div>
-                    <div class="mx-2 flex-1 px-2"><a href="/">Home </a></div>
+                    <div class="menu menu-horizontal mx-2 flex-1 px-2">
+                        <li><a href="/">Home </a></div></li>
                     <div class="hidden flex-none lg:block">
-                        <ul class="menu menu-horizontal" v-scope="Constants">
-                            <div
+                        <ul class="menu menu-horizontal">
+                            <li
                                 v-for="(item, index) in Constants.navigation"
                                 :key="index"
                             >
-                                <li>
-                                    <a :href="item.url">{{ item.title }}</a>
-                                </li>
-                            </div>
+                                <a :href="item.url">{{ item.title }}</a>
+                            </li>
                         </ul>
                     </div>
-                </div>
+                </nav>
                 <article class="prose max-w-none"><%- slot %></article>
             </div>
             <div class="drawer-side">
@@ -82,14 +83,12 @@
                 ></label>
                 <ul class="menu bg-base-200 min-h-full w-80 p-4">
                     <!-- Sidebar content here -->
-                    <div
+                    <li
                         v-for="(item, index) in Constants.navigation"
                         :key="index"
                     >
-                        <li>
-                            <a :href="item.url">{{ item.title }}</a>
-                        </li>
-                    </div>
+                        <a :href="item.url">{{ item.title }}</a>
+                    </li>
                 </ul>
             </div>
         </div>

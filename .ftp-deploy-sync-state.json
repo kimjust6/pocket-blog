@@ -1,7 +1,7 @@
 {
     "description": "DO NOT DELETE THIS FILE. This file is used to keep track of which files have been synced in the most recent deployment. If you delete this file a resync will need to be done (which can take a while) - read more: https://github.com/SamKirkland/FTP-Deploy-Action",
     "version": "1.0.0",
-    "generatedTime": 1756989631153,
+    "generatedTime": 1757024553139,
     "data": [
         {
             "type": "file",
@@ -28,14 +28,10 @@
             "name": "pb_hooks/pages"
         },
         {
-            "type": "folder",
-            "name": "pb_hooks/lib"
-        },
-        {
             "type": "file",
             "name": "pb_hooks/pages/index.ejs",
-            "size": 839,
-            "hash": "7c62622970f5b73defc1b0d4d2901217397d530c271bb789eae2c24cbf782dc6"
+            "size": 582,
+            "hash": "b3bb79b5318181e1ea118e428221191a2f5ac51d2ab38d5dd03aa37c6fc29677"
         },
         {
             "type": "folder",
@@ -56,20 +52,20 @@
         {
             "type": "file",
             "name": "pb_hooks/pages/+middleware.js",
-            "size": 295,
-            "hash": "bcc9a8d9e67ba0f1886a81e465c5d4a126f0af3cdb3a9ea7f4ee1d928192c3c3"
+            "size": 112,
+            "hash": "671807bd04e82e85336ad74be069990c4d615561a9edc38fc861c0186b87082b"
         },
         {
             "type": "file",
             "name": "pb_hooks/pages/+layout.ejs",
-            "size": 2900,
-            "hash": "e1a12b8cabb559cddcd060310cdd77bd5a1ef2488d72b4de2de1653f8b5fc0f5"
+            "size": 3626,
+            "hash": "48a7aaa733daaa863ce576a2911b944037225836d13611a80640f2667d45e73b"
         },
         {
             "type": "file",
             "name": "pb_hooks/pages/+config.js",
-            "size": 157,
-            "hash": "7949ed16d87688986ea592c01686c8c20de1ee73edf84274ef94e7084406b946"
+            "size": 384,
+            "hash": "dbb9881f76173ec44d6e5955c0a9554a67bb65e4f715ea5a6b6b43a79cc0de03"
         },
         {
             "type": "folder",
@@ -84,14 +80,8 @@
         {
             "type": "file",
             "name": "pb_hooks/pages/blog/posts/[postId].ejs",
-            "size": 1375,
-            "hash": "6677bdd952cea93070fed7a8c5b15494a6271a3e86dfd18b07105bd2d0e01bb8"
-        },
-        {
-            "type": "file",
-            "name": "pb_hooks/lib/common.js",
-            "size": 358,
-            "hash": "10b13def2dd63a903f93587dc5d8ec13142c008379a50cb685ebe42f36ba0fa3"
+            "size": 1373,
+            "hash": "716dc75dc3c2d79e3973c63a3be8f08af8abe744b6d69290ae1039f61d182875"
         }
     ]
 }
