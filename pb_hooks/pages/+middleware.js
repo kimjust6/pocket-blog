@@ -1,6 +1,5 @@
 /** @type {import('pocketpages').MiddlewareLoaderFunc} */
 module.exports = function (api) {
-    console.log({ api })
     return {
         siteName: "Justin's Blog",
         navigation: [

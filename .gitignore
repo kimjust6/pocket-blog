@@ -6,8 +6,8 @@
 .pnp.js
 .yarn/install-state.gz
 
-pb_data
-
+/pb_data
+/pb_migrations
 # testing
 /coverage
 
