@@ -1,10 +1,42 @@
-<script server></script>
-<div class="hero min-h-screen bg-base-200">
-    <div><%= params.postId %></div>
-    <div class="hero-content text-center">
-        <div class="max-w-md">
-            <h1 class="text-5xl font-bold">Latest Posts</h1>
-            <p class="py-6">Here are the latest posts.</p>
+<script server>
+    let blogposts = $app.findRecordsByFilter(
+        'blogposts', // collection
+        'isDeleted = {:isDeleted}', // filter
+        '-created', // sort by created date descending
+        5, // limit 5,
+        0, // offset 0
+        { isDeleted: false }
+    )
+
+    blogposts = JSON.parse(JSON.stringify(blogposts))
+    const filteredBlog = blogposts.find(post => post.id === params.postId);
+
+    dbg('data:', filteredBlog)
+
+</script>
+<% if (typeof(params.postId) === "undefined") { %>
+    <div class="hero min-h-screen bg-base-200">
+        <div class="hero-content text-center">
+            <div class="max-w-md">
+                <h1 class="text-5xl font-bold">Latest Posts</h1>
+                <p class="py-6">Here are the latest posts.  </p>
+                <% blogposts?.forEach(blog => { %>
+                    <ul>
+                        <a href="/blog/posts/<%= blog.id %>"><%= blog.title %></a>
+                    </ul>
+                <% }) %>
+            </div>
         </div>
     </div>
-</div>
+<% } else { %>
+    <div class="hero min-h-screen bg-base-200">
+        <div class="hero-content text-center">
+            <div class="max-w-md">
+                <h1 class="text-5xl font-bold"><%= filteredBlog.title %></h1>
+                <p class="py-6"><%= filteredBlog.content %></p>
+            </div>
+        </div>
+    </div>
+    
+<% } %>
+

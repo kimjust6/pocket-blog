@@ -37,6 +37,6 @@
     "*.md"
   ],
   "pockethost": {
-    "instanceName": "portfolio-tracker"
+    "instanceName": "mlt-blog"
   }
 }
