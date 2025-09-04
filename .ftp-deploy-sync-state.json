@@ -1,13 +1,13 @@
 {
     "description": "DO NOT DELETE THIS FILE. This file is used to keep track of which files have been synced in the most recent deployment. If you delete this file a resync will need to be done (which can take a while) - read more: https://github.com/SamKirkland/FTP-Deploy-Action",
     "version": "1.0.0",
-    "generatedTime": 1756942549631,
+    "generatedTime": 1756949997745,
     "data": [
         {
             "type": "file",
             "name": "package.json",
-            "size": 953,
-            "hash": "de7d2ab11c8ecd07a692f42ef6b5b11b527b131a38bae74937887ea66363bf84"
+            "size": 1005,
+            "hash": "9a68b3c192385d2c04fe6a8363be0a2f1da249f7c6b3683acdf508cc09b54056"
         },
         {
             "type": "folder",
@@ -22,6 +22,10 @@
         {
             "type": "folder",
             "name": "pb_hooks/pages"
+        },
+        {
+            "type": "folder",
+            "name": "pb_hooks/lib"
         },
         {
             "type": "file",
@@ -47,15 +51,15 @@
         },
         {
             "type": "file",
-            "name": "pb_hooks/pages/+load.js",
-            "size": 293,
-            "hash": "f0d78932f18a6fc64ad5b4a9b17989422852e1b2ab5a504cd3925ff1aa5dafce"
+            "name": "pb_hooks/pages/+middleware.js",
+            "size": 321,
+            "hash": "61b0122ca3d490e7450d668c26ead61020a5c2d59429c7c003f49d747c0d21e8"
         },
         {
             "type": "file",
             "name": "pb_hooks/pages/+layout.ejs",
-            "size": 2928,
-            "hash": "83de6d19b9a237d94cd5d69989620d76b660e8b055319bd6ee85aa762e6a004a"
+            "size": 2900,
+            "hash": "e1a12b8cabb559cddcd060310cdd77bd5a1ef2488d72b4de2de1653f8b5fc0f5"
         },
         {
             "type": "folder",
@@ -78,6 +82,12 @@
             "name": "pb_hooks/pages/blog/posts/[postId].ejs",
             "size": 365,
             "hash": "b787c54664bacaed6f1cee7c27c737297b4477ff08f2e6f9f80b79412c8a9005"
+        },
+        {
+            "type": "file",
+            "name": "pb_hooks/lib/common.js",
+            "size": 325,
+            "hash": "d4b73b4272c4307870cb676b6256f03bd0a8f0a869cc055b29c5b6fa09deaf55"
         }
     ]
 }
