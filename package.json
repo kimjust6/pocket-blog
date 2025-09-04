@@ -3,8 +3,7 @@
   "private": true,
   "version": "0.0.2",
   "scripts": {
-    "dev": "tailwindcss -i ./pb_hooks/pages/app.tailwind.css -o ./pb_hooks/pages/app.css --watch",
-    "start": "pocketbase serve --dir=pb_data --dev"
+    "dev": "start \"Tailwind\" tailwindcss -i ./pb_hooks/pages/app.tailwind.css -o ./pb_hooks/pages/app.css --watch && pocketbase serve --dir=pb_data --dev"
   },
   "description": "Justin's personal blog using PocketPages and DaisyUI.",
   "author": {
