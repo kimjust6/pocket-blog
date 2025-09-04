@@ -1,13 +1,13 @@
 {
     "description": "DO NOT DELETE THIS FILE. This file is used to keep track of which files have been synced in the most recent deployment. If you delete this file a resync will need to be done (which can take a while) - read more: https://github.com/SamKirkland/FTP-Deploy-Action",
     "version": "1.0.0",
-    "generatedTime": 1756961717357,
+    "generatedTime": 1756989631153,
     "data": [
         {
             "type": "file",
             "name": "package.json",
-            "size": 996,
-            "hash": "f62a3a5939b81540416863acd590caca3d7f760a2d09210dd79880f0e23b3a4f"
+            "size": 1185,
+            "hash": "65760fbf35abcd4d0c3043790606cf19604f119ff5f221fad5a282554376cb03"
         },
         {
             "type": "folder",
@@ -34,8 +34,8 @@
         {
             "type": "file",
             "name": "pb_hooks/pages/index.ejs",
-            "size": 587,
-            "hash": "003342bbdf748e0a198eb99d08cd2f5be9c0fb9572e4918e801da1d59b4e48fb"
+            "size": 839,
+            "hash": "7c62622970f5b73defc1b0d4d2901217397d530c271bb789eae2c24cbf782dc6"
         },
         {
             "type": "folder",
@@ -50,8 +50,8 @@
         {
             "type": "file",
             "name": "pb_hooks/pages/app.css",
-            "size": 59600,
-            "hash": "fb25d376321f4fcddcd0e8ef7265d5e551a3647e9437c83dd00a534a36c5efb9"
+            "size": 58576,
+            "hash": "fac3c2c8f1e465ecd2b523e0cccd83a2e643cf0645c07114e3635f050ccbe47e"
         },
         {
             "type": "file",
@@ -66,6 +66,12 @@
             "hash": "e1a12b8cabb559cddcd060310cdd77bd5a1ef2488d72b4de2de1653f8b5fc0f5"
         },
         {
+            "type": "file",
+            "name": "pb_hooks/pages/+config.js",
+            "size": 157,
+            "hash": "7949ed16d87688986ea592c01686c8c20de1ee73edf84274ef94e7084406b946"
+        },
+        {
             "type": "folder",
             "name": "pb_hooks/pages/blog/posts"
         },
@@ -78,8 +84,8 @@
         {
             "type": "file",
             "name": "pb_hooks/pages/blog/posts/[postId].ejs",
-            "size": 1407,
-            "hash": "312394ec06063e8b1a8518700e70e23c1984492fd0804ec8f1cb4248b76eade3"
+            "size": 1375,
+            "hash": "6677bdd952cea93070fed7a8c5b15494a6271a3e86dfd18b07105bd2d0e01bb8"
         },
         {
             "type": "file",

@@ -3,7 +3,9 @@
   "private": true,
   "version": "0.0.2",
   "scripts": {
-    "dev": "start \"Tailwind\" tailwindcss -i ./pb_hooks/pages/app.tailwind.css -o ./pb_hooks/pages/app.css --watch && pocketbase serve --dir=pb_data --dev"
+    "dev": "concurrently \"tailwindcss -i ./pb_hooks/pages/app.tailwind.css -o ./pb_hooks/pages/app.css --watch\" \"pocketbase serve --dir=pb_data --dev\"",
+    "start": "pocketbase serve --dir=pb_data --dev",
+    "css": "tailwindcss -i ./pb_hooks/pages/app.tailwind.css -o ./pb_hooks/pages/app.css --watch\""
   },
   "description": "Justin's personal blog using PocketPages and DaisyUI.",
   "author": {
@@ -22,6 +24,7 @@
   ],
   "devDependencies": {
     "@tailwindcss/typography": "^0.5.16",
+    "concurrently": "^9.2.1",
     "daisyui": "^4.12.23",
     "prettier": "^3.6.2",
     "prettier-plugin-tailwindcss": "^0.6.14",

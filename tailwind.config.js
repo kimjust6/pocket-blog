@@ -11,9 +11,5 @@ export default {
         styled: true, // include daisyUI colors and design decisions
         utils: true, // adds responsive and modifier utility classes
     },
-    plugins: [
-        'pocketpages-plugin-js-sdk',
-        require('@tailwindcss/typography'),
-        require('daisyui'),
-    ],
+    plugins: [require('@tailwindcss/typography'), require('daisyui')],
 }

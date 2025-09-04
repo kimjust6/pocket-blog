@@ -1,6 +1,28 @@
-<script server>
-</script>
+<script src="https://unpkg.com/petite-vue"></script>
+<script type="module">
+    import { createApp } from 'https://unpkg.com/petite-vue?module'
 
+    //consts
+    const Constants = {
+        navigation: [
+            // { title: 'Home', url: '/' },
+            { title: 'Blog Posts', url: '/blog/posts' },
+        ],
+    }
+
+    function Navbar(props) {
+        return {
+            count: props.initialCount,
+            // on mount
+            mounted() {},
+        }
+    }
+
+    createApp({
+        Navbar,
+        Constants,
+    }).mount()
+</script>
 <!doctype html>
 <html lang="en" data-theme="cupcake">
     <head>
@@ -38,13 +60,15 @@
                     </div>
                     <div class="mx-2 flex-1 px-2"><a href="/">Home </a></div>
                     <div class="hidden flex-none lg:block">
-                        <ul class="menu menu-horizontal">
-                            <!-- Navbar menu content here -->
-                            <% data.navigation?.forEach(item => { %>
+                        <ul class="menu menu-horizontal" v-scope="Constants">
+                            <div
+                                v-for="(item, index) in Constants.navigation"
+                                :key="index"
+                            >
                                 <li>
-                                    <a href="<%= item.url %>"><%= item.title %></a>
+                                    <a :href="item.url">{{ item.title }}</a>
                                 </li>
-                            <% }) %>
+                            </div>
                         </ul>
                     </div>
                 </div>
@@ -58,11 +82,14 @@
                 ></label>
                 <ul class="menu bg-base-200 min-h-full w-80 p-4">
                     <!-- Sidebar content here -->
-                    <% data.navigation?.forEach(item => { %>
+                    <div
+                        v-for="(item, index) in Constants.navigation"
+                        :key="index"
+                    >
                         <li>
-                            <a href="<%= item.url %>"><%= item.title %></a>
+                            <a :href="item.url">{{ item.title }}</a>
                         </li>
-                    <% }) %>
+                    </div>
                 </ul>
             </div>
         </div>
