@@ -1,3 +1,5 @@
+
+
 <script src="https://unpkg.com/petite-vue"></script>
 <script type="module">
     import { createApp } from 'https://unpkg.com/petite-vue?module'
@@ -50,7 +52,13 @@
     <head>
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <title>{{ sitename }}</title>
+
+        <% data.metadata.forEach(function(ogTag) { %>
+            <meta name="<%= ogTag.name %>" content="<%= ogTag.content %>">
+        <% }); %>
+
+
+        <title></title>
         <link href="<%=asset('/app.css')%>" rel="stylesheet" />
         <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico">
     </head>
@@ -82,6 +90,7 @@
                             </svg>
                         </label>
                     </div>
+
                     <div class="menu menu-horizontal mx-2 flex-1 px-2">
                         <li><a href="/">Home </a></div></li>
                     <div class="hidden flex-none lg:block">
