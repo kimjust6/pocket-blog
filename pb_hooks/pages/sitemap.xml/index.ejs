@@ -1,0 +1,29 @@
+<script server>
+
+    const client = pb({ request })
+    const blogposts = client.collection('blogposts').getFullList(
+        {
+            sort: '-created',
+            filter: 'isDeleted = false'
+        });
+</script>
+
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+    <div>
+    <url>
+        <loc>https://blog.jkim.win/</loc>
+        <priority>1.00</priority>
+    </url>
+</div>
+<% blogposts.forEach(function(post) { %>
+    <div>
+        <url>
+            <loc>https://blog.jkim.win/blog/posts/<%= post.id %></loc>
+            <lastmod><%= new Date(post.updated).toISOString() %></lastmod>
+            <priority>0.80</priority>
+        </url>
+    </div>
+    <% }); %>
+</urlset>
+    
