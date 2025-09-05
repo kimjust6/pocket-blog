@@ -1,7 +1,7 @@
 {
     "description": "DO NOT DELETE THIS FILE. This file is used to keep track of which files have been synced in the most recent deployment. If you delete this file a resync will need to be done (which can take a while) - read more: https://github.com/SamKirkland/FTP-Deploy-Action",
     "version": "1.0.0",
-    "generatedTime": 1757041068456,
+    "generatedTime": 1757042841150,
     "data": [
         {
             "type": "file",
@@ -11,11 +11,27 @@
         },
         {
             "type": "folder",
+            "name": "pb_public"
+        },
+        {
+            "type": "folder",
             "name": "pb_migrations"
         },
         {
             "type": "folder",
             "name": "pb_hooks"
+        },
+        {
+            "type": "file",
+            "name": "pb_public/favicon.ico",
+            "size": 131070,
+            "hash": "eade4d177060fc5f49cee53a4a1cc1d3e757de60ba8178c568465cd2b4436ebe"
+        },
+        {
+            "type": "file",
+            "name": "pb_migrations/1757042216_updated_blogposts.js",
+            "size": 677,
+            "hash": "aa1ca8b6d3b577c915ebd8baabb8ed8870cd8ea126633eeec4af456b74e22023"
         },
         {
             "type": "file",
@@ -30,8 +46,8 @@
         {
             "type": "file",
             "name": "pb_hooks/pages/index.ejs",
-            "size": 582,
-            "hash": "b3bb79b5318181e1ea118e428221191a2f5ac51d2ab38d5dd03aa37c6fc29677"
+            "size": 576,
+            "hash": "09dc85d4e63bde5c85ffa68470bb5d6b25f453c9259caa95407b6610f45b9f71"
         },
         {
             "type": "folder",
@@ -46,8 +62,8 @@
         {
             "type": "file",
             "name": "pb_hooks/pages/app.css",
-            "size": 60818,
-            "hash": "faa760c98cac9a6d07e8d168a2efd9f9d39518e98d3d65befcc286a0d1a1013e"
+            "size": 60783,
+            "hash": "a0db9a8db29961549e8fdb7f0b4f8d9abd77c8b49b5cddf668ab14ba508f8738"
         },
         {
             "type": "folder",
@@ -62,8 +78,8 @@
         {
             "type": "file",
             "name": "pb_hooks/pages/+layout.ejs",
-            "size": 4298,
-            "hash": "981bb7ab35b2a0f5785a6f4c548e47f679940a3504b75bdac968bd449fa5b4ac"
+            "size": 4373,
+            "hash": "19a6b5a9482f0dd432bbf46fadfb3b5d88d4dd175970f0b39ebe79979344dd4b"
         },
         {
             "type": "file",
