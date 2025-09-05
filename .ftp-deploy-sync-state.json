@@ -1,7 +1,7 @@
 {
     "description": "DO NOT DELETE THIS FILE. This file is used to keep track of which files have been synced in the most recent deployment. If you delete this file a resync will need to be done (which can take a while) - read more: https://github.com/SamKirkland/FTP-Deploy-Action",
     "version": "1.0.0",
-    "generatedTime": 1757032658476,
+    "generatedTime": 1757041068456,
     "data": [
         {
             "type": "file",
@@ -46,8 +46,12 @@
         {
             "type": "file",
             "name": "pb_hooks/pages/app.css",
-            "size": 58576,
-            "hash": "fac3c2c8f1e465ecd2b523e0cccd83a2e643cf0645c07114e3635f050ccbe47e"
+            "size": 60818,
+            "hash": "faa760c98cac9a6d07e8d168a2efd9f9d39518e98d3d65befcc286a0d1a1013e"
+        },
+        {
+            "type": "folder",
+            "name": "pb_hooks/pages/_private"
         },
         {
             "type": "file",
@@ -58,8 +62,8 @@
         {
             "type": "file",
             "name": "pb_hooks/pages/+layout.ejs",
-            "size": 4248,
-            "hash": "6d8e4e70160275d855f21c30aa58c6c2990fd3b424651312d027dab38bf8946e"
+            "size": 4298,
+            "hash": "981bb7ab35b2a0f5785a6f4c548e47f679940a3504b75bdac968bd449fa5b4ac"
         },
         {
             "type": "file",
@@ -80,8 +84,20 @@
         {
             "type": "file",
             "name": "pb_hooks/pages/blog/posts/[postId].ejs",
-            "size": 1781,
-            "hash": "cd60c62fc00840b033685dfab6fc765dffd4108a0323a62b368a824e8866a2cd"
+            "size": 708,
+            "hash": "5c09506302d379d553062d829e1d97799a9fd208f0e2c733d3c6a03fb762425b"
+        },
+        {
+            "type": "file",
+            "name": "pb_hooks/pages/_private/blogpage.ejs",
+            "size": 267,
+            "hash": "ad57a31346192383ee466623065c5049bd947f3913c996a34066211040269cca"
+        },
+        {
+            "type": "file",
+            "name": "pb_hooks/pages/_private/blogcard.ejs",
+            "size": 2129,
+            "hash": "c573ffbbc502039c858a29418333c73087288b708ac2cdf7259246633dc7e393"
         }
     ]
 }

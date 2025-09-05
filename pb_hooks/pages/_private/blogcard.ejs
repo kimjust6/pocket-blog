@@ -1,0 +1,42 @@
+<script server>
+    function formatDateTime(date) {
+        const month = (date.getMonth() + 1).toString().padStart(2, '0');
+        const day = date.getDate().toString().padStart(2, '0');
+        const year = date.getFullYear();
+        return `${month}/${day}/${year}`;
+    }
+</script>
+
+<div class="hero min-h-screen bg-base-200">
+    <div class="hero-content text-center">
+        <!-- <div v-scope="Pocket()">
+            <button @click="getBlogPosts">dank</button>
+        </div> -->
+        <div class="max-w-md">
+            <h1 class="text-5xl font-bold">Latest Posts</h1>
+            <p class="py-6">Here are the latest posts.  </p>
+            <div class="flex flex-col gap-4">
+                <% items?.forEach(blog => { %>
+                    <div class="animate-slide-in group relative block backdrop-blur-sm rounded-2xl shadow-xl border transition-all duration-300 hover:shadow-2xl overflow-hidden">
+                        <a href="/blog/posts/<%= blog.id %>" class="blog-card">
+                            <figure class="m-0">
+                                <img src="https://images.unsplash.com/photo-1518373714866-3f1478910cc0?w=400&h=250&fit=crop" 
+                                    alt="Web Development" class="w-full object-cover" />
+                            </figure>
+                            <div class="p-4">
+                                <span class="card-title"><%= blog.title %></span>
+                                <p class="text-sm text-base-content/70">Learn the latest React patterns and best practices for building scalable applications.</p>
+                                <div class="flex items-start gap-2 mt-2">
+                                    <div class="blog-meta">
+                                        <span class="blog-date"><%= formatDateTime(new Date(blog.created)) %></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                <% }) %>
+            </div>
+        </div>
+    </div>
+
+</div>

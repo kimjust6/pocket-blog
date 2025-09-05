@@ -3,10 +3,9 @@
 
 <script type="module">
     import { createApp } from 'https://unpkg.com/petite-vue?module'
-    import pocketbase from 'https://cdn.jsdelivr.net/npm/pocketbase@0.26.2/+esm'
+    // import pocketbase from 'https://cdn.jsdelivr.net/npm/pocketbase@0.26.2/+esm'
+    // const myPB = new pocketbase('http://127.0.0.1:8090');
     
-    const myPB = new pocketbase('http://127.0.0.1:8090');
-    //consts
     const Constants = {
         sitename: "Justin's Blog",
         navigation: [
@@ -17,17 +16,17 @@
     
     function Pocket() {
         return {
-            getBlogPosts() {
-                if (!myPB) {
-                    myPB = new pocketbase('http://127.0.0.1:8090');
-                }
-                myPB.collection('blogposts').getList(1, 50).then((result) => {
-                    console.log(result);
-                    return result;
-                }).catch((error) => {
-                    console.log(error);
-                })
-            }
+            // getBlogPosts() {
+            //     if (!myPB) {
+            //         myPB = new pocketbase('http://127.0.0.1:8090');
+            //     }
+            //     myPB.collection('blogposts').getList(1, 50).then((result) => {
+            //         console.log(result);
+            //         return result;
+            //     }).catch((error) => {
+            //         console.log(error);
+            //     })
+            // }
         }
     }
 
@@ -61,7 +60,7 @@
             <input id="my-drawer-3" type="checkbox" class="drawer-toggle" />
             <div class="drawer-content flex flex-col">
                 <!-- Navbar -->
-                <nav class="navbar bg-base-300 w-full fixed">
+                <nav class="navbar bg-base-300 w-full fixed z-40">
                     <div class="flex-none lg:hidden">
                         <!-- hamburger icon -->
                         <label
@@ -97,9 +96,9 @@
                         </ul>
                     </div>
                 </nav>
-                <article class="prose max-w-none"><%- slot %></article>
+                <article class="prose max-w-none pt-16"><%- slot %></article>
             </div>
-            <div class="drawer-side">
+            <div class="drawer-side z-50">
                 <label
                     for="my-drawer-3"
                     aria-label="close sidebar"

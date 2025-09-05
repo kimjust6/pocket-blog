@@ -20,30 +20,8 @@
 </template>
 
 <% if (typeof(params.postId) === "undefined") { %>
-    <div class="hero min-h-screen bg-base-200">
-        <div class="hero-content text-center">
-            <!-- <div v-scope="Pocket()">
-                <button @click="getBlogPosts">dank</button>
-            </div> -->
-            <div class="max-w-md">
-                <h1 class="text-5xl font-bold">Latest Posts</h1>
-                <p class="py-6">Here are the latest posts.  </p>
-                <% blogposts?.items?.forEach(blog => { %>
-                    <ul>
-                        <a href="/blog/posts/<%= blog.id %>"><%= blog.title %></a>
-                    </ul>
-                <% }) %>
-            </div>
-        </div>
-    </div>
+    <%- include('blogcard.ejs', blogposts) %>
 <% } else { %>
-    <div class="hero min-h-screen bg-base-200">
-        <div class="hero-content text-center">
-            <div class="max-w-md">
-                <h1 class="text-5xl font-bold"><%= singleBlog.title %></h1>
-                <p class="py-6"><%= singleBlog.content %></p>
-            </div>
-        </div>
-    </div>
+    <%- include('blogpage.ejs', singleBlog) %>
 <% } %>
 
