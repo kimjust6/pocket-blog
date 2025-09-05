@@ -1,7 +1,11 @@
 <script src="https://unpkg.com/petite-vue"></script>
+
+
 <script type="module">
     import { createApp } from 'https://unpkg.com/petite-vue?module'
-
+    import pocketbase from 'https://cdn.jsdelivr.net/npm/pocketbase@0.26.2/+esm'
+    
+    const pb = new pocketbase('http://127.0.0.1:8090');
     //consts
     const Constants = {
         sitename: "Justin's Blog",
@@ -10,20 +14,40 @@
             { title: 'Blog Posts', url: '/blog/posts' },
         ],
     }
-
-    function Navbar(props) {
+    
+    function Pocket() {
         return {
+            getBlogPosts() {
+                if (!pb) {
+                    pb = new pocketbase('http://127.0.0.1:8090');
+                }
+                pb.collection('blogposts').getList(1, 50).then((result) => {
+                    console.log(result);
+                    return result;
+                }).catch((error) => {
+                    console.log(error);
+                })
+            }
+        }
+    }
+
+    function Templates(props){
+        return {
+            $template: '#counter-template',
             count: props.initialCount,
-            // on mount
-            mounted() {},
+            inc() {
+                this.count++
+            },
         }
     }
 
     createApp({
-        Navbar,
         Constants,
+        Pocket,
+        Templates
     }).mount()
 </script>
+
 <!doctype html>
 <html lang="en" data-theme="cupcake" v-scope="Constants">
     <head>
