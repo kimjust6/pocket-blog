@@ -1,15 +1,16 @@
 <script server>
-    let blogposts = $app.findRecordsByFilter(
-        'blogposts', // collection
-        'isDeleted = {:isDeleted}', // filter
-        '-created', // sort by created date descending
-        5, // limit 5,
-        0, // offset 0
-        { isDeleted: false }
-    )
     
-    blogposts = JSON.parse(JSON.stringify(blogposts))
-    const filteredBlog = blogposts.find(post => post.id === params.postId);
+    // Get an authenticated client for the current request
+    const client = pb({ request })
+    const blogposts = client.collection('blogposts').getList(
+        1, // page
+        3, // perPage
+        {
+            sort: '-created',
+            filter: 'isDeleted = false'
+        });
+
+    const singleBlog = blogposts.items.find(post => post.id === params.postId);
 </script>
 
 <template id="counter-template">
@@ -23,15 +24,11 @@
         <div class="hero-content text-center">
             <!-- <div v-scope="Pocket()">
                 <button @click="getBlogPosts">dank</button>
-            </div>
-            <div v-scope="Templates({initialCount: 5})">
-                <button @click="inc">dank23</button>
             </div> -->
-
             <div class="max-w-md">
                 <h1 class="text-5xl font-bold">Latest Posts</h1>
                 <p class="py-6">Here are the latest posts.  </p>
-                <% blogposts?.forEach(blog => { %>
+                <% blogposts?.items?.forEach(blog => { %>
                     <ul>
                         <a href="/blog/posts/<%= blog.id %>"><%= blog.title %></a>
                     </ul>
@@ -42,10 +39,9 @@
 <% } else { %>
     <div class="hero min-h-screen bg-base-200">
         <div class="hero-content text-center">
-            <!-- reuse it -->
             <div class="max-w-md">
-                <h1 class="text-5xl font-bold"><%= filteredBlog.title %></h1>
-                <p class="py-6"><%= filteredBlog.content %></p>
+                <h1 class="text-5xl font-bold"><%= singleBlog.title %></h1>
+                <p class="py-6"><%= singleBlog.content %></p>
             </div>
         </div>
     </div>

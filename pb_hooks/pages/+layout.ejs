@@ -5,7 +5,7 @@
     import { createApp } from 'https://unpkg.com/petite-vue?module'
     import pocketbase from 'https://cdn.jsdelivr.net/npm/pocketbase@0.26.2/+esm'
     
-    const pb = new pocketbase('http://127.0.0.1:8090');
+    const myPB = new pocketbase('http://127.0.0.1:8090');
     //consts
     const Constants = {
         sitename: "Justin's Blog",
@@ -18,10 +18,10 @@
     function Pocket() {
         return {
             getBlogPosts() {
-                if (!pb) {
-                    pb = new pocketbase('http://127.0.0.1:8090');
+                if (!myPB) {
+                    myPB = new pocketbase('http://127.0.0.1:8090');
                 }
-                pb.collection('blogposts').getList(1, 50).then((result) => {
+                myPB.collection('blogposts').getList(1, 50).then((result) => {
                     console.log(result);
                     return result;
                 }).catch((error) => {
