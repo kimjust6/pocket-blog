@@ -1,26 +1,41 @@
 <script server>
-    
+    let isLoading = true;
     // Get an authenticated client for the current request
     const client = pb({ request })
-    const blogposts = client.collection('blogposts').getList(
-        1, // page
-        3, // perPage
-        {
-            sort: '-created',
-            filter: 'isDeleted = false'
-        });
+    let blogposts;
+    let singleBlog = null;
 
-    const singleBlog = blogposts.items.find(post => post.id === params.postId);
+    if (params.postId) {
+        try {
+            singleBlog = client.collection('blogposts').getFirstListItem(
+                `id = "${params.postId}" && isDeleted = false`,
+                { sort: '-created' }
+            );
+
+        } catch (error) {
+            console.error("Error fetching single blog post: ", error);
+            singleBlog = null;
+        }
+
+    }
+    else {
+        blogposts = client.collection('blogposts').getList(
+            1, // page
+            10, // perPage
+            {
+                sort: '-created',
+                filter: 'isDeleted = false'
+            });
+        }
+        isLoading = false;
 </script>
 
-<template id="counter-template">
-    My count is {{ count }}
-    <button @click="inc">+</button>
-
-</template>
-
-<% if (typeof(params.postId) === "undefined") { %>
+<% if (isLoading) { %>
+    <%- include('loading.ejs') %>
+<% } else if (typeof(params.postId) === "undefined") { %>
     <%- include('blogcard.ejs', blogposts) %>
+<% } else if (singleBlog === null) { %>    
+    <%- include('pagenotfound.ejs', "dank") %>
 <% } else { %>
     <%- include('blogpage.ejs', singleBlog) %>
 <% } %>
