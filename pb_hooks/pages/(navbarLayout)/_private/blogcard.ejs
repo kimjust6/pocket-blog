@@ -5,42 +5,44 @@
         const year = date.getFullYear();
         return `${month}/${day}/${year}`;
     }
-    
+
+    function getImageUrl(blog) {
+        return `/api/files/${blog.collectionId}/${blog.id}/${blog.coverImage}` || 'https://images.unsplash.com/photo-1518373714866-3f1478910cc0?w=600&h=400&fit=crop';
+    }
 </script>
 
-<div class="hero min-h-screen bg-base-200">
-    <div class="hero-content text-center">
-        <!-- <div v-scope="Pocket()">
-            <button @click="getBlogPosts">dank</button>
-        </div> -->
-        <div class="max-w-md">
+<div class="min-h-screen bg-gradient-to-br from-base-200 to-base-100 py-16">
+    <div class="max-w-6xl mx-auto px-4">
+        <div class="text-center mb-12">
             <h1 class="text-5xl font-bold">Latest Posts</h1>
-            <p class="py-6">Here are the latest posts.  </p>
-            <div class="flex flex-col gap-4">
-                <% items?.forEach(blog => { 
-                    const text = blog.content.replace(/<[^>]*>/g, '')
-                    %>
+            <p class="mt-4 text-lg text-base-content/80">Explore recent insights, tutorials, and stories.</p>
+        </div>
 
-                    <div class="animate-slide-in group relative block backdrop-blur-sm rounded-2xl shadow-xl border transition-all duration-300 hover:shadow-2xl overflow-hidden">
-                        <a href="/blog/posts/<%= blog.id %>" class="blog-card">
-                            <figure class="m-0">
-                                <img src="https://images.unsplash.com/photo-1518373714866-3f1478910cc0?w=400&h=250&fit=crop" 
-                                    alt="Web Development" class="w-full object-cover" />
-                            </figure>
-                            <div class="p-4">
-                                <span class="card-title"><%= blog.title %></span>
-                                <p class="text-sm text-base-content/70"><%= text.slice(0, 40) %>...</p>
-                                <div class="flex items-start gap-2 mt-2">
-                                    <div class="blog-meta">
-                                        <span class="blog-date"><%= formatDateTime(new Date(blog.created)) %></span>
-                                    </div>
-                                </div>
-                            </div>
-                        </a>
+        <div class="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+            <% items?.forEach(blog => { 
+                const text = blog.content.replace(/<[^>]*>/g, '');
+            %>
+
+            <a href="/blog/posts/<%= blog.id %>" class="no-underline group">
+                <div class="card bg-base-100 shadow-xl hover:shadow-2xl transition-shadow duration-300">
+                    <figure class="max-h-48 overflow-hidden m-0">
+                        <img src="<%= getImageUrl(blog) %>" alt="Blog Image" class="w-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                    </figure>
+                    <div class="card-body">
+                        <h2 class="card-title group-hover:text-primary transition-colors duration-200 mt-0">
+                            <%= blog.title %>
+                        </h2>
+                        <p class="text-sm text-base-content/70">
+                            <%= text.slice(0, 80) %>...
+                        </p>
+                        <div class="text-xs text-base-content/50 mt-2">
+                            <%= formatDateTime(new Date(blog.created)) %>
+                        </div>
                     </div>
-                <% }) %>
-            </div>
+                </div>
+            </a>
+
+            <% }) %>
         </div>
     </div>
-
 </div>
