@@ -6,7 +6,7 @@
     "dev": "concurrently \"tailwindcss -i ./pb_hooks/pages/app.tailwind.css -o ./pb_hooks/pages/app.css --watch\" \"pocketbase serve --dir=pb_data --dev\"",
     "start": "pocketbase serve --dir=pb_data --dev",
     "css": "tailwindcss -i ./pb_hooks/pages/app.tailwind.css -o ./pb_hooks/pages/app.css --watch\"",
-    "push": "npx phio deploy mlt-blog-2",
+    "push": "npx phio deploy mlt-blog",
     "login": "npx phio login"
   },
   "description": "Justin's personal blog using PocketPages and DaisyUI.",
@@ -41,6 +41,6 @@
     "*.md"
   ],
   "pockethost": {
-    "instanceName": "mlt-blog-2"
+    "instanceName": "mlt-blog"
   }
 }
