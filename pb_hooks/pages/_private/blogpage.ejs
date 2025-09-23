@@ -2,8 +2,9 @@
     const { formatDateTime, getImageUrl } = resolve('../../utils/common')
 </script>
 
-<div class="hero bg-base-100 py-12">
-    <div class="hero-content flex-col xl:flex-row gap-12 max-w-9xl">
+<div class="hero bg-base-100 py-12 flex flex-col">
+    <div class="hero-content flex-col gap-12 max-w-9xl">
+        <div class="flex-col xl:flex-row gap-12 max-w-9xl"></div>
         <!-- Blog Image -->
         <img
             src="<%= getImageUrl(singleBlog) %>"
@@ -12,7 +13,9 @@
         />
 
         <!-- Blog Content -->
-        <div class="prose lg:prose-xl max-w-none">
+        <div
+            class="prose lg:prose-xl max-w-none flex flex-col self-start xl:mt-24"
+        >
             <h1
                 class="mb-4 font-extrabold text-4xl sm:text-5xl lg:text-6xl leading-tight"
             >
@@ -31,7 +34,12 @@
                 </div>
             </div>
             <p class="text-base-content/80 mb-6 min-w-80">
-                <%- singleBlog.content %>
+                <%- singleBlog.content1 %>
+            </p>
+        </div>
+        <div class="">
+            <p class="text-base-content/80 mb-6 gap-12">
+                <%- singleBlog.content2 %>
             </p>
         </div>
     </div>

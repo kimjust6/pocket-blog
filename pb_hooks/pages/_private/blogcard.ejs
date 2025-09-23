@@ -13,7 +13,7 @@
 
         <div class="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
             <% items?.forEach(blog => { 
-                const text = blog.content.replace(/<[^>]*>/g, '');
+                const text = blog.content1.replace(/<[^>]*>/g, '');
             %>
 
             <a href="/blog/posts/<%= blog.id %>" class="no-underline group">
