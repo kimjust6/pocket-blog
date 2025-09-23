@@ -19,15 +19,21 @@
 
     }
     else {
-        blogposts = client.collection('blogposts').getList(
-            1, // page
-            10, // perPage
-            {
-                sort: '-created',
-                filter: 'isDeleted = false'
-            });
+        try {
+            blogposts = client.collection('blogposts').getList(
+                1, // page
+                10, // perPage
+                {
+                    sort: '-created',
+                    filter: 'isDeleted = false'
+                }
+            );
+        } catch (error) {
+            console.error("Error fetching blog posts: ", error);
+            blogposts = { items: [] };
         }
-        isLoading = false;
+    }
+    isLoading = false;
 </script>
 
 <% if (isLoading) { %>
@@ -35,8 +41,8 @@
 <% } else if (typeof(params.postId) === "undefined") { %>
     <%- include('blogcard.ejs', blogposts) %>
 <% } else if (singleBlog === null) { %>    
-    <%- include('pagenotfound.ejs', "dank") %>
+    <%- include('pagenotfound.ejs') %>
 <% } else { %>
-    <%- include('blogpage.ejs', singleBlog) %>
+    <%- include('blogpage.ejs', { singleBlog }) %>
 <% } %>
 

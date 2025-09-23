@@ -1,19 +1,38 @@
 <script server>
-    function getImageUrl(blog) {
-        return `/api/files/${blog.collectionId}/${blog.id}/${blog.coverImage}`
-    }
+    const { formatDateTime, getImageUrl } = resolve('../../utils/common')
 </script>
 
-<div class="hero min-h-screen bg-base-200">
-    <div class="hero-content text-center">
+<div class="hero bg-base-100 py-12">
+    <div class="hero-content flex-col xl:flex-row gap-12 max-w-9xl">
+        <!-- Blog Image -->
         <img
-            src="https://source.unsplash.com/featured/600x400?blog,writing"
-            class="max-w-sm rounded-lg shadow-2xl hidden lg:block"
-            alt="Hero Image"
+            src="<%= getImageUrl(singleBlog) %>"
+            class="max-w-2xl rounded-lg shadow-lg object-cover"
+            alt="<%= singleBlog.title %> image"
         />
-        <div class="max-w-md">
-            <h1 class="text-5xl font-bold"><%= title %></h1>
-            <p class="pb-6"><%- content %></p>
+
+        <!-- Blog Content -->
+        <div class="prose lg:prose-xl max-w-none">
+            <h1
+                class="mb-4 font-extrabold text-4xl sm:text-5xl lg:text-6xl leading-tight"
+            >
+                <%= singleBlog.title %>
+            </h1>
+            <!-- Meta Info -->
+            <div class="flex items-center gap-4 text-sm text-base-content/70">
+                <div
+                    class="flex flex-col sm:flex-row sm:justify-between w-full"
+                >
+                    <span>Written by <strong>Justin K</strong></span>
+                    <span
+                        ><%= formatDateTime(new Date(singleBlog.created))
+                        %></span
+                    >
+                </div>
+            </div>
+            <p class="text-base-content/80 mb-6 min-w-80">
+                <%- singleBlog.content %>
+            </p>
         </div>
     </div>
 </div>
