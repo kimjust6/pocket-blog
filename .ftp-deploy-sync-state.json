@@ -1,7 +1,7 @@
 {
     "description": "DO NOT DELETE THIS FILE. This file is used to keep track of which files have been synced in the most recent deployment. If you delete this file a resync will need to be done (which can take a while) - read more: https://github.com/SamKirkland/FTP-Deploy-Action",
     "version": "1.0.0",
-    "generatedTime": 1758603638379,
+    "generatedTime": 1758604890855,
     "data": [
         {
             "type": "file",
@@ -32,6 +32,12 @@
             "name": "pb_public/favicon.ico",
             "size": 131070,
             "hash": "eade4d177060fc5f49cee53a4a1cc1d3e757de60ba8178c568465cd2b4436ebe"
+        },
+        {
+            "type": "file",
+            "name": "pb_migrations/1758604624_updated_blogposts.js",
+            "size": 976,
+            "hash": "db91ef312d78ed00cc9698e8e0201aac0200d5ea6fbd04021d194716a000d0f5"
         },
         {
             "type": "file",
@@ -160,8 +166,8 @@
         {
             "type": "file",
             "name": "pb_hooks/pages/_private/blogcard.ejs",
-            "size": 1797,
-            "hash": "7105919e31c5125bcbd33bed6734fce4798a32807213a673a0d7730874743da9"
+            "size": 1809,
+            "hash": "55bf309ec35ef0f41e3fd6fdc42b02854cec8b69d245139404f115cc0a782970"
         },
         {
             "type": "file",
