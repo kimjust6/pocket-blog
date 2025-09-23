@@ -5,19 +5,19 @@
 <div class="hero bg-base-100 py-12">
     <div class="hero-content gap-x-12 max-w-9xl grid grid-cols-7">
         <!-- Blog Image -->
-        <div class="col-span-3">
+        <div class="col-span-7 md:col-span-3">
             <img
                 src="<%= getImageUrl(singleBlog) %>"
-                class="rounded-lg shadow-lg object-cover"
+                class="rounded-lg shadow-lg object-cover m-0"
                 alt="<%= singleBlog.title %> image"
             />
         </div>
         <!-- Blog Content -->
         <div
-            class="col-span-4 prose lg:prose-xl max-w-none self-start xl:mt-24"
+            class="col-span-7 md:col-span-4 prose lg:prose-xl max-w-none self-start xl:mt-24"
         >
             <h1
-                class="mb-4 font-extrabold text-4xl sm:text-5xl lg:text-6xl leading-tight"
+                class="mb-0 font-extrabold text-4xl sm:text-5xl lg:text-6xl leading-tight"
             >
                 <%= singleBlog.title %>
             </h1>
