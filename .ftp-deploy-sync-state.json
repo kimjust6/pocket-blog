@@ -1,7 +1,7 @@
 {
     "description": "DO NOT DELETE THIS FILE. This file is used to keep track of which files have been synced in the most recent deployment. If you delete this file a resync will need to be done (which can take a while) - read more: https://github.com/SamKirkland/FTP-Deploy-Action",
     "version": "1.0.0",
-    "generatedTime": 1758600696576,
+    "generatedTime": 1758601427604,
     "data": [
         {
             "type": "file",
@@ -54,8 +54,8 @@
         {
             "type": "file",
             "name": "pb_hooks/pocketpages.pb.js",
-            "size": 23,
-            "hash": "83f80163c8424e9245990124ea42a8b74425828cf66395cb680498225d26f275"
+            "size": 22,
+            "hash": "2487f2bb78dbf1004ac420900cd5d3d2a5db1fc692e9506f55d4d87cdc0ba27e"
         },
         {
             "type": "folder",
@@ -76,8 +76,8 @@
         {
             "type": "file",
             "name": "pb_hooks/pages/pagenotfound.ejs",
-            "size": 603,
-            "hash": "92ceaef3c2feaae15bb44cdceb882cb9671fee93ffdb1dfae1a77ca19d5b0556"
+            "size": 599,
+            "hash": "6d258bae72ff99e805dfd60bed90492b353bdd30d98d1e84c3b5406ea6abc08b"
         },
         {
             "type": "folder",
@@ -166,8 +166,8 @@
         {
             "type": "file",
             "name": "pb_hooks/pages/(navbarLayout)/index.ejs",
-            "size": 814,
-            "hash": "963a2b5bd3014cbbbb3d0d9ecab9a44dc5d28c3a0151b099e2267dc7e79f4e3d"
+            "size": 54,
+            "hash": "73d0b9f2f704834962d41d7130a2de76bbb1058f8fe980fa92ea3d6b8e237ffb"
         },
         {
             "type": "folder",
@@ -176,8 +176,8 @@
         {
             "type": "file",
             "name": "pb_hooks/pages/(navbarLayout)/+layout.ejs",
-            "size": 4638,
-            "hash": "2574a3539ec02a94cc24dff1b523f4904919d1b07074a1f78bbfd3b406f3bbb3"
+            "size": 0,
+            "hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
         },
         {
             "type": "folder",
