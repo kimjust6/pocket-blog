@@ -2683,6 +2683,10 @@ html:has(.drawer-toggle:checked) {
   margin-bottom: 0.5rem;
 }
 
+.mb-5 {
+  margin-bottom: 1.25rem;
+}
+
 .inline-block {
   display: inline-block;
 }
@@ -2829,6 +2833,14 @@ html:has(.drawer-toggle:checked) {
 
 .gap-2 {
   gap: 0.5rem;
+}
+
+.gap-24 {
+  gap: 6rem;
+}
+
+.gap-16 {
+  gap: 4rem;
 }
 
 .gap-x-12 {
@@ -3573,6 +3585,10 @@ html:has(.drawer-toggle:checked) {
 
   .md\:items-start {
     align-items: flex-start;
+  }
+
+  .md\:gap-8 {
+    gap: 2rem;
   }
 
   .md\:space-y-0 > :not([hidden]) ~ :not([hidden]) {

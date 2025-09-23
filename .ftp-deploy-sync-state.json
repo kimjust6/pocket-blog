@@ -1,7 +1,7 @@
 {
     "description": "DO NOT DELETE THIS FILE. This file is used to keep track of which files have been synced in the most recent deployment. If you delete this file a resync will need to be done (which can take a while) - read more: https://github.com/SamKirkland/FTP-Deploy-Action",
     "version": "1.0.0",
-    "generatedTime": 1758604890855,
+    "generatedTime": 1758607391299,
     "data": [
         {
             "type": "file",
@@ -98,8 +98,8 @@
         {
             "type": "file",
             "name": "pb_hooks/pages/app.css",
-            "size": 82905,
-            "hash": "1f2a6191c477c4f444fd0502a5f4121132ec2ca847d78a71caea10a9fc828363"
+            "size": 85086,
+            "hash": "d261097bbf36d6eb6ce0c19a7fdd5af48a77932064760aa3ea42422d2215c261"
         },
         {
             "type": "folder",
@@ -159,9 +159,15 @@
         },
         {
             "type": "file",
+            "name": "pb_hooks/pages/_private/footer.ejs",
+            "size": 3179,
+            "hash": "6d907095471db1ca27145322ec6f19ddefacc918ef4a6d512bba765bf98ae0af"
+        },
+        {
+            "type": "file",
             "name": "pb_hooks/pages/_private/blogpage.ejs",
-            "size": 1653,
-            "hash": "1cb1904d13f375aaa559e232db8c5d6899e2b1dbc433c28f4b45f83fab7cb227"
+            "size": 1577,
+            "hash": "aa87c32940f7d56ccd0af90ea3830e6628c4fbe67e7f2886e38a5085b03af8ec"
         },
         {
             "type": "file",
@@ -182,8 +188,8 @@
         {
             "type": "file",
             "name": "pb_hooks/pages/(navbarLayout)/+layout.ejs",
-            "size": 4637,
-            "hash": "56f404c14ec96041c282d40444b377eb47eb882b1423e3ec213ab45ff48aa07f"
+            "size": 4675,
+            "hash": "cfa1d36179bc8ee05e4335e441bb84b03117cc972ca76e38f76eadc2013764da"
         },
         {
             "type": "folder",
