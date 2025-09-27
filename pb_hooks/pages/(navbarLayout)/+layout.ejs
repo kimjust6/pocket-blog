@@ -1,5 +1,3 @@
-
-
 <script src="https://unpkg.com/petite-vue"></script>
 <script type="module">
     import { createApp } from 'https://unpkg.com/petite-vue?module'
@@ -13,7 +11,7 @@
             { title: 'Blog Posts', url: '/blog/posts' },
         ],
     }
-    
+
     function Pocket() {
         return {
             // getBlogPosts() {
@@ -30,7 +28,7 @@
         }
     }
 
-    function Templates(props){
+    function Templates(props) {
         return {
             $template: '#counter-template',
             count: props.initialCount,
@@ -43,7 +41,7 @@
     createApp({
         Constants,
         Pocket,
-        Templates
+        Templates,
     }).mount()
 </script>
 
@@ -54,13 +52,12 @@
         <meta name="viewport" content="width=device-width, initial-scale=1" />
 
         <% data.metadata.forEach(function(ogTag) { %>
-            <meta name="<%= ogTag.name %>" content="<%= ogTag.content %>">
+        <meta name="<%= ogTag.name %>" content="<%= ogTag.content %>" />
         <% }); %>
-
 
         <title></title>
         <link href="<%=asset('/app.css')%>" rel="stylesheet" />
-        <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico">
+        <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
     </head>
     <body>
         <div class="drawer">
@@ -92,7 +89,8 @@
                     </div>
 
                     <div class="menu menu-horizontal mx-2 flex-1 px-2">
-                        <li><a href="/">Home </a></div></li>
+                        <li><a href="/">Home </a></li>
+                    </div>
                     <div class="hidden flex-none lg:block">
                         <ul class="menu menu-horizontal">
                             <li
@@ -124,7 +122,6 @@
             </div>
         </div>
 
-        
         <%- include('footer.ejs') %>
     </body>
 </html>

@@ -1,5 +1,3 @@
-
-
 <script server>
     const { formatDateTime, getImageUrl } = resolve('../../utils/common')
     console.log(JSON.stringify(items))
@@ -9,37 +7,48 @@
     <div class="max-w-6xl mx-auto px-4">
         <div class="text-center mb-12">
             <h1 class="text-5xl font-bold">Latest Posts</h1>
-            <p class="mt-4 text-lg text-base-content/80">Explore recent insights, tutorials, and stories.</p>
+            <p class="mt-4 text-lg text-base-content/80">
+                Explore recent insights, tutorials, and stories.
+            </p>
         </div>
 
         <div class="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-            <% items?.forEach(blog => { 
-                const text = blog.content1.replace(/<[^>]*>/g, '');
-            %>
+            <% items?.forEach(blog => { const text =
+            blog.content1.replace(/<[^>]*>/g, ''); %>
 
-                <a href="/blog/posts/<%= blog.id %>" class="no-underline group">
-                    <div class="card bg-base-100 shadow-xl hover:shadow-2xl transition-shadow duration-300">
-                        <figure class="max-h-48 overflow-hidden m-0">
-                            <img src="<%= getImageUrl(blog) %>?thumb=350x0" alt="Blog Image" class="w-full object-cover group-hover:scale-105 transition-transform duration-300" />
-                        </figure>
-                        <% if (blog.tags) { %>
-                            <% blog.tags?.split(';').forEach(tag => { %>
-                                <span class="badge badge-outline badge-sm mr-2"><%= tag %></span>
-                            <% }) %>
-                        <% } %>
-                        <div class="card-body">
-                            <h2 class="card-title group-hover:text-primary transition-colors duration-200 mt-0">
-                                <%= blog.title %>
-                            </h2>
-                            <p class="text-sm text-base-content/70">
-                                <%= text.slice(0, 80) %>...
-                            </p>
-                            <div class="text-xs text-base-content/50 mt-2">
-                                <%= formatDateTime(new Date(blog.created)) %>
-                            </div>
+            <a href="/blog/posts/<%= blog.id %>" class="no-underline group">
+                <div
+                    class="card bg-base-100 shadow-xl hover:shadow-2xl transition-shadow duration-300"
+                >
+                    <figure class="max-h-48 overflow-hidden m-0">
+                        <img
+                            src="<%= getImageUrl(blog) %>?thumb=350x0"
+                            alt="Blog Image"
+                            class="w-full object-cover group-hover:scale-105 transition-transform duration-300"
+                        />
+                    </figure>
+                    <% if (blog.tags) { %>
+                    <% blog.tags?.split(';').forEach(tag => { %>
+                    <span class="badge badge-outline badge-sm mr-2"
+                        ><%= tag %></span
+                    >
+                    <% }) %>
+                    <% } %>
+                    <div class="card-body">
+                        <h2
+                            class="card-title group-hover:text-primary transition-colors duration-200 mt-0"
+                        >
+                            <%= blog.title %>
+                        </h2>
+                        <p class="text-sm text-base-content/70">
+                            <%= text.slice(0, 80) %>...
+                        </p>
+                        <div class="text-xs text-base-content/50 mt-2">
+                            <%= formatDateTime(new Date(blog.created)) %>
                         </div>
                     </div>
-                </a>
+                </div>
+            </a>
             <% }) %>
         </div>
     </div>
