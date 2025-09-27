@@ -2,6 +2,7 @@
 
 <script server>
     const { formatDateTime, getImageUrl } = resolve('../../utils/common')
+    console.log(JSON.stringify(items))
 </script>
 
 <div class="min-h-screen bg-gradient-to-br from-base-200 to-base-100 py-16">
@@ -16,25 +17,28 @@
                 const text = blog.content1.replace(/<[^>]*>/g, '');
             %>
 
-            <a href="/blog/posts/<%= blog.id %>" class="no-underline group">
-                <div class="card bg-base-100 shadow-xl hover:shadow-2xl transition-shadow duration-300">
-                    <figure class="max-h-48 overflow-hidden m-0">
-                        <img src="<%= getImageUrl(blog) %>?thumb=350x0" alt="Blog Image" class="w-full object-cover group-hover:scale-105 transition-transform duration-300" />
-                    </figure>
-                    <div class="card-body">
-                        <h2 class="card-title group-hover:text-primary transition-colors duration-200 mt-0">
-                            <%= blog.title %>
-                        </h2>
-                        <p class="text-sm text-base-content/70">
-                            <%= text.slice(0, 80) %>...
-                        </p>
-                        <div class="text-xs text-base-content/50 mt-2">
-                            <%= formatDateTime(new Date(blog.created)) %>
+                <a href="/blog/posts/<%= blog.id %>" class="no-underline group">
+                    <div class="card bg-base-100 shadow-xl hover:shadow-2xl transition-shadow duration-300">
+                        <figure class="max-h-48 overflow-hidden m-0">
+                            <img src="<%= getImageUrl(blog) %>?thumb=350x0" alt="Blog Image" class="w-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                        </figure>
+                        <% blog.tags?.forEach(tag => { %>
+                            <span class="badge badge-outline badge-sm mr-2"><%= tag %></span>
+                            <%= JSON.stringify(items)%>
+                        <% }) %>
+                        <div class="card-body">
+                            <h2 class="card-title group-hover:text-primary transition-colors duration-200 mt-0">
+                                <%= blog.title %>
+                            </h2>
+                            <p class="text-sm text-base-content/70">
+                                <%= text.slice(0, 80) %>...
+                            </p>
+                            <div class="text-xs text-base-content/50 mt-2">
+                                <%= formatDateTime(new Date(blog.created)) %>
+                            </div>
                         </div>
                     </div>
-                </div>
-            </a>
-
+                </a>
             <% }) %>
         </div>
     </div>

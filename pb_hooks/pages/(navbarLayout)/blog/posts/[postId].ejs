@@ -25,7 +25,8 @@
                 10, // perPage
                 {
                     sort: '-created',
-                    filter: 'isDeleted = false'
+                    filter: 'isDeleted = false',
+                    expand: 'tags'  
                 }
             );
         } catch (error) {

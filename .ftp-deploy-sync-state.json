@@ -1,7 +1,7 @@
 {
     "description": "DO NOT DELETE THIS FILE. This file is used to keep track of which files have been synced in the most recent deployment. If you delete this file a resync will need to be done (which can take a while) - read more: https://github.com/SamKirkland/FTP-Deploy-Action",
     "version": "1.0.0",
-    "generatedTime": 1758608903491,
+    "generatedTime": 1758676092197,
     "data": [
         {
             "type": "file",
@@ -98,8 +98,8 @@
         {
             "type": "file",
             "name": "pb_hooks/pages/app.css",
-            "size": 85581,
-            "hash": "6025fda7c83e7475ca5aa60df13c5fa49f248e6c79a1f1c33d3b78f5032fd228"
+            "size": 87543,
+            "hash": "87d1a058f8f1ef7f98430214f3983527cd7666b5fa558cd51b85a5637f242200"
         },
         {
             "type": "folder",
@@ -124,8 +124,8 @@
         {
             "type": "file",
             "name": "pb_hooks/pages/utils/common.js",
-            "size": 492,
-            "hash": "541582aa227c55824a2a682116416b8b9da64020738d0071b93653d2551fb204"
+            "size": 581,
+            "hash": "ee511873ca2fb231f5b59fbd251ca3a18acb774cd39bae3edbcffc14ac3a9b53"
         },
         {
             "type": "file",
@@ -160,26 +160,26 @@
         {
             "type": "file",
             "name": "pb_hooks/pages/_private/footer.ejs",
-            "size": 2875,
-            "hash": "10623fdca7193a9e49bf6f84ecd6cd21f3a0da28673831e9e9ee17206b620841"
+            "size": 2905,
+            "hash": "072bac94972adf459e93b7bca2a87f1c30b5050373b9da3582a1effed5831e84"
         },
         {
             "type": "file",
             "name": "pb_hooks/pages/_private/blogpage.ejs",
-            "size": 1609,
-            "hash": "b642f330922999c2b6f91f807b045501543e94377b755903431819b744218f81"
+            "size": 1618,
+            "hash": "e950a4cb10f74f10e1117c6760f16698c91e88fb0fb53e86492288070253b005"
         },
         {
             "type": "file",
             "name": "pb_hooks/pages/_private/blogcard.ejs",
-            "size": 1809,
-            "hash": "55bf309ec35ef0f41e3fd6fdc42b02854cec8b69d245139404f115cc0a782970"
+            "size": 1985,
+            "hash": "3f59f9dec8ea671df9cda1854a416e0ffbeb5444155f6cb09f5525544ef26385"
         },
         {
             "type": "file",
             "name": "pb_hooks/pages/(navbarLayout)/index.ejs",
-            "size": 813,
-            "hash": "1d2f128b9d2cfe75a37adf6f310c326162673978cefc4e16ac24409efcdb2999"
+            "size": 832,
+            "hash": "7ac11e2fe9c642049b90aa3950a630459a143fdf8d0bb8948dd2b3f4d67188d0"
         },
         {
             "type": "folder",
