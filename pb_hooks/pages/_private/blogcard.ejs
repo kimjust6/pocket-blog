@@ -1,6 +1,18 @@
 <script server>
     const { formatDateTime, getImageUrl } = resolve('../../utils/common')
-    console.log(JSON.stringify(items))
+
+    // let records = $app.findRecordsByFilter(
+    //     'blogposts', // collection
+    //     'isDeleted = false && tags ~ {:tag}', // filter (relation expand)
+    //     '-created', // sort
+    //     10, // limit
+    //     0, // offset
+    //     { tag: 'random' } // filter params
+    // )
+    // records.forEach((record) => {
+    //     $app.expandRecord(record, ['user'], null)
+    // })
+    // console.log(JSON.stringify(records[0].expandedOne('user')))
 </script>
 
 <div class="min-h-screen bg-gradient-to-br from-base-200 to-base-100 py-16">
@@ -28,13 +40,15 @@
                         />
                     </figure>
 
-                    <div class="card-body">
-                        <div class="flex pb-4">
+                    <div class="card-body gap-0">
+                        <div class="flex">
                             <% if (blog.tags && blog.tags?.length > 0) {
                             blog.tags?.split(';').forEach(tag => { %>
-                            <span class="badge badge-outline badge-sm mr-2"
-                                ><%= tag %>
-                            </span>
+                            <div class="pb-4">
+                                <span class="badge badge-outline badge-sm mr-2"
+                                    ><%= tag %>
+                                </span>
+                            </div>
                             <% }) %>
                             <% } %>
                         </div>
