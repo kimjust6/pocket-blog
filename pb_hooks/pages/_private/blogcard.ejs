@@ -22,10 +22,11 @@
                         <figure class="max-h-48 overflow-hidden m-0">
                             <img src="<%= getImageUrl(blog) %>?thumb=350x0" alt="Blog Image" class="w-full object-cover group-hover:scale-105 transition-transform duration-300" />
                         </figure>
-                        <% blog.tags?.forEach(tag => { %>
-                            <span class="badge badge-outline badge-sm mr-2"><%= tag %></span>
-                            <%= JSON.stringify(items)%>
-                        <% }) %>
+                        <% if (blog.tags) { %>
+                            <% blog.tags?.split(';').forEach(tag => { %>
+                                <span class="badge badge-outline badge-sm mr-2"><%= tag %></span>
+                            <% }) %>
+                        <% } %>
                         <div class="card-body">
                             <h2 class="card-title group-hover:text-primary transition-colors duration-200 mt-0">
                                 <%= blog.title %>
