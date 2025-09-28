@@ -7,7 +7,7 @@
         <!-- Blog Image -->
         <div class="col-span-7 md:col-span-3">
             <img
-                src="<%= getImageUrl(singleBlog) %>"
+                src="<%= singleBlog.coverImageAlt ?? getImageUrl(singleBlog) %>"
                 class="rounded-lg shadow-lg object-cover m-0"
                 alt="<%= singleBlog.title %> image"
             />
