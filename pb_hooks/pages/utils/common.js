@@ -21,11 +21,10 @@ function formatDateTime(date) {
 }
 
 function getImageUrl(blog) {
-    if (!blog || !blog.coverImage) {
+    if (blog && blog?.coverImage && blog?.collectionId && blog?.id) {
 
         return (
-            `/api/files/${blog.collectionId}/${blog.id}/${blog.coverImage}` ||
-            'https://images.unsplash.com/photo-1518373714866-3f1478910cc0?w=600&h=400&fit=crop'
+            `/api/files/${blog.collectionId}/${blog.id}/${blog.coverImage}`
         )
     }
     return null;
