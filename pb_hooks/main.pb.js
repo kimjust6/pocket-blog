@@ -27,9 +27,6 @@ routerAdd("GET", "/clippy/zendesk", (e) => {
     return e.json(200, { "message": "Hello" })
 })
 
-routerAdd("GET", "/_", (e) => {
-    return routerNext(e)
-})
 
 
 
