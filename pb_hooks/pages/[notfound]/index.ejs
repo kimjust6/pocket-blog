@@ -1,16 +1,8 @@
 <% if (params.notfound == "_") {%>
 <script>
-    console.log('gay')
+    console.log('forward to dashboard')
 </script>
 <% } else { %>
-<script>
-    console.log('gay2')
-</script>
-<% } %>
-
-<h1>
-    pagenotfound:
-    <%= params.pagenotfound %>
-</h1>
 <%- include('pagenotfound.ejs') %>
 <%- include('footer.ejs') %>
+<% } %>
