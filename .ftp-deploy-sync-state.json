@@ -1,7 +1,7 @@
 {
     "description": "DO NOT DELETE THIS FILE. This file is used to keep track of which files have been synced in the most recent deployment. If you delete this file a resync will need to be done (which can take a while) - read more: https://github.com/SamKirkland/FTP-Deploy-Action",
     "version": "1.0.0",
-    "generatedTime": 1759004889121,
+    "generatedTime": 1759018415902,
     "data": [
         {
             "type": "file",
@@ -134,12 +134,16 @@
         {
             "type": "file",
             "name": "pb_hooks/pages/app.css",
-            "size": 90486,
-            "hash": "edf5d674b7cae264b012b7e049a502a647ee60b074d01b664c998839efb634f9"
+            "size": 90604,
+            "hash": "fc505b3ac289be2e47ae109d8f4fe7ab1b20350b41c3f566b9eb6e22db134672"
         },
         {
             "type": "folder",
             "name": "pb_hooks/pages/_private"
+        },
+        {
+            "type": "folder",
+            "name": "pb_hooks/pages/[pagenotfound]"
         },
         {
             "type": "file",
@@ -184,8 +188,8 @@
         {
             "type": "file",
             "name": "pb_hooks/pages/_private/pagenotfound.ejs",
-            "size": 32,
-            "hash": "ed84372c3d04a6ceb7d4d619d202f219b12245d57ec93a1bb10f304467d7babc"
+            "size": 1130,
+            "hash": "ecfa01a3c4854004c873073730e155014883168831c0ca6bc77aa45481a292f8"
         },
         {
             "type": "file",
@@ -202,14 +206,20 @@
         {
             "type": "file",
             "name": "pb_hooks/pages/_private/blogpage.ejs",
-            "size": 1598,
-            "hash": "5e269ddc6d310731a3dd177af4ab3e750645d87d15d8f16938c2f79379495866"
+            "size": 1626,
+            "hash": "30b63d842f7b9d6552ab412330be4ed570e7dba4726254262f732995588b96a7"
         },
         {
             "type": "file",
             "name": "pb_hooks/pages/_private/blogcard.ejs",
-            "size": 2989,
-            "hash": "1625c9e0fa125503df6a8e66546c18c4feee19d3ea342133e4b0ff9c0c0dfa21"
+            "size": 3057,
+            "hash": "d22780ad8bf24dd218397df05df1c64a3b71387f60a1a7cdaa8689255746ff7d"
+        },
+        {
+            "type": "file",
+            "name": "pb_hooks/pages/[pagenotfound]/index.ejs",
+            "size": 64,
+            "hash": "1220d71f07493048732c91613ae4df23ae9fcb274037afe376276421037c1519"
         },
         {
             "type": "file",

@@ -26,7 +26,9 @@
 
         <div class="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
             <% items?.forEach(blog => { const text =
-            blog.content1.replace(/<[^>]*>/g, ''); %>
+            blog.content1.replace(/<[^>]*>/g, ''); const myImageUrl =
+            getImageUrl(blog) ?`${getImageUrl(blog)}?thumb=350x0` :
+            blog.coverImageAlt %>
 
             <a href="/blog/posts/<%= blog.id %>" class="no-underline group">
                 <div
@@ -34,7 +36,7 @@
                 >
                     <figure class="max-h-48 overflow-hidden m-0">
                         <img
-                            src="<%= getImageUrl(blog) %>?thumb=350x0"
+                            src="<%= myImageUrl%>"
                             alt="Blog Image"
                             class="w-full object-cover group-hover:scale-105 transition-transform duration-300"
                         />

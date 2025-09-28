@@ -21,10 +21,14 @@ function formatDateTime(date) {
 }
 
 function getImageUrl(blog) {
-    return (
-        `/api/files/${blog.collectionId}/${blog.id}/${blog.coverImage}` ||
-        'https://images.unsplash.com/photo-1518373714866-3f1478910cc0?w=600&h=400&fit=crop'
-    )
+    if (!blog || !blog.coverImage) {
+
+        return (
+            `/api/files/${blog.collectionId}/${blog.id}/${blog.coverImage}` ||
+            'https://images.unsplash.com/photo-1518373714866-3f1478910cc0?w=600&h=400&fit=crop'
+        )
+    }
+    return null;
 }
 
 module.exports = {
