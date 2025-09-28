@@ -1,14 +1,18 @@
 <script server>
+    const { POCKET_BLOGPOSTS } = resolve('../../utils/constants')
+
     let isLoading = true
     // Get an authenticated client for the current request
     const client = pb({ request })
     let blogposts
     let singleBlog = null
+    let page = params.page ?? 1
+    const perPage = params.perPage ?? 1
 
-    if (params.postId) {
+    if (params?.postId) {
         try {
             singleBlog = client
-                .collection('blogposts')
+                .collection(POCKET_BLOGPOSTS)
                 .getFirstListItem(
                     `id = "${params.postId}" && isDeleted = false`,
                     { sort: '-created' }
@@ -19,14 +23,13 @@
         }
     } else {
         try {
-            blogposts = client.collection('blogposts').getList(
-                1, // page
-                10, // perPage
-                {
+            blogposts = client
+                .collection(POCKET_BLOGPOSTS)
+                .getList(page, perPage, {
                     sort: '-created',
                     filter: 'isDeleted = false',
-                }
-            )
+                })
+            console.log('Blog posts fetched: ', blogposts)
         } catch (error) {
             console.error('Error fetching blog posts: ', error)
             blogposts = { items: [] }
@@ -34,11 +37,11 @@
     }
     isLoading = false
 </script>
-
+<!-- <%= JSON.stringify(blogposts) %> -->
 <% if (isLoading) { %>
 <%- include('loading.ejs') %>
 <% } else if (typeof(params.postId) === "undefined") { %>
-<%- include('blogcard.ejs', blogposts) %>
+<%- include('blogcards.ejs', { blogposts }) %>
 <% } else if (singleBlog === null) { %>
 <%- include('pagenotfound.ejs') %>
 <% } else { %>

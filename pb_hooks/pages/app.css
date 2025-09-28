@@ -3499,6 +3499,10 @@ html:has(.drawer-toggle:checked) {
   transition-duration: 300ms;
 }
 
+.\[dank\:\"meme\"\] {
+  dank: "meme";
+}
+
 @media (min-width: 1024px) {
   .lg\:prose-xl {
     font-size: 1.25rem;

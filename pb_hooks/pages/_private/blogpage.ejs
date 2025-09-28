@@ -9,9 +9,9 @@
         <!-- Blog Image -->
         <div class="col-span-7 md:col-span-3">
             <img
-                src="<%= singleBlog.coverImageAlt ?? getImageUrl(singleBlog) %>"
+                src="<%= singleBlog?.coverImageAlt ?? getImageUrl(singleBlog) %>"
                 class="rounded-lg shadow-lg object-cover m-0"
-                alt="<%= singleBlog.title %> image"
+                alt="<%= singleBlog?.title %> image"
             />
         </div>
         <!-- Blog Content -->
@@ -21,7 +21,7 @@
             <h1
                 class="mb-0 font-extrabold text-4xl sm:text-5xl lg:text-6xl leading-tight"
             >
-                <%= singleBlog.title %>
+                <%= singleBlog?.title %>
             </h1>
             <!-- Meta Info -->
             <div class="items-center gap-4 text-sm text-base-content/70">
@@ -30,19 +30,19 @@
                     <span
                         >Posted:
                         <strong>
-                            <%= formatDateTime(new Date(singleBlog.created))
+                            <%= formatDateTime(new Date(singleBlog?.created))
                         %>
                         </strong></span
                     >
                 </div>
             </div>
             <p class="text-base-content/80 mb-6 min-w-80">
-                <%- singleBlog.content1 %>
+                <%- singleBlog?.content1 %>
             </p>
         </div>
         <div class="col-span-7">
             <p class="text-base-content/80 mb-6 gap-12">
-                <%- singleBlog.content2 %>
+                <%- singleBlog?.content2 %>
             </p>
         </div>
     </div>
