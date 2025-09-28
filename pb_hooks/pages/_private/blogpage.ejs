@@ -2,7 +2,9 @@
     const { formatDateTime, getImageUrl } = resolve('../../utils/common')
 </script>
 
-<div class="hero bg-base-100 py-12">
+<div
+    class="hero bg-base-100 py-12 min-h-[calc(100vh-12.54rem)] flex flex-col items-center justify-start"
+>
     <div class="hero-content gap-x-12 max-w-9xl grid grid-cols-7">
         <!-- Blog Image -->
         <div class="col-span-7 md:col-span-3">
@@ -24,11 +26,13 @@
             <!-- Meta Info -->
             <div class="items-center gap-4 text-sm text-base-content/70">
                 <div class="flex justify-between w-full">
-                    <span>Written by <strong>Justin K</strong></span>
+                    <span>By: <strong>Justin K</strong></span>
                     <span
-                        >posted
-                        <%= formatDateTime(new Date(singleBlog.created))
-                        %></span
+                        >Posted:
+                        <strong>
+                            <%= formatDateTime(new Date(singleBlog.created))
+                        %>
+                        </strong></span
                     >
                 </div>
             </div>
