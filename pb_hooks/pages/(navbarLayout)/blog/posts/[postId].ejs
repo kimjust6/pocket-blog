@@ -8,7 +8,6 @@
     let singleBlog = null
     let page = params.page ?? 1
     const perPage = params.perPage ?? 1
-
     if (params?.postId) {
         try {
             singleBlog = client
@@ -29,7 +28,16 @@
                     sort: '-created',
                     filter: 'isDeleted = false',
                 })
-            console.log('Blog posts fetched: ', blogposts)
+            if (blogposts?.page > blogposts.totalPages) {
+                page = blogposts.totalPages
+            }
+
+            blogposts = client
+                .collection(POCKET_BLOGPOSTS)
+                .getList(page, perPage, {
+                    sort: '-created',
+                    filter: 'isDeleted = false',
+                })
         } catch (error) {
             console.error('Error fetching blog posts: ', error)
             blogposts = { items: [] }
@@ -37,7 +45,6 @@
     }
     isLoading = false
 </script>
-<!-- <%= JSON.stringify(blogposts) %> -->
 <% if (isLoading) { %>
 <%- include('loading.ejs') %>
 <% } else if (typeof(params.postId) === "undefined") { %>
