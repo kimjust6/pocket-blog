@@ -35,7 +35,7 @@ module.exports = function (api) {
                 content:
                     'Unfiltered reflections and insights from Justin Kim — capturing personal thoughts one "Console.WriteLine" at a time.',
             },
-            { name: 'og:site_name', content: "Justin Kim's Blog" },
+            { name: 'og:site_name', content: "Justin's Dank Blog" },
             { name: 'og:locale', content: 'en_CA' },
 
             // Encourage connection—author details

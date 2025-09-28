@@ -2,36 +2,47 @@
     const { formatDateTime, getImageUrl } = resolve('../../utils/common')
 </script>
 
-<div class="hero bg-base-100 py-12">
-    <div class="hero-content flex-col xl:flex-row gap-12 max-w-9xl">
+<div
+    class="hero bg-base-100 py-12 min-h-[calc(100vh-12.54rem)] flex flex-col items-center justify-start"
+>
+    <div class="hero-content gap-x-12 max-w-9xl grid grid-cols-7">
         <!-- Blog Image -->
-        <img
-            src="<%= getImageUrl(singleBlog) %>"
-            class="max-w-2xl rounded-lg shadow-lg object-cover"
-            alt="<%= singleBlog.title %> image"
-        />
-
+        <div class="col-span-7 md:col-span-3">
+            <img
+                src="<%= singleBlog?.coverImageAlt ?? getImageUrl(singleBlog) %>"
+                class="rounded-lg shadow-lg object-cover m-0"
+                alt="<%= singleBlog?.title %> image"
+            />
+        </div>
         <!-- Blog Content -->
-        <div class="prose lg:prose-xl max-w-none">
+        <div
+            class="col-span-7 md:col-span-4 prose lg:prose-xl max-w-none self-start xl:mt-24"
+        >
             <h1
-                class="mb-4 font-extrabold text-4xl sm:text-5xl lg:text-6xl leading-tight"
+                class="mb-0 font-extrabold text-4xl sm:text-5xl lg:text-6xl leading-tight"
             >
-                <%= singleBlog.title %>
+                <%= singleBlog?.title %>
             </h1>
             <!-- Meta Info -->
-            <div class="flex items-center gap-4 text-sm text-base-content/70">
-                <div
-                    class="flex flex-col sm:flex-row sm:justify-between w-full"
-                >
-                    <span>Written by <strong>Justin K</strong></span>
+            <div class="items-center gap-4 text-sm text-base-content/70">
+                <div class="flex justify-between w-full">
+                    <span>By: <strong>Justin K</strong></span>
                     <span
-                        ><%= formatDateTime(new Date(singleBlog.created))
-                        %></span
+                        >Posted:
+                        <strong>
+                            <%= formatDateTime(new Date(singleBlog?.created))
+                        %>
+                        </strong></span
                     >
                 </div>
             </div>
             <p class="text-base-content/80 mb-6 min-w-80">
-                <%- singleBlog.content %>
+                <%- singleBlog?.content1 %>
+            </p>
+        </div>
+        <div class="col-span-7">
+            <p class="text-base-content/80 mb-6 gap-12">
+                <%- singleBlog?.content2 %>
             </p>
         </div>
     </div>

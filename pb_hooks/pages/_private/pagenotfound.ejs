@@ -1,1 +1,31 @@
-<% redirect('/pagenotfound') %>
+<script>
+    // remove header and footer from the dom
+    document.querySelector('nav.navbar.bg-base-300.w-full.fixed.z-40')?.remove()
+</script>
+
+<!doctype html>
+<html lang="en" data-theme="cupcake" v-scope="Constants">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+        <% data.metadata.forEach(function(ogTag) { %>
+        <meta name="<%= ogTag.name %>" content="<%= ogTag.content %>" />
+        <% }); %>
+
+        <title></title>
+        <link href="<%=asset('/app.css')%>" rel="stylesheet" />
+        <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+    </head>
+    <body>
+        <div
+            class="flex flex-col items-center justify-center min-h-[calc(100vh-15rem)] bg-base-200 text-center"
+        >
+            <h1 class="text-4xl font-bold mb-4">404 - Page Not Found</h1>
+            <p class="text-lg text-base-content/70 mb-6">
+                Oops! The page you're looking for doesn't exist.
+            </p>
+            <a href="/" class="btn btn-primary">Go Back to Home</a>
+        </div>
+    </body>
+</html>

@@ -1,0 +1,106 @@
+<script server>
+    const { formatDateTime, getImageUrl } = resolve('../../utils/common')
+
+    // let records = $app.findRecordsByFilter(
+    //     'blogposts', // collection
+    //     'isDeleted = false && tags ~ {:tag}', // filter (relation expand)
+    //     '-created', // sort
+    //     10, // limit
+    //     0, // offset
+    //     { tag: 'random' } // filter params
+    // )
+    // records.forEach((record) => {
+    //     $app.expandRecord(record, ['user'], null)
+    // })
+    // console.log(JSON.stringify(records[0].expandedOne('user')))
+    const currentPage = blogposts?.page || 1
+    const totalPages = blogposts?.totalPages || 1
+    const perPage = blogposts?.perPage || 10
+
+</script>
+
+<div
+    class="min-h-[calc(100vh-12.54rem)] bg-gradient-to-br from-base-200 to-base-100 pt-16 flex flex-col justify-between"
+>
+    
+    <div class="max-w-6xl mx-auto px-4">
+        <div class="text-center mb-12">
+            <h1 class="text-5xl font-bold">Latest Posts</h1>
+            <p class="mt-4 text-lg text-base-content/80">
+                Explore recent insights, tutorials, and stories.
+            </p>
+        </div>
+
+        <div class="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+            <% blogposts?.items?.forEach(blog => { const text =
+            blog.content1.replace(/<[^>]*>/g, ''); const myImageUrl =
+            getImageUrl(blog) ?`${getImageUrl(blog)}?thumb=350x0` :
+            blog.coverImageAlt %>
+
+            <a href="/blog/posts/<%= blog.id %>" class="no-underline group">
+                <div
+                    class="card bg-base-100 shadow-xl hover:shadow-2xl transition-shadow duration-300"
+                >
+                    <figure class="max-h-48 overflow-hidden m-0">
+                        <img
+                            src="<%= myImageUrl%>"
+                            alt="Blog Image"
+                            class="w-full object-cover group-hover:scale-105 transition-transform duration-300"
+                        />
+                    </figure>
+
+                    <div class="card-body gap-0">
+                        <div class="flex">
+                            <% if (blog.tags && blog.tags?.length > 0) {
+                            blog.tags?.split(';').forEach(tag => { %>
+                            <div class="pb-4">
+                                <span
+                                    class="badge badge-outline badge-sm mr-2"
+                                    ><%= tag %>
+                                </span>
+                            </div>
+                            <% }) %>
+                            <% } %>
+                        </div>
+                        <h2
+                            class="card-title group-hover:text-primary transition-colors duration-200 mt-0"
+                        >
+                            <%= blog.title %>
+                        </h2>
+                        <p class="text-sm text-base-content/70">
+                            <%= text.slice(0, 80) %>...
+                        </p>
+                        <span class="text-xs text-base-content/50 mt-2">
+                            <%= formatDateTime(new Date(blog.created)) %>
+                        </span>
+                    </div>
+                </div>
+            </a>
+            <% }) %>
+        </div>
+    </div>
+
+    <!-- Pagination -->
+    <div class="flex justify-center my-12">
+        <div class="join">
+            <a href="?page=<%= currentPage - 1 %>" 
+            class="join-item btn btn-sm"
+            <% if (currentPage <= 1) { %> disabled <% } %>>
+            «
+            </a>
+
+            <% for (let i = 1; i <= totalPages; i++) { %>
+            <a href="?page=<%= i %>" 
+                class="join-item btn btn-sm <%= currentPage === i ? 'btn-active' : '' %>">
+                <%= i %>
+            </a>
+            <% } %>
+
+            <a href="?page=<%= currentPage + 1 %>" 
+            class="join-item btn btn-sm"
+            <% if (currentPage >= totalPages) { %> disabled <% } %>>
+            »
+            </a>
+        </div>
+    </div>
+</div>

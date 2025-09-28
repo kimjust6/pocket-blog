@@ -1,0 +1,77 @@
+<script server>
+    const socials = [
+        {
+            name: 'Portfolio',
+            icon: 'fa-solid fa-globe',
+            url: 'https://www.justink.dev',
+        },
+        {
+            name: 'GitHub',
+            icon: 'fa-brands fa-github',
+            url: 'https://github.com/kimjust6',
+        },
+        {
+            name: 'Instagram',
+            icon: 'fa-brands fa-instagram',
+            url: 'https://instagram.com/milklatteteas',
+        },
+        {
+            name: 'Bluesky',
+            icon: 'fa-solid fa-cloud',
+            url: 'https://bsky.app/profile/milklattetea.bsky.social',
+        },
+    ]
+
+    const resources = [
+        { name: 'Privacy Policy', url: '/privacy' },
+        { name: 'Terms of Service', url: '/terms' },
+        { name: 'FAQ', url: '/faq' },
+    ]
+</script>
+
+<!-- Footer -->
+<footer class="bg-base-200 border-t border-base-100">
+    <div
+        class="max-w-9xl mx-auto px-20 md:grid grid-cols-1 md:grid-cols-3 gap-16 md:gap-8 justify-center flex flex-col items-center text-center md:text-left md:items-start"
+    >
+        <!-- 
+        Newsletter
+        <div>
+            <h2 class="font-bold text-lg mb-5">Stay Updated</h2>
+            <form class="flex flex-col gap-3">
+                <input
+                    type="email"
+                    placeholder="Your email"
+                    class="input input-bordered w-full"
+                />
+                <button type="submit" class="btn btn-primary w-full">
+                    Subscribe
+                </button>
+            </form>
+        </div> -->
+    </div>
+
+    <!-- Bottom Bar -->
+    <div
+        class="py-10 border-base-300 text-center text-sm text-base-content/70 flex flex-col items-center justify-center px-14 gap-4"
+    >
+        <!-- Social Media -->
+        <ul
+            class="text-base-content/80 text-sm flex gap-4 flex-row flex-wrap justify-center"
+        >
+            <% socials.forEach(social => { %>
+            <li>
+                <a
+                    href="<%= social.url %>"
+                    target="_blank"
+                    class="hover:text-primary"
+                >
+                    <i class="<%= social.icon %> text-lg"></i>
+                    <%= social.name %>
+                </a>
+            </li>
+            <% }) %>
+        </ul>
+        <p>© <%= new Date().getFullYear() %> Justin K. All rights reserved.</p>
+    </div>
+</footer>

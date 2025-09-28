@@ -1,46 +1,47 @@
 {
-  "name": "justins-blog",
-  "private": true,
-  "version": "0.0.2",
-  "scripts": {
-    "dev": "concurrently \"tailwindcss -i ./pb_hooks/pages/app.tailwind.css -o ./pb_hooks/pages/app.css --watch\" \"pocketbase serve --dir=pb_data --dev\"",
-    "start": "pocketbase serve --dir=pb_data --dev",
-    "css": "tailwindcss -i ./pb_hooks/pages/app.tailwind.css -o ./pb_hooks/pages/app.css --watch\"",
-    "push": "npx phio deploy mlt-blog",
-    "login": "npx phio login"
-  },
-  "description": "Justin's personal blog using PocketPages and DaisyUI.",
-  "author": {
-    "name": "Justin Kim",
-    "github": "kimjust6"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/benallfree/pocketpages/tree/main/packages/starters/daisyui"
-  },
-  "keywords": [
-    "pocketpages",
-    "blog",
-    "daisyui",
-    "justin kim"
-  ],
-  "devDependencies": {
-    "@tailwindcss/typography": "^0.5.16",
-    "concurrently": "^9.2.1",
-    "daisyui": "^4.12.23",
-    "prettier": "^3.6.2",
-    "prettier-plugin-tailwindcss": "^0.6.14",
-    "tailwindcss": "^3.4.17"
-  },
-  "dependencies": {
-    "pocketpages": ">=0.22.3",
-    "pocketpages-plugin-js-sdk": "^0.2.0"
-  },
-  "files": [
-    "pb_hooks",
-    "*.md"
-  ],
-  "pockethost": {
-    "instanceName": "mlt-blog"
-  }
+    "name": "justins-blog",
+    "private": true,
+    "version": "0.0.2",
+    "scripts": {
+        "dev": "concurrently \"tailwindcss -i ./pb_hooks/pages/app.tailwind.css -o ./pb_hooks/pages/app.css --watch\" \"pocketbase serve --dir=pb_data --dev\"",
+        "start": "pocketbase serve --dir=pb_data --dev",
+        "css": "tailwindcss -i ./pb_hooks/pages/app.tailwind.css -o ./pb_hooks/pages/app.css --watch\"",
+        "push": "npx phio deploy mlt-blog",
+        "login": "npx phio login"
+    },
+    "description": "Justin's personal blog using PocketPages and DaisyUI.",
+    "author": {
+        "name": "Justin Kim",
+        "github": "kimjust6"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/benallfree/pocketpages/tree/main/packages/starters/daisyui"
+    },
+    "keywords": [
+        "pocketpages",
+        "blog",
+        "daisyui",
+        "justin kim"
+    ],
+    "devDependencies": {
+        "@tailwindcss/typography": "^0.5.16",
+        "concurrently": "^9.2.1",
+        "daisyui": "^4.12.23",
+        "prettier": "^3.6.2",
+        "prettier-plugin-ejs": "^1.0.3",
+        "prettier-plugin-tailwindcss": "^0.6.14",
+        "tailwindcss": "^3.4.17"
+    },
+    "dependencies": {
+        "pocketpages": ">=0.22.3",
+        "pocketpages-plugin-js-sdk": "^0.2.0"
+    },
+    "files": [
+        "pb_hooks",
+        "*.md"
+    ],
+    "pockethost": {
+        "instanceName": "mlt-blog"
+    }
 }
