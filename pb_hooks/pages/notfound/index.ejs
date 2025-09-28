@@ -1,6 +1,7 @@
 <% if (params.notfound == "_") {%>
 <script>
     console.log('forward to dashboard')
+    return routerNext(e)
 </script>
 <% } else { %>
 <%- include('pagenotfound.ejs') %>
