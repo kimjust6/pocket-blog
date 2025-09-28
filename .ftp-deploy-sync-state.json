@@ -1,7 +1,7 @@
 {
     "description": "DO NOT DELETE THIS FILE. This file is used to keep track of which files have been synced in the most recent deployment. If you delete this file a resync will need to be done (which can take a while) - read more: https://github.com/SamKirkland/FTP-Deploy-Action",
     "version": "1.0.0",
-    "generatedTime": 1759037627097,
+    "generatedTime": 1759067746051,
     "data": [
         {
             "type": "file",
@@ -158,8 +158,8 @@
         {
             "type": "file",
             "name": "pb_hooks/pages/app.css",
-            "size": 84585,
-            "hash": "92ff1cf4df6b3f608fb8e878f39dbbbb4046df9b85b7cc9c32f732858ef1f1e2"
+            "size": 85881,
+            "hash": "2e58dae733d6269da2328e10da9512cd2cff2fd5518d9a5949084b3b24503dba"
         },
         {
             "type": "folder",
@@ -226,14 +226,14 @@
         {
             "type": "file",
             "name": "pb_hooks/pages/_private/blogpage.ejs",
-            "size": 1626,
-            "hash": "30b63d842f7b9d6552ab412330be4ed570e7dba4726254262f732995588b96a7"
+            "size": 1766,
+            "hash": "1bf8869418da58261fe847eb0ddd77d7c76548c0fba65c9d2a26dfdff23dda58"
         },
         {
             "type": "file",
             "name": "pb_hooks/pages/_private/blogcard.ejs",
-            "size": 3087,
-            "hash": "d8c239c2733174c3fc00ce8a3d0cb9f234bc3cf194d18212f8678cdd4aa387b4"
+            "size": 3108,
+            "hash": "3fa82deca0c6c71a08175ab77990dc036ebe72b3416b3fbeb7387361793164b7"
         },
         {
             "type": "file",
