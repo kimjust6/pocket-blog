@@ -25,20 +25,12 @@
         }
     }
 
-    function Templates(props) {
-        return {
-            $template: '#counter-template',
-            count: props.initialCount,
-            inc() {
-                this.count++
-            },
-        }
-    }
+
 
     createApp({
         Constants,
         Pocket,
-        Templates,
+        SearchApp,
     }).mount()
 </script>
 

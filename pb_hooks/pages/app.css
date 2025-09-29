@@ -2976,10 +2976,6 @@ html:has(.drawer-toggle:checked) {
   margin-top: 1.5rem;
 }
 
-.mt-12 {
-  margin-top: 3rem;
-}
-
 .inline-block {
   display: inline-block;
 }
@@ -3004,20 +3000,12 @@ html:has(.drawer-toggle:checked) {
   height: 100%;
 }
 
-.h-\[\] {
-  height: ;
-}
-
-.h-\[80\%\] {
-  height: 80%;
-}
-
-.h-\[80vh\] {
-  height: 80vh;
-}
-
 .max-h-48 {
   max-height: 12rem;
+}
+
+.min-h-\[calc\(100vh-12\.54rem\)\] {
+  min-height: calc(100vh - 12.54rem);
 }
 
 .min-h-\[calc\(100vh-15rem\)\] {
@@ -3034,90 +3022,6 @@ html:has(.drawer-toggle:checked) {
 
 .min-h-screen {
   min-height: 100vh;
-}
-
-.min-h-\[\] {
-  min-height: ;
-}
-
-.min-h-\[calc\] {
-  min-height: calc;
-}
-
-.min-h-\[calc\(100vh-12rem\)\] {
-  min-height: calc(100vh - 12rem);
-}
-
-.min-h-\[calc\(100vh-13rem\)\] {
-  min-height: calc(100vh - 13rem);
-}
-
-.min-h-\[calc\(100vh-12\.5rem\)\] {
-  min-height: calc(100vh - 12.5rem);
-}
-
-.min-h-\[calc\(100vh-12\.4rem\)\] {
-  min-height: calc(100vh - 12.4rem);
-}
-
-.min-h-\[calc\(100vh-12\.6rem\)\] {
-  min-height: calc(100vh - 12.6rem);
-}
-
-.min-h-\[calc\(100vh-12\.65rem\)\] {
-  min-height: calc(100vh - 12.65rem);
-}
-
-.min-h-\[calc\(100vh-12\.69rem\)\] {
-  min-height: calc(100vh - 12.69rem);
-}
-
-.min-h-\[calc\(100vh-12\.7rem\)\] {
-  min-height: calc(100vh - 12.7rem);
-}
-
-.min-h-\[calc\(100vh-12\.75rem\)\] {
-  min-height: calc(100vh - 12.75rem);
-}
-
-.min-h-\[calc\(100vh-12\.8rem\)\] {
-  min-height: calc(100vh - 12.8rem);
-}
-
-.min-h-\[calc\(100vh-12\.9rem\)\] {
-  min-height: calc(100vh - 12.9rem);
-}
-
-.min-h-\[calc\(100vh-12\.45rem\)\] {
-  min-height: calc(100vh - 12.45rem);
-}
-
-.min-h-\[calc\(100vh-12\.55rem\)\] {
-  min-height: calc(100vh - 12.55rem);
-}
-
-.min-h-\[calc\(100vh-12\.51rem\)\] {
-  min-height: calc(100vh - 12.51rem);
-}
-
-.min-h-\[calc\(100vh-12\.52rem\)\] {
-  min-height: calc(100vh - 12.52rem);
-}
-
-.min-h-\[calc\(100vh-12\.53rem\)\] {
-  min-height: calc(100vh - 12.53rem);
-}
-
-.min-h-\[calc\(100vh-12\.54rem\)\] {
-  min-height: calc(100vh - 12.54rem);
-}
-
-.min-h-\[80vh\] {
-  min-height: 80vh;
-}
-
-.min-h-\[75vh\] {
-  min-height: 75vh;
 }
 
 .w-6 {
@@ -3233,6 +3137,10 @@ html:has(.drawer-toggle:checked) {
   border-radius: 0.5rem;
 }
 
+.border {
+  border-width: 1px;
+}
+
 .border-t {
   border-top-width: 1px;
 }
@@ -3245,6 +3153,11 @@ html:has(.drawer-toggle:checked) {
 .border-base-300 {
   --tw-border-opacity: 1;
   border-color: var(--fallback-b3,oklch(var(--b3)/var(--tw-border-opacity, 1)));
+}
+
+.border-gray-600 {
+  --tw-border-opacity: 1;
+  border-color: rgb(75 85 99 / var(--tw-border-opacity, 1));
 }
 
 .bg-base-100 {
@@ -3324,11 +3237,6 @@ html:has(.drawer-toggle:checked) {
   padding-bottom: 3rem;
 }
 
-.py-16 {
-  padding-top: 4rem;
-  padding-bottom: 4rem;
-}
-
 .pb-4 {
   padding-bottom: 1rem;
 }
@@ -3339,26 +3247,6 @@ html:has(.drawer-toggle:checked) {
 
 .pt-16 {
   padding-top: 4rem;
-}
-
-.pb-24 {
-  padding-bottom: 6rem;
-}
-
-.pb-14 {
-  padding-bottom: 3.5rem;
-}
-
-.pb-10 {
-  padding-bottom: 2.5rem;
-}
-
-.pb-12 {
-  padding-bottom: 3rem;
-}
-
-.pb-16 {
-  padding-bottom: 4rem;
 }
 
 .text-left {
@@ -3497,10 +3385,6 @@ html:has(.drawer-toggle:checked) {
 
 .duration-300 {
   transition-duration: 300ms;
-}
-
-.\[dank\:\"meme\"\] {
-  dank: "meme";
 }
 
 @media (min-width: 1024px) {
