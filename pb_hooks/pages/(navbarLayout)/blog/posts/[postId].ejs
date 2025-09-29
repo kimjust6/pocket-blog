@@ -45,6 +45,19 @@
         }
     }
     isLoading = false
+
+    // let records = $app.findRecordsByFilter(
+    //     'blogposts', // collection
+    //     'isDeleted = false && tags ~ {:tag}', // filter (relation expand)
+    //     '-created', // sort
+    //     10, // limit
+    //     0, // offset
+    //     { tag: 'random' } // filter params
+    // )
+    // records.forEach((record) => {
+    //     $app.expandRecord(record, ['user'], null)
+    // })
+    // console.log(JSON.stringify(records[0].expandedOne('user')))
 </script>
 
 <% if (isLoading) { %>

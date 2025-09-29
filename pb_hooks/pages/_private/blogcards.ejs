@@ -1,34 +1,45 @@
 <script server>
     const { formatDateTime, getImageUrl } = resolve('../../utils/common')
 
-    // let records = $app.findRecordsByFilter(
-    //     'blogposts', // collection
-    //     'isDeleted = false && tags ~ {:tag}', // filter (relation expand)
-    //     '-created', // sort
-    //     10, // limit
-    //     0, // offset
-    //     { tag: 'random' } // filter params
-    // )
-    // records.forEach((record) => {
-    //     $app.expandRecord(record, ['user'], null)
-    // })
-    // console.log(JSON.stringify(records[0].expandedOne('user')))
     const currentPage = blogposts?.page || 1
     const totalPages = blogposts?.totalPages || 1
     const perPage = blogposts?.perPage || 10
+</script>
+
+<script>
+    const SearchApp = {
+        searchQuery: '<%= params.query %>',
+        handleSearch() {
+            console.log('Searching for:', this.searchQuery)
+            // Update query params in URL
+            window.location.href = `?query=${encodeURIComponent(this.searchQuery)}`
+        },
+        mounted() {
+            console.log('Search component mounted')
+            this.$refs.searchInput.focus()
+        }
+    }
+
 
 </script>
+
 
 <div
     class="min-h-[calc(100vh-12.54rem)] bg-gradient-to-br from-base-200 to-base-100 pt-16 flex flex-col justify-between"
 >
-    
-    <div class="max-w-6xl mx-auto px-4">
+
+    <div class="max-w-6xl mx-auto px-4" v-scope="SearchApp">
         <div class="text-center mb-12">
             <h1 class="text-5xl font-bold">Latest Posts</h1>
             <p class="mt-4 text-lg text-base-content/80">
                 Explore recent insights, tutorials, and stories.
             </p>
+            <input
+                ref="searchInput"
+                v-model="searchQuery"
+                class="input w-full border border-gray-600" 
+                placeholder="Search blogs..." 
+                @keydown.enter="handleSearch" />
         </div>
 
         <div class="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
