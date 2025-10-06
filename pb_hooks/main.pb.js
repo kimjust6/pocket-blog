@@ -31,7 +31,6 @@ routerAdd("POST", "/clippy/zendesk", (e) => {
         };
 
         return e.json(201, data);
-        // return e.json(201, { message: "Ticket received", data: data });
     } catch (err) {
         return e.json(500, {
             error: err?.message || "Failed to create Zendesk ticket",
