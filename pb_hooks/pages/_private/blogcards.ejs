@@ -10,7 +10,6 @@
     const SearchApp = {
         searchQuery: '<%= params.query %>',
         handleSearch() {
-            console.log('Searching for:', this.searchQuery)
             // Update query params in URL
             window.location.href = `?query=${encodeURIComponent(this.searchQuery)}`
         },
