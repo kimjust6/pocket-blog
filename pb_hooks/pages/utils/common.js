@@ -4,6 +4,8 @@ const {
     ZENDESK_API_ENDPOINT
 } = require(`${__hooks}/pages/utils/constants.js`);
 
+const { ZENDESK_SUBMITTER_ID_JUSTIN, DISCORD_ID_JUSTIN } = require(`${__hooks}/pages/utils/constants.js`);
+
 function formatDateTime(date) {
     const months = [
         'Jan',
@@ -36,8 +38,8 @@ function getImageUrl(blog) {
     return null;
 }
 
-function isJustinsTicket(submitter_id, ticket) {
-    const body = ticket?.body ?? ticket;
+function isJustinsTicket(ticket, submitter_id = ZENDESK_SUBMITTER_ID_JUSTIN) {
+    const body = ticket?.body?.body ?? ticket?.body;
     return body?.detail?.submitter_id == submitter_id;
 }
 
@@ -46,14 +48,18 @@ function isSlaBreaching(ticket) {
     return body?.event?.tags_added?.includes(POCKET_SLA_BREACHING_SOON);
 }
 
-function getZendeskUrl(ticketId) {
+function getZendeskUrl(data) {
+    let ticketId = data?.body?.body?.detail?.id ?? data?.body?.body?.subject ?? null;
+    //delimit and get last part"
+    ticketId = ticketId.split(":").pop();
+
     if (!ticketId) {
         return null;
     }
     return `${ZENDESK_API_ENDPOINT}${ticketId}`
 }
 
-function sendDiscordMessageAsync(userId, message) {
+function sendDiscordMessage(message, userId = DISCORD_ID_JUSTIN) {
     const discordApiEndpoint = DISCORD_API_ENDPOINT;
     const payload = {
         userId,
@@ -80,5 +86,5 @@ module.exports = {
     getZendeskUrl,
     isJustinsTicket,
     isSlaBreaching,
-    sendDiscordMessageAsync
+    sendDiscordMessage
 }
