@@ -2,7 +2,7 @@ const {
     POCKET_SLA_BREACHING_SOON,
     DISCORD_API_ENDPOINT,
     ZENDESK_API_ENDPOINT
-} = require("./constants");
+} = require(`${__hooks}/pages/utils/constants.js`);
 
 function formatDateTime(date) {
     const months = [
@@ -53,7 +53,7 @@ function getZendeskUrl(ticketId) {
     return `${ZENDESK_API_ENDPOINT}${ticketId}`
 }
 
-async function sendDiscordMessageAsync(userId, message) {
+function sendDiscordMessageAsync(userId, message) {
     const discordApiEndpoint = DISCORD_API_ENDPOINT;
     const payload = {
         userId,
@@ -61,7 +61,8 @@ async function sendDiscordMessageAsync(userId, message) {
     };
 
     try {
-        await fetch(discordApiEndpoint, {
+        $http.send({
+            url: discordApiEndpoint,
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
