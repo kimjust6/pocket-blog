@@ -1,10 +1,10 @@
 const {
     POCKET_SLA_BREACHING_SOON,
     DISCORD_API_ENDPOINT,
-    ZENDESK_API_ENDPOINT
+    ZENDESK_API_ENDPOINT,
+    ZENDESK_ASSIGNEE_ID_JUSTIN,
+    DISCORD_ID_JUSTIN
 } = require(`${__hooks}/pages/utils/constants.js`);
-
-const { ZENDESK_SUBMITTER_ID_JUSTIN, DISCORD_ID_JUSTIN } = require(`${__hooks}/pages/utils/constants.js`);
 
 function formatDateTime(date) {
     const months = [
@@ -38,9 +38,9 @@ function getImageUrl(blog) {
     return null;
 }
 
-function isJustinsTicket(ticket, submitter_id = ZENDESK_SUBMITTER_ID_JUSTIN) {
-    const body = ticket?.body?.body ?? ticket?.body;
-    return body?.detail?.submitter_id == submitter_id;
+function isJustinsTicket(data, assignee_id = ZENDESK_ASSIGNEE_ID_JUSTIN) {
+    const body = data?.body?.body ?? data?.body;
+    return body?.detail?.assignee_id === assignee_id;
 }
 
 function isSlaBreaching(ticket) {

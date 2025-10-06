@@ -19,8 +19,9 @@ routerAdd("POST", "/clippy/zendesk", (e) => {
         saveZendeskRecord(data);
 
         const url = getZendeskUrl(data);
-        // forward to discord bot
+
         if (isJustinsTicket(data)) {
+            // forward to discord bot
             sendDiscordMessage(`Your ticket has been updated: ${url || 'No URL available'}`);
         };
 
