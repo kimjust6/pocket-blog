@@ -7,7 +7,7 @@
 >
     <div class="hero-content max-w-4xl flex flex-col">
         <h1
-            class="md:mb-0 font-extrabold text-5xl leading-tight md:flex hidden"
+            class="md:mb-0 font-extrabold text-3xl leading-tight md:flex hidden"
         >
             <%= singleBlog?.title %>
         </h1>
@@ -18,9 +18,9 @@
             alt="<%= singleBlog?.title %> image"
         />
         <!-- Blog Content -->
-        <div class="prose lg:prose-xl w-full self-start">
+        <div class="prose w-full self-start">
             <h1
-                class="mb-0 font-extrabold sm:text-4xl leading-tight flex md:hidden"
+                class="mb-0 font-extrabold sm:text-2xl leading-tight flex md:hidden"
             >
                 <%= singleBlog?.title %>
             </h1>
@@ -37,12 +37,12 @@
                     >
                 </div>
             </div>
-            <p class="text-base-content/80 mb-6 min-w-80">
+            <p class="text-base-content/80 min-w-80">
                 <%- singleBlog?.content1 %>
             </p>
-        </div>
-        <div class="">
-            <p class="text-base-content/80 mb-6"><%- singleBlog?.content2 %></p>
+            <p class="text-base-content/80 mb-6 min-w-80">
+                <%- singleBlog?.content2 %>
+            </p>
         </div>
     </div>
 </div>
