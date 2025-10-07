@@ -1,3 +1,11 @@
+const {
+    POCKET_SLA_BREACHING_SOON,
+    DISCORD_API_ENDPOINT,
+    ZENDESK_API_ENDPOINT,
+    ZENDESK_ASSIGNEE_ID_JUSTIN,
+    DISCORD_ID_JUSTIN
+} = require(`${__hooks}/pages/utils/constants.js`);
+
 function formatDateTime(date) {
     const months = [
         'Jan',
@@ -30,7 +38,53 @@ function getImageUrl(blog) {
     return null;
 }
 
+function isJustinsTicket(data, assignee_id = ZENDESK_ASSIGNEE_ID_JUSTIN) {
+    const body = data?.body?.body ?? data?.body;
+    return body?.detail?.assignee_id === assignee_id;
+}
+
+function isSlaBreaching(ticket) {
+    const body = ticket?.body ?? ticket;
+    return body?.event?.tags_added?.includes(POCKET_SLA_BREACHING_SOON);
+}
+
+function getZendeskUrl(data) {
+    let ticketId = data?.body?.body?.detail?.id ?? data?.body?.body?.subject ?? null;
+    //delimit and get last part"
+    ticketId = ticketId.split(":").pop();
+
+    if (!ticketId) {
+        return null;
+    }
+    return `${ZENDESK_API_ENDPOINT}${ticketId}`
+}
+
+function sendDiscordMessage(message, userId = DISCORD_ID_JUSTIN) {
+    const discordApiEndpoint = DISCORD_API_ENDPOINT;
+    const payload = {
+        userId,
+        message,
+    };
+
+    try {
+        $http.send({
+            url: discordApiEndpoint,
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(payload),
+        });
+    } catch (error) {
+        console.error("Error sending Discord message:", error);
+    }
+}
+
 module.exports = {
     formatDateTime,
     getImageUrl,
+    getZendeskUrl,
+    isJustinsTicket,
+    isSlaBreaching,
+    sendDiscordMessage
 }
