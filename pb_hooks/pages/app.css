@@ -3569,6 +3569,9 @@ html:has(.drawer-toggle:checked) {
   /* Prevent layout shift during transitions */
   contain: layout;
   will-change: transform;
+  transition:
+        filter 0.3s ease,
+        opacity 0.3s ease;
 }
 
 .blog-title-transition {
@@ -3580,6 +3583,10 @@ html:has(.drawer-toggle:checked) {
 .blog-card-transition:hover {
   /* Removed translateY to prevent card movement on hover */
   transition: transform 0.2s ease-out;
+}
+
+.group:hover .blog-image-transition {
+  filter: brightness(1.1) contrast(1.05);
 }
 
 /* Ensure smooth font rendering during transitions */
