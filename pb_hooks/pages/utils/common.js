@@ -39,6 +39,8 @@ function getImageUrl(blog) {
 }
 
 function isJustinsTicket(data, assignee_id = ZENDESK_ASSIGNEE_ID_JUSTIN) {
+    // get zendesk_user_id from data from collection
+    // const zendeskUserId = $app.collection("zendeskuser_discorduser").findOne({ description: "justin.kim@verndale.com" })?.zendesk_id;
     const body = data?.body?.body ?? data?.body;
     return body?.detail?.assignee_id === assignee_id;
 }

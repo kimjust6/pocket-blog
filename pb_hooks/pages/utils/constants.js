@@ -5,7 +5,7 @@ const DISCORD_API_ENDPOINT = "https://zen.jkim.win/api/discord/send-dm/";
 const ZENDESK_API_ENDPOINT = "https://yaksa.zendesk.com/agent/tickets/";
 const POCKET_COLLECTION_ZENDESK_TICKETS = "zendesk_tickets";
 
-const ZENDESK_ASSIGNEE_ID_JUSTIN = "21068348524823";
+const ZENDESK_ASSIGNEE_ID_JUSTIN = "35387898477463";
 const DISCORD_ID_JUSTIN = "90909125164163072";
 
 
