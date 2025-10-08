@@ -22,6 +22,9 @@
     object-fit: cover;
     width: 100%;
     height: 100%;
+    /* Maintain rounded corners during transition */
+    border-radius: 1rem;
+    overflow: hidden;
 }
 
 ::view-transition-old(blog-title),
