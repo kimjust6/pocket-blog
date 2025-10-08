@@ -3503,12 +3503,6 @@ html:has(.drawer-toggle:checked) {
   transition-duration: 150ms;
 }
 
-.transition-transform {
-  transition-property: transform;
-  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-  transition-duration: 150ms;
-}
-
 .duration-200 {
   transition-duration: 200ms;
 }
@@ -3586,7 +3580,7 @@ html:has(.drawer-toggle:checked) {
 }
 
 .group:hover .blog-image-transition {
-  filter: brightness(1.1) contrast(1.05);
+  opacity: 0.9;
 }
 
 /* Ensure smooth font rendering during transitions */

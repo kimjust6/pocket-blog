@@ -65,7 +65,7 @@
 }
 
 .group:hover .blog-image-transition {
-    filter: brightness(1.1) contrast(1.05);
+    opacity: 0.9;
 }
 
 /* Ensure smooth font rendering during transitions */
