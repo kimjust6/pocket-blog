@@ -44,14 +44,14 @@
 
             <a href="/blog/posts/<%= blog.id %>" class="no-underline group">
                 <div
-                    class="card bg-base-100 shadow-xl hover:shadow-2xl transition-shadow duration-300 blog-card-transition"
+                    class="card bg-base-100 shadow-xl transition-shadow duration-300 blog-card-transition"
                     style="--blog-card-id: blog-card-<%= blog.id %>"
                 >
                     <figure class="h-48 overflow-hidden m-0">
                         <img
                             src="<%= myImageUrl%>"
                             alt="Blog Image"
-                            class="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300 blog-image-transition"
+                            class="w-full h-48 object-cover transition-transform duration-300 blog-image-transition"
                             style="--blog-image-id: blog-image-<%= blog.id %>"
                             loading="lazy"
                         />

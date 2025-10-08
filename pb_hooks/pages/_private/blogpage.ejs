@@ -24,7 +24,7 @@
             alt="<%= singleBlog?.title %> image"
         />
         <!-- Blog Content -->
-        <div class="prose w-full self-start">
+        <div class="w-full self-start">
             <h1
                 class="mb-0 font-extrabold sm:text-2xl leading-tight flex md:hidden blog-title-transition"
                 style="--blog-title-id: blog-title-<%= singleBlog?.id %>"
@@ -33,15 +33,38 @@
             </h1>
             <!-- Meta Info -->
             <div class="items-center text-sm text-base-content/70">
-                <div class="flex justify-between w-full">
-                    <!-- <span>By: <strong>Justin K</strong></span> -->
-                    <span
-                        >Posted:
-                        <strong>
-                            <%= formatDateTime(new Date(singleBlog?.created))
+                <!-- Back to Posts Button -->
+                <div class="mt-6 border-t border-base-300">
+                    <div class="flex justify-between w-full">
+                        <!-- <span>By: <strong>Justin K</strong></span> -->
+                        <span
+                            >Posted:
+                            <strong>
+                                <%= formatDateTime(new Date(singleBlog?.created))
                         %>
-                        </strong></span
-                    >
+                            </strong></span
+                        >
+                        <a
+                            href="/blog/posts"
+                            class="btn btn-outline btn-sm gap-2 transition-all duration-200 hover:scale-105"
+                        >
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="16"
+                                height="16"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="2"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                            >
+                                <path d="m12 19-7-7 7-7" />
+                                <path d="M19 12H5" />
+                            </svg>
+                            Back to Posts
+                        </a>
+                    </div>
                 </div>
             </div>
             <p class="text-base-content/80 min-w-80">
@@ -50,30 +73,6 @@
             <p class="text-base-content/80 mb-6 min-w-80">
                 <%- singleBlog?.content2 %>
             </p>
-
-            <!-- Back to Posts Button -->
-            <div class="not-prose mt-8 pt-6 border-t border-base-300">
-                <a
-                    href="/blog/posts"
-                    class="btn btn-outline btn-sm gap-2 transition-all duration-200 hover:scale-105"
-                >
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="16"
-                        height="16"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-width="2"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                    >
-                        <path d="m12 19-7-7 7-7" />
-                        <path d="M19 12H5" />
-                    </svg>
-                    Back to Posts
-                </a>
-            </div>
         </div>
     </div>
 </div>
