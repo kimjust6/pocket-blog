@@ -44,12 +44,13 @@ function isJustinsTicket(data, assignee_id = ZENDESK_ASSIGNEE_ID_JUSTIN) {
 }
 
 function isSlaBreaching(ticket) {
-    const body = ticket?.body ?? ticket;
+    const body = ticket?.body?.body ?? ticket?.body;
     return body?.event?.tags_added?.includes(POCKET_SLA_BREACHING_SOON);
 }
 
 function getZendeskUrl(data) {
-    let ticketId = data?.body?.body?.detail?.id ?? data?.body?.body?.subject ?? null;
+    const body = data?.body?.body ?? data?.body;
+    let ticketId = body?.detail?.id ?? body?.subject ?? null;
     //delimit and get last part"
     ticketId = ticketId.split(":").pop();
 
