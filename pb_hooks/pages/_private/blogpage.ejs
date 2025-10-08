@@ -3,24 +3,31 @@
 </script>
 
 <div
-    class="hero bg-base-100 py-12 min-h-[calc(100vh-12.54rem)] flex flex-col items-center justify-start"
+    class="hero bg-base-100 py-12 min-h-[calc(100vh-12.54rem)] flex flex-col items-center justify-start blog-card-transition"
+    style="--blog-card-id: blog-card-<%= singleBlog?.id %>"
 >
     <div class="hero-content max-w-4xl flex flex-col">
         <h1
-            class="md:mb-0 font-extrabold text-3xl leading-tight md:flex hidden"
+            class="md:mb-0 font-extrabold text-3xl leading-tight md:flex hidden blog-title-transition"
+            style="--blog-title-id: blog-title-<%= singleBlog?.id %>"
         >
             <%= singleBlog?.title %>
         </h1>
         <!-- Blog Image -->
         <img
             src="<%= singleBlog?.coverImageAlt ?? getImageUrl(singleBlog) %>"
-            class="rounded-lg shadow-lg object-cover m-0"
+            class="rounded-lg shadow-lg w-full h-auto max-h-96 object-cover m-0 blog-image-transition"
+            style="
+                --blog-image-id: blog-image-<%= singleBlog?.id %>;
+                aspect-ratio: 16/9;
+            "
             alt="<%= singleBlog?.title %> image"
         />
         <!-- Blog Content -->
         <div class="prose w-full self-start">
             <h1
-                class="mb-0 font-extrabold sm:text-2xl leading-tight flex md:hidden"
+                class="mb-0 font-extrabold sm:text-2xl leading-tight flex md:hidden blog-title-transition"
+                style="--blog-title-id: blog-title-<%= singleBlog?.id %>"
             >
                 <%= singleBlog?.title %>
             </h1>
@@ -43,6 +50,30 @@
             <p class="text-base-content/80 mb-6 min-w-80">
                 <%- singleBlog?.content2 %>
             </p>
+
+            <!-- Back to Posts Button -->
+            <div class="not-prose mt-8 pt-6 border-t border-base-300">
+                <a
+                    href="/blog/posts"
+                    class="btn btn-outline btn-sm gap-2 transition-all duration-200 hover:scale-105"
+                >
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                    >
+                        <path d="m12 19-7-7 7-7" />
+                        <path d="M19 12H5" />
+                    </svg>
+                    Back to Posts
+                </a>
+            </div>
         </div>
     </div>
 </div>

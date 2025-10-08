@@ -28,6 +28,29 @@
     createApp({
         Constants,
     }).mount()
+
+    // Enable View Transitions API for blog navigation
+    if ('startViewTransition' in document) {
+        // Intercept blog-related navigation for smooth transitions
+        document.addEventListener('click', (e) => {
+            const link = e.target.closest('a[href*="/blog/posts"]')
+            if (link && !e.ctrlKey && !e.metaKey && !e.shiftKey) {
+                e.preventDefault()
+                document.startViewTransition(() => {
+                    window.location.href = link.href
+                })
+            }
+        })
+
+        // Handle back navigation with view transitions
+        window.addEventListener('popstate', (e) => {
+            if ('startViewTransition' in document) {
+                document.startViewTransition(() => {
+                    window.location.reload()
+                })
+            }
+        })
+    }
 </script>
 
 <!doctype html>
