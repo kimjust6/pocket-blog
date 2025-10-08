@@ -1,7 +1,7 @@
 {
     "description": "DO NOT DELETE THIS FILE. This file is used to keep track of which files have been synced in the most recent deployment. If you delete this file a resync will need to be done (which can take a while) - read more: https://github.com/SamKirkland/FTP-Deploy-Action",
     "version": "1.0.0",
-    "generatedTime": 1759879731392,
+    "generatedTime": 1759885087010,
     "data": [
         {
             "type": "file",
@@ -176,14 +176,14 @@
         {
             "type": "file",
             "name": "pb_hooks/pages/app.tailwind.css",
-            "size": 59,
-            "hash": "cc1a7ad0d019ddb1d32d0ecb588ba0ac26ce41d8625dd6c366348b25f83a28ec"
+            "size": 1709,
+            "hash": "1a6c76fcde21bc4be6aaa5d625d18a16adcf3f24e6067bd242c0b89e4d2e5201"
         },
         {
             "type": "file",
             "name": "pb_hooks/pages/app.css",
-            "size": 89781,
-            "hash": "f8e61cf44595dd444383a6cdf6b61dfecaf4cdba2aaf46b9320f9f04b50f82da"
+            "size": 87864,
+            "hash": "fa9682206ed389af606eaa2d13eb0cdab48cbd11e798af020519a442fff6c910"
         },
         {
             "type": "folder",
@@ -268,14 +268,14 @@
         {
             "type": "file",
             "name": "pb_hooks/pages/_private/blogpage.ejs",
-            "size": 1723,
-            "hash": "1e21d806c579be819b318a910d8ef30220ef72a2acc7b3f86fee6cf954a1a096"
+            "size": 3248,
+            "hash": "d0de256303d2328dab18e29aa692e1945d099d33862ccc044859d56acd7233b3"
         },
         {
             "type": "file",
             "name": "pb_hooks/pages/_private/blogcards.ejs",
-            "size": 4204,
-            "hash": "dc299b0d6ee28b3e1366e4c97ee500d195b2debc13da387e1a3463b3f81c913f"
+            "size": 4528,
+            "hash": "ca19881d8c8df2bdd7416832a84145f9066c96164e6b06e6d460b2544b4ebbc5"
         },
         {
             "type": "file",
@@ -308,8 +308,8 @@
         {
             "type": "file",
             "name": "pb_hooks/pages/(navbarLayout)/+layout.ejs",
-            "size": 4240,
-            "hash": "3d2092d1d6e51d46b1014f4b524fae16acf1c80cd0ad17bf97845f6fb58ec987"
+            "size": 5092,
+            "hash": "ab3542311e8a436b472ea6bf051f62a139e04088c2a8248758357b39ce1ef503"
         },
         {
             "type": "folder",

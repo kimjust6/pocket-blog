@@ -1,6 +1,5 @@
 <script server>
     const { formatDateTime, getImageUrl } = resolve('../../utils/common')
-
     const currentPage = blogposts?.page || 1
     const totalPages = blogposts?.totalPages || 1
     const perPage = blogposts?.perPage || 10
@@ -44,13 +43,16 @@
 
             <a href="/blog/posts/<%= blog.id %>" class="no-underline group">
                 <div
-                    class="card bg-base-100 shadow-xl hover:shadow-2xl transition-shadow duration-300"
+                    class="card bg-base-100 shadow-xl transition-shadow duration-300 blog-card-transition"
+                    style="--blog-card-id: blog-card-<%= blog.id %>"
                 >
-                    <figure class="max-h-48 overflow-hidden m-0">
+                    <figure class="h-48 overflow-hidden m-0 rounded-t-2xl">
                         <img
                             src="<%= myImageUrl%>"
                             alt="Blog Image"
-                            class="w-full object-cover group-hover:scale-105 transition-transform duration-300"
+                            class="w-full h-48 object-cover transition-transform duration-300 blog-image-transition rounded-t-2xl"
+                            style="--blog-image-id: blog-image-<%= blog.id %>"
+                            loading="lazy"
                         />
                     </figure>
 
@@ -68,7 +70,8 @@
                             <% } %>
                         </div>
                         <h2
-                            class="card-title group-hover:text-primary transition-colors duration-200 mt-0"
+                            class="card-title group-hover:text-primary transition-colors duration-200 mt-0 blog-title-transition"
+                            style="--blog-title-id: blog-title-<%= blog.id %>"
                         >
                             <%= blog.title %>
                         </h2>
