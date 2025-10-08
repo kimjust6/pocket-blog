@@ -3564,6 +3564,10 @@ html:has(.drawer-toggle:checked) {
   transition-duration: 150ms;
 }
 
+.transition-none {
+  transition-property: none;
+}
+
 .duration-200 {
   transition-duration: 200ms;
 }
