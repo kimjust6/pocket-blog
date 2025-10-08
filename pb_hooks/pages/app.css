@@ -3589,12 +3589,6 @@ html:has(.drawer-toggle:checked) {
   -moz-osx-font-smoothing: grayscale;
 }
 
-.hover\:scale-105:hover {
-  --tw-scale-x: 1.05;
-  --tw-scale-y: 1.05;
-  transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
-}
-
 .hover\:text-primary:hover {
   --tw-text-opacity: 1;
   color: var(--fallback-p,oklch(var(--p)/var(--tw-text-opacity, 1)));

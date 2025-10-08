@@ -6,12 +6,12 @@ module.exports = function (api) {
             {
                 name: 'title',
                 content:
-                    "Keeping a record of my personal mistakes and lessons learned as a programmer.",
+                    "Keeping a personal record of my mistakes and lessons learned as a programmer.",
             },
             {
                 name: 'description',
                 content:
-                    'Keeping a record of my personal mistakes and lessons learned as a programmer.',
+                    'Keeping a personal record of my mistakes and lessons learned as a programmer.',
             },
             { name: 'url', content: 'https://www.jkim.win/' },
 
@@ -19,7 +19,7 @@ module.exports = function (api) {
             {
                 name: 'og:title',
                 content:
-                    "Keeping a record of my personal mistakes and lessons learned as a programmer.",
+                    "Keeping a personal record of my mistakes and lessons learned as a programmer.",
             },
             { name: 'og:type', content: 'website' },
             { name: 'og:url', content: 'https://www.justink.dev/' },
@@ -33,7 +33,7 @@ module.exports = function (api) {
             {
                 name: 'og:description',
                 content:
-                    'Keeping a record of my personal mistakes and lessons learned as a programmer.',
+                    'Keeping a personal record of my mistakes and lessons learned as a programmer.',
             },
             { name: 'og:site_name', content: "Justin's Dank Blog" },
             { name: 'og:locale', content: 'en_CA' },
