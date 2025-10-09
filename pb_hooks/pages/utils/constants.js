@@ -1,4 +1,5 @@
 const POCKET_BLOGPOSTS = "blogposts"
+const POCKET_ZENDESKUSER_DISCORDUSER = "zendeskuser_discorduser"
 const POCKET_SLA_BREACHING_SOON = "nearing_sla_breach_notified"
 // const DISCORD_API_ENDPOINT = "https://zen.jkim.win/api/discord/send-dm/";
 const DISCORD_API_ENDPOINT = "http://localhost:3000/api/discord/send-dm/";
@@ -11,6 +12,7 @@ const DISCORD_ID_JUSTIN = "90909125164163072";
 
 module.exports = {
     POCKET_BLOGPOSTS,
+    POCKET_ZENDESKUSER_DISCORDUSER,
     POCKET_SLA_BREACHING_SOON,
     DISCORD_API_ENDPOINT,
     ZENDESK_API_ENDPOINT,

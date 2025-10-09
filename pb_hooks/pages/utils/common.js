@@ -62,6 +62,11 @@ function isJustinsTicket(data, assignee_id = ZENDESK_ASSIGNEE_ID_JUSTIN) {
     return body?.detail?.assignee_id === assignee_id;
 }
 
+function getAssigneeId(data) {
+    const body = privateGetBody(data);
+    return body?.detail?.assignee_id ?? null;
+}
+
 function isSlaBreaching(ticket) {
     const body = privateGetBody(ticket);
     return body?.event?.tags_added?.includes(POCKET_SLA_BREACHING_SOON);
@@ -104,5 +109,6 @@ module.exports = {
     isSlaBreaching,
     sendDiscordMessage,
     getTicketId,
-    getTicketType
+    getTicketType,
+    getAssigneeId
 }

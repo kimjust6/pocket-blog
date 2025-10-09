@@ -6,13 +6,14 @@ routerAdd("POST", "/clippy/zendesk", (e) => {
     const {
         sendDiscordMessage,
         getZendeskUrl,
-        isJustinsTicket,
+        getAssigneeId,
         isSlaBreaching
     } = require(`${__hooks}/pages/utils/common.js`);
 
     const {
         saveZendeskRecord,
-        findRecentTicketByTicketNumber
+        findRecentTicketByTicketNumber,
+        getDiscordIdByAssigneeId
     } = require(`${__hooks}/pages/utils/pocketbase.js`);
 
 
@@ -21,10 +22,12 @@ routerAdd("POST", "/clippy/zendesk", (e) => {
         saveZendeskRecord(data);
 
         const url = getZendeskUrl(data);
+        const assigneeId = getAssigneeId(data);
+        const discordId = getDiscordIdByAssigneeId(assigneeId);
 
-        if (isJustinsTicket(data)) {
+        if (discordId) {
             // check if the a ticket with the same number has been created in the last 10 seconds
-            const recentTicket = findRecentTicketByTicketNumber(data);
+            const recentTicket = findRecentTicketByTicketNumber(data, discordId);
             if (!recentTicket) {
                 // forward to discord bot
                 sendDiscordMessage(`Your ticket has been updated: ${url || 'No URL available'}`);
@@ -45,13 +48,6 @@ routerAdd("POST", "/clippy/zendesk", (e) => {
 });
 
 routerAdd("GET", "/clippy/zendesk", (e) => {
-    // const {
-    //     findRecentTicketByTicketNumber
-    // } = require(`${__hooks}/pages/utils/pocketbase.js`);
-    // const nice = findRecentTicketByTicketNumber(8000, 1440000) ?? "";
-    // return e.json(200, {
-    //     message: nice,
-    // });
     return e.json(405, { "message": "Method not allowed." })
 })
 

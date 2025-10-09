@@ -1,4 +1,7 @@
-const { POCKET_COLLECTION_ZENDESK_TICKETS }
+const {
+    POCKET_COLLECTION_ZENDESK_TICKETS,
+    POCKET_ZENDESKUSER_DISCORDUSER
+}
     = require(`${__hooks}/pages/utils/constants.js`);
 
 const {
@@ -62,7 +65,24 @@ function findRecentTicketByTicketNumber(data, timeInSeconds = 10) {
     return null;
 }
 
+function getDiscordIdByAssigneeId(assignee_id) {
+    if (!assignee_id) {
+        return null;
+    }
+
+    let record = new Record();
+    $app.recordQuery(POCKET_ZENDESKUSER_DISCORDUSER)
+        .andWhere($dbx.hashExp({ "zendesk_id": assignee_id }))
+        .limit(1)
+        .one(record)
+
+    if (record) {
+        return record.get("discord_id") ?? null;
+    }
+}
+
 module.exports = {
     saveZendeskRecord,
-    findRecentTicketByTicketNumber
+    findRecentTicketByTicketNumber,
+    getDiscordIdByAssigneeId
 }
