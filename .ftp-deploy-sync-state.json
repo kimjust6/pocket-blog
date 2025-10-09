@@ -1,7 +1,7 @@
 {
     "description": "DO NOT DELETE THIS FILE. This file is used to keep track of which files have been synced in the most recent deployment. If you delete this file a resync will need to be done (which can take a while) - read more: https://github.com/SamKirkland/FTP-Deploy-Action",
     "version": "1.0.0",
-    "generatedTime": 1759963144831,
+    "generatedTime": 1760039057997,
     "data": [
         {
             "type": "file",
@@ -42,6 +42,18 @@
             "name": "pb_public/js/petite-vue.es.js",
             "size": 17033,
             "hash": "f17d90e493295133d491e84c04e3a56a77e82eaafe20fd75f3625aa6a2c62ddd"
+        },
+        {
+            "type": "file",
+            "name": "pb_migrations/1759968367_updated_zendesk_tickets.js",
+            "size": 445,
+            "hash": "8ae8626e2d2ef41f4a971751762b881745a3da5fe3b7c3ac6d083cc8d66a6946"
+        },
+        {
+            "type": "file",
+            "name": "pb_migrations/1759967621_updated_zendesk_tickets.js",
+            "size": 483,
+            "hash": "45d131fa83a71a078d201f5e1019d5abd3ef12772ffd2e177eb183d7bd2b66ad"
         },
         {
             "type": "file",
@@ -158,8 +170,8 @@
         {
             "type": "file",
             "name": "pb_hooks/main.pb.js",
-            "size": 1141,
-            "hash": "3dd788aee1a0e443428af5e2932599be7063b9e61a8edbeffc489f71f1150c22"
+            "size": 1550,
+            "hash": "b7e8df69ecdc4f1689de582237a3724724aa42eafd3119726eaad5f5908a5cf0"
         },
         {
             "type": "folder",
@@ -168,6 +180,10 @@
         {
             "type": "folder",
             "name": "pb_hooks/pages/sitemap.xml"
+        },
+        {
+            "type": "folder",
+            "name": "pb_hooks/pages/sitemap"
         },
         {
             "type": "folder",
@@ -192,8 +208,8 @@
         {
             "type": "file",
             "name": "pb_hooks/pages/app.css",
-            "size": 88999,
-            "hash": "d0889ac1e6d5988de83522a44455741807285a8cb0cc0b9cf6f410d080e0facf"
+            "size": 88754,
+            "hash": "83c767fdf5e974fd67b4774b0e60aebb98b6babaeb77161a9237f60f8c563409"
         },
         {
             "type": "folder",
@@ -218,8 +234,8 @@
         {
             "type": "file",
             "name": "pb_hooks/pages/utils/pocketbase.js",
-            "size": 642,
-            "hash": "355bdd31c29c72aa7d6e6de4a9c8f4b8321ab735b45f22eefc0c445054ea804f"
+            "size": 2168,
+            "hash": "437603f256b4d8511e9683f406151894a4ab99456e509644efb99248b9d4f7e7"
         },
         {
             "type": "file",
@@ -230,20 +246,26 @@
         {
             "type": "file",
             "name": "pb_hooks/pages/utils/constants.js",
-            "size": 709,
-            "hash": "f771d2d40e7b748fa6b0fa860f351bc891c820c7962e87eb30454d4267fe1883"
+            "size": 809,
+            "hash": "57e5a00b57bc24899e6a39bd432192449ea797e9fd037845cf578292f549684f"
         },
         {
             "type": "file",
             "name": "pb_hooks/pages/utils/common.js",
-            "size": 2356,
-            "hash": "b337696e71eac8b776507237a4205568f2aad6d31d5d77de4e6498f728a9721b"
+            "size": 2809,
+            "hash": "251913298ec2d29ffdf330ea47dc8c74207953ccc2f127c67df13b0a625c29b0"
         },
         {
             "type": "file",
             "name": "pb_hooks/pages/sitemap.xml/index.ejs",
             "size": 1012,
             "hash": "1779307305aa7012b237b4c425c6244e1349058dd6b9d5fa5d1a5cadf6e18e00"
+        },
+        {
+            "type": "file",
+            "name": "pb_hooks/pages/sitemap/index.ejs",
+            "size": 31,
+            "hash": "081d70e4bb137769eaccda2c227604e9ed538bd84dd20995aae573ca814042d7"
         },
         {
             "type": "file",

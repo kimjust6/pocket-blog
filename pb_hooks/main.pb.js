@@ -22,22 +22,34 @@ routerAdd("POST", "/clippy/zendesk", (e) => {
         saveZendeskRecord(data);
 
         const url = getZendeskUrl(data);
+
         const assigneeId = getAssigneeId(data);
         const discordId = getDiscordIdByAssigneeId(assigneeId);
 
         if (discordId) {
-            // check if the a ticket with the same number has been created in the last 10 seconds
-            const recentTicket = findRecentTicketByTicketNumber(data, discordId);
-            if (!recentTicket) {
-                // forward to discord bot
-                sendDiscordMessage(`Your ticket has been updated: ${url || 'No URL available'}`);
+            try {
+                // check if the a ticket with the same number has been created in the last 10 seconds
+                const recentTicket = findRecentTicketByTicketNumber(data);
+                if (!recentTicket) {
+                    // forward to discord bot
+                    sendDiscordMessage(`Your ticket has been updated: ${url || 'No URL available'}`);
+                }
+            } catch (error) {
+                console.error("Error sending ticket update message:", error);
             }
         };
 
         if (isSlaBreaching(data)) {
-            // forward to discord bot
-            sendDiscordMessage(`SLA breaching soon: ${url || 'No URL available'}`);
+            try {
+
+                // forward to discord bot
+                sendDiscordMessage(`SLA breaching soon: ${url || 'No URL available'}`);
+            }
+            catch (error) {
+                console.error("Error sending SLA breaching message:", error);
+            }
         };
+
 
         return e.json(201, data);
     } catch (err) {

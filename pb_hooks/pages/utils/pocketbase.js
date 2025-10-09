@@ -6,8 +6,10 @@ const {
 
 const {
     getTicketId,
-    getTicketType
+    getTicketType,
+    getAssigneeId
 } = require(`${__hooks}/pages/utils/common.js`);
+
 
 function saveZendeskRecord(data) {
     if (!data) {
@@ -20,11 +22,13 @@ function saveZendeskRecord(data) {
         return e.json(404, { error: "zendesk_tickets collection not found" });
     }
 
-    let record = new Record(collection)
+    const assigneeId = parseInt(getAssigneeId(data) ?? "0")
 
+    let record = new Record(collection)
     record.set("data", JSON.stringify(data))
     record.set("ticketId", getTicketId(data))
     record.set("ticketType", getTicketType(data))
+    record.set("zendeskUserId", assigneeId)
     record.set("created", Date.now())
     record.set("updated", Date.now())
 
