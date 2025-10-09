@@ -1,7 +1,10 @@
 const { POCKET_COLLECTION_ZENDESK_TICKETS }
     = require(`${__hooks}/pages/utils/constants.js`);
 
-const { getTicketId } = require(`${__hooks}/pages/utils/common.js`);
+const {
+    getTicketId,
+    getTicketType
+} = require(`${__hooks}/pages/utils/common.js`);
 
 function saveZendeskRecord(data) {
     if (!data) {
@@ -17,6 +20,8 @@ function saveZendeskRecord(data) {
     let record = new Record(collection)
 
     record.set("data", JSON.stringify(data))
+    record.set("ticketId", getTicketId(data))
+    record.set("ticketType", getTicketType(data))
     record.set("created", Date.now())
     record.set("updated", Date.now())
 
