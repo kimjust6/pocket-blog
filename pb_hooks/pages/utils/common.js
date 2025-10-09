@@ -6,6 +6,23 @@ const {
     DISCORD_ID_JUSTIN
 } = require(`${__hooks}/pages/utils/constants.js`);
 
+function privateGetBody(data) {
+    return data?.body?.body ?? data?.body ?? null;
+}
+
+function getTicketId(data) {
+    const body = privateGetBody(data);
+    let ticketId = body?.subject ?? body?.detail?.id ?? "0";
+    //delimit and get last part"
+    ticketId = ticketId.split(":").pop();
+    return parseInt(ticketId);
+}
+
+function getTicketType(data) {
+    const body = privateGetBody(data);
+    return body?.detail?.type ?? null;
+}
+
 function formatDateTime(date) {
     const months = [
         'Jan',
@@ -46,16 +63,12 @@ function isJustinsTicket(data, assignee_id = ZENDESK_ASSIGNEE_ID_JUSTIN) {
 }
 
 function isSlaBreaching(ticket) {
-    const body = ticket?.body?.body ?? ticket?.body;
+    const body = privateGetBody(ticket);
     return body?.event?.tags_added?.includes(POCKET_SLA_BREACHING_SOON);
 }
 
 function getZendeskUrl(data) {
-    const body = data?.body?.body ?? data?.body;
-    let ticketId = body?.detail?.id ?? body?.subject ?? null;
-    //delimit and get last part"
-    ticketId = ticketId.split(":").pop();
-
+    let ticketId = getTicketId(data);
     if (!ticketId) {
         return null;
     }
@@ -89,5 +102,7 @@ module.exports = {
     getZendeskUrl,
     isJustinsTicket,
     isSlaBreaching,
-    sendDiscordMessage
+    sendDiscordMessage,
+    getTicketId,
+    getTicketType
 }

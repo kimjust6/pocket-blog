@@ -1,6 +1,8 @@
 const { POCKET_COLLECTION_ZENDESK_TICKETS }
     = require(`${__hooks}/pages/utils/constants.js`);
 
+const { getTicketId } = require(`${__hooks}/pages/utils/common.js`);
+
 function saveZendeskRecord(data) {
     if (!data) {
         throw new Error("Invalid collection or data");
@@ -22,7 +24,40 @@ function saveZendeskRecord(data) {
 
 }
 
+function findRecentTicketByTicketNumber(data, timeInSeconds = 10) {
+    let ticketId
+    if (typeof data !== "number") {
+        ticketId = getTicketId(data);
+    }
+    else {
+        ticketId = data;
+    }
+
+    if (!ticketId) {
+        return null;
+    }
+
+    let record = new Record();
+    $app.recordQuery(POCKET_COLLECTION_ZENDESK_TICKETS)
+        .andWhere($dbx.hashExp({ "ticketId": ticketId }))
+        .orderBy("created DESC")
+        .limit(1)
+        .one(record)
+
+    // check if the record was created within the last `timeInSeconds` seconds
+    if (record) {
+        const createdTime = new Date(record.get("created")).getTime();
+        const currentTime = Date.now();
+        const timeDiff = (currentTime - createdTime)
+        if (timeDiff <= timeInSeconds * 1000) {
+            return record;
+        }
+        return null;
+    }
+    return null;
+}
 
 module.exports = {
-    saveZendeskRecord
+    saveZendeskRecord,
+    findRecentTicketByTicketNumber
 }
