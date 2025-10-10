@@ -64,7 +64,6 @@ function findRecentTicketByTicketNumber(data, timeInSeconds = 10) {
         if (timeDiff <= timeInSeconds * 1000) {
             return record;
         }
-        return null;
     }
     return null;
 }

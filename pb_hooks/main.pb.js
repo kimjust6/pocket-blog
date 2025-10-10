@@ -19,12 +19,18 @@ routerAdd("POST", "/clippy/zendesk", (e) => {
 
     try {
         let data = e.requestInfo()
-        saveZendeskRecord(data);
-
         const url = getZendeskUrl(data);
 
-        const assigneeId = getAssigneeId(data);
-        const discordId = getDiscordIdByAssigneeId(assigneeId);
+        let assigneeId
+        let discordId
+        try {
+
+            assigneeId = getAssigneeId(data);
+            discordId = getDiscordIdByAssigneeId(assigneeId);
+        }
+        catch (error) {
+            console.error("Error getting Discord ID from PocketBase:", error);
+        }
 
         if (discordId) {
             try {
@@ -39,9 +45,10 @@ routerAdd("POST", "/clippy/zendesk", (e) => {
             }
         };
 
+        saveZendeskRecord(data);
+
         if (isSlaBreaching(data)) {
             try {
-
                 // forward to discord bot
                 sendDiscordMessage(`SLA breaching soon: ${url || 'No URL available'}`);
             }
@@ -49,7 +56,6 @@ routerAdd("POST", "/clippy/zendesk", (e) => {
                 console.error("Error sending SLA breaching message:", error);
             }
         };
-
 
         return e.json(201, data);
     } catch (err) {

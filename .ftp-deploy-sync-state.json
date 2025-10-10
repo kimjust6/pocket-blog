@@ -1,7 +1,7 @@
 {
     "description": "DO NOT DELETE THIS FILE. This file is used to keep track of which files have been synced in the most recent deployment. If you delete this file a resync will need to be done (which can take a while) - read more: https://github.com/SamKirkland/FTP-Deploy-Action",
     "version": "1.0.0",
-    "generatedTime": 1760039057997,
+    "generatedTime": 1760057073015,
     "data": [
         {
             "type": "file",
@@ -42,6 +42,18 @@
             "name": "pb_public/js/petite-vue.es.js",
             "size": 17033,
             "hash": "f17d90e493295133d491e84c04e3a56a77e82eaafe20fd75f3625aa6a2c62ddd"
+        },
+        {
+            "type": "file",
+            "name": "pb_migrations/1760047622_updated_zendesk_tickets.js",
+            "size": 676,
+            "hash": "559315abc0f035ad359451a6aa41a6e209fabc555f04074d304dd98712856932"
+        },
+        {
+            "type": "file",
+            "name": "pb_migrations/1760047096_updated_zendesk_tickets.js",
+            "size": 1424,
+            "hash": "1a96791fbf8e59eea56cc1f242896423eecbf115ea042da67a874c75dafe169b"
         },
         {
             "type": "file",
@@ -170,8 +182,8 @@
         {
             "type": "file",
             "name": "pb_hooks/main.pb.js",
-            "size": 1550,
-            "hash": "b7e8df69ecdc4f1689de582237a3724724aa42eafd3119726eaad5f5908a5cf0"
+            "size": 2046,
+            "hash": "9f7db7bacaf20e9d9f48a3be823c1e6f289d140f0f945aeca550b6bf6fc368e5"
         },
         {
             "type": "folder",
@@ -234,8 +246,8 @@
         {
             "type": "file",
             "name": "pb_hooks/pages/utils/pocketbase.js",
-            "size": 2168,
-            "hash": "437603f256b4d8511e9683f406151894a4ab99456e509644efb99248b9d4f7e7"
+            "size": 2271,
+            "hash": "2b94568bf2dfe7e1b7aa25f3e7e927f4c0233a729c8fe05977c77d1fd063056d"
         },
         {
             "type": "file",
