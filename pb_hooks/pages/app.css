@@ -3233,6 +3233,10 @@ html:has(.drawer-toggle:checked) {
   max-width: none;
 }
 
+.max-w-xl {
+  max-width: 36rem;
+}
+
 .flex-1 {
   flex: 1 1 0%;
 }
