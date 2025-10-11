@@ -35,7 +35,7 @@ module.exports = function (api) {
                 content:
                     'Keeping a personal record of my mistakes and lessons learned as a programmer.',
             },
-            { name: 'og:site_name', content: "Justin's Dank Blog" },
+            { name: 'og:site_name', content: "The Justin Blog" },
             { name: 'og:locale', content: 'en_CA' },
 
             // Encourage connection—author details

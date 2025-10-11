@@ -5,10 +5,12 @@
 <div class="hero bg-base-200 pt-40">
     <div class="hero-content text-center">
         <div class="">
-            <h1 class="text-5xl font-bold">
-                <%= (data.metadata.find(meta => meta.name ===
-                "og:site_name")).content %>
-            </h1>
+            <a href="/" class="no-underline">
+                <h1 class="text-5xl font-bold">
+                    <%= (data.metadata.find(meta => meta.name ===
+                    "og:site_name")).content %>
+                </h1>
+            </a>
             <a href="/blog/posts" class="no-underline">
                 <div class="mockup-code text-left group transition-all">
                     <pre
