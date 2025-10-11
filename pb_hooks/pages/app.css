@@ -3098,16 +3098,8 @@ html:has(.drawer-toggle:checked) {
   margin-bottom: 2rem;
 }
 
-.-mt-20 {
-  margin-top: -5rem;
-}
-
 .mb-0 {
   margin-bottom: 0px;
-}
-
-.mb-12 {
-  margin-bottom: 3rem;
 }
 
 .mb-4 {
@@ -3140,10 +3132,6 @@ html:has(.drawer-toggle:checked) {
 
 .mt-6 {
   margin-top: 1.5rem;
-}
-
-.mb-8 {
-  margin-bottom: 2rem;
 }
 
 .inline-block {
@@ -3194,10 +3182,6 @@ html:has(.drawer-toggle:checked) {
   min-height: calc(100vh - 15rem);
 }
 
-.min-h-\[calc\(100vh-4rem\)\] {
-  min-height: calc(100vh - 4rem);
-}
-
 .min-h-full {
   min-height: 100%;
 }
@@ -3232,10 +3216,6 @@ html:has(.drawer-toggle:checked) {
 
 .max-w-6xl {
   max-width: 72rem;
-}
-
-.max-w-md {
-  max-width: 28rem;
 }
 
 .max-w-none {
@@ -3323,10 +3303,6 @@ html:has(.drawer-toggle:checked) {
   align-self: flex-start;
 }
 
-.self-end {
-  align-self: flex-end;
-}
-
 .overflow-hidden {
   overflow: hidden;
 }
@@ -3386,20 +3362,10 @@ html:has(.drawer-toggle:checked) {
   background-image: linear-gradient(to bottom right, var(--tw-gradient-stops));
 }
 
-.from-base-200 {
-  --tw-gradient-from: var(--fallback-b2,oklch(var(--b2)/1)) var(--tw-gradient-from-position);
-  --tw-gradient-to: var(--fallback-b2,oklch(var(--b2)/0)) var(--tw-gradient-to-position);
-  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
-}
-
 .from-base-100 {
   --tw-gradient-from: var(--fallback-b1,oklch(var(--b1)/1)) var(--tw-gradient-from-position);
   --tw-gradient-to: var(--fallback-b1,oklch(var(--b1)/0)) var(--tw-gradient-to-position);
   --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
-}
-
-.to-base-100 {
-  --tw-gradient-to: var(--fallback-b1,oklch(var(--b1)/1)) var(--tw-gradient-to-position);
 }
 
 .to-base-200 {
@@ -3454,12 +3420,12 @@ html:has(.drawer-toggle:checked) {
   padding-bottom: 3rem;
 }
 
-.pb-4 {
-  padding-bottom: 1rem;
+.pb-12 {
+  padding-bottom: 3rem;
 }
 
-.pb-6 {
-  padding-bottom: 1.5rem;
+.pb-4 {
+  padding-bottom: 1rem;
 }
 
 .pr-10 {
@@ -3472,14 +3438,6 @@ html:has(.drawer-toggle:checked) {
 
 .pt-40 {
   padding-top: 10rem;
-}
-
-.pb-10 {
-  padding-bottom: 2.5rem;
-}
-
-.pb-12 {
-  padding-bottom: 3rem;
 }
 
 .text-left {
@@ -3533,11 +3491,6 @@ html:has(.drawer-toggle:checked) {
 .text-xs {
   font-size: 0.75rem;
   line-height: 1rem;
-}
-
-.text-xl {
-  font-size: 1.25rem;
-  line-height: 1.75rem;
 }
 
 .font-bold {

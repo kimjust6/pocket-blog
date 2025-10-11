@@ -13,9 +13,13 @@ routerAdd("POST", "/clippy/zendesk", (e) => {
     const {
         saveZendeskRecord,
         findRecentTicketByTicketNumber,
-        getDiscordIdByAssigneeId
+        getDiscordIdByAssigneeId,
+        getAdminSetting
     } = require(`${__hooks}/pages/utils/pocketbase.js`);
 
+    const {
+        POCKET_ADMIN_IGNORE_DUPLICATE_ZENDESK_CALLBACK_IN_SECONDS
+    } = require(`${__hooks}/pages/utils/constants.js`);
 
     try {
         let data = e.requestInfo()
@@ -34,8 +38,10 @@ routerAdd("POST", "/clippy/zendesk", (e) => {
 
         if (discordId) {
             try {
-                // check if the a ticket with the same number has been created in the last 10 seconds
-                const recentTicket = findRecentTicketByTicketNumber(data);
+                const setting = getAdminSetting(POCKET_ADMIN_IGNORE_DUPLICATE_ZENDESK_CALLBACK_IN_SECONDS) ?? "10";
+
+                const recentTicket = findRecentTicketByTicketNumber(data, parseInt(setting));
+                // return e.json(201, recentTicket);
                 if (!recentTicket) {
                     // forward to discord bot
                     sendDiscordMessage(`Your ticket has been updated: ${url || 'No URL available'}`);

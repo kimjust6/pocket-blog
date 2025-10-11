@@ -68,13 +68,12 @@ function findRecentTicketByTicketNumber(data, timeInSeconds = 10) {
         .orderBy("created DESC")
         .limit(1)
         .one(record)
-
     // check if the record was created within the last `timeInSeconds` seconds
     if (record) {
         const createdTime = new Date(record.get("created")).getTime();
         const currentTime = Date.now();
         const timeDiff = (currentTime - createdTime)
-        if (timeDiff <= timeInSeconds * 1000) {
+        if (timeDiff && timeDiff <= timeInSeconds * 1000) {
             return record;
         }
     }
