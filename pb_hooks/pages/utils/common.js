@@ -6,6 +6,23 @@ const {
     DISCORD_ID_JUSTIN
 } = require(`${__hooks}/pages/utils/constants.js`);
 
+function privateGetBody(data) {
+    return data?.body?.body ?? data?.body ?? null;
+}
+
+function getTicketId(data) {
+    const body = privateGetBody(data);
+    let ticketId = body?.subject ?? body?.detail?.id ?? "0";
+    //delimit and get last part"
+    ticketId = ticketId.split(":").pop();
+    return parseInt(ticketId);
+}
+
+function getTicketType(data) {
+    const body = privateGetBody(data);
+    return body?.type ?? body?.detail?.type ?? null;
+}
+
 function formatDateTime(date) {
     const months = [
         'Jan',
@@ -39,20 +56,24 @@ function getImageUrl(blog) {
 }
 
 function isJustinsTicket(data, assignee_id = ZENDESK_ASSIGNEE_ID_JUSTIN) {
-    const body = data?.body?.body ?? data?.body;
+    // get zendesk_user_id from data from collection
+    // const zendeskUserId = $app.collection("zendeskuser_discorduser").findOne({ description: "justin.kim@verndale.com" })?.zendesk_id;
+    const body = privateGetBody(data);
     return body?.detail?.assignee_id === assignee_id;
 }
 
+function getAssigneeId(data) {
+    const body = privateGetBody(data);
+    return body?.detail?.assignee_id ?? null;
+}
+
 function isSlaBreaching(ticket) {
-    const body = ticket?.body ?? ticket;
+    const body = privateGetBody(ticket);
     return body?.event?.tags_added?.includes(POCKET_SLA_BREACHING_SOON);
 }
 
 function getZendeskUrl(data) {
-    let ticketId = data?.body?.body?.detail?.id ?? data?.body?.body?.subject ?? null;
-    //delimit and get last part"
-    ticketId = ticketId.split(":").pop();
-
+    let ticketId = getTicketId(data);
     if (!ticketId) {
         return null;
     }
@@ -86,5 +107,8 @@ module.exports = {
     getZendeskUrl,
     isJustinsTicket,
     isSlaBreaching,
-    sendDiscordMessage
+    sendDiscordMessage,
+    getTicketId,
+    getTicketType,
+    getAssigneeId
 }

@@ -12,6 +12,10 @@
             // Update query params in URL
             window.location.href = `?query=${encodeURIComponent(this.searchQuery)}`
         },
+        clearSearch() {
+            this.searchQuery = ''
+            window.location.href = '/blog/posts'
+        },
         mounted() {
             this.$refs.searchInput.focus()
         },
@@ -25,14 +29,38 @@
         <div class="text-center mb-12">
             <h1 class="text-5xl font-bold">Latest Posts</h1>
             <p class="mt-4 text-lg text-base-content/80">
-                Explore recent insights, tutorials, and stories.
+                Explore recent insights, thoughts, and stories.
             </p>
-            <input
-                autofocus
-                v-model="searchQuery"
-                class="input w-full border border-gray-600" 
-                placeholder="Search blogs..." 
-                @keydown.enter="handleSearch" />
+            <div class="relative">
+                <input
+                    autofocus
+                    v-model="searchQuery"
+                    x-ref="searchInput"
+                    class="input w-full border border-gray-600 pr-10" 
+                    placeholder="Search blogs..." 
+                    @keydown.enter="handleSearch" />
+                <button
+                    v-show="searchQuery"
+                    @click="clearSearch"
+                    class="absolute right-3 top-1/2 !-translate-y-1/2 btn btn-ghost btn-sm btn-circle active:!-translate-y-1/2"
+                    type="button"
+                >
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        class="h-5 w-5"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                    >
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M6 18L18 6M6 6l12 12"
+                        />
+                    </svg>
+                </button>
+            </div>
         </div>
 
         <div class="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
@@ -50,7 +78,7 @@
                         <img
                             src="<%= myImageUrl%>"
                             alt="Blog Image"
-                            class="w-full h-48 object-cover transition-transform duration-300 blog-image-transition rounded-t-2xl"
+                            class="w-full h-48 object-cover blog-image-transition rounded-t-2xl"
                             style="--blog-image-id: blog-image-<%= blog.id %>"
                             loading="lazy"
                         />

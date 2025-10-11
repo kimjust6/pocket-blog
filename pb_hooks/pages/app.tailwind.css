@@ -49,6 +49,9 @@
     /* Prevent layout shift during transitions */
     contain: layout;
     will-change: transform;
+    transition:
+        filter 0.3s ease,
+        opacity 0.3s ease;
 }
 
 .blog-title-transition {
@@ -59,6 +62,10 @@
 .blog-card-transition:hover {
     /* Removed translateY to prevent card movement on hover */
     transition: transform 0.2s ease-out;
+}
+
+.group:hover .blog-image-transition {
+    opacity: 0.9;
 }
 
 /* Ensure smooth font rendering during transitions */

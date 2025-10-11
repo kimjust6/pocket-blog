@@ -6,34 +6,34 @@ module.exports = function (api) {
             {
                 name: 'title',
                 content:
-                    "I'm Justin Kim — Sharing Thoughts from Behind the Console",
+                    "Keeping a personal record of my mistakes and lessons learned as a programmer.",
             },
             {
                 name: 'description',
                 content:
-                    'I\'m Justin Kim — a programmer sharing unfiltered insights, musings, and the occasional "Console.WriteLine(…)" moment.',
+                    'Keeping a personal record of my mistakes and lessons learned as a programmer.',
             },
-            { name: 'url', content: 'https://blog.jkim.win/' },
+            { name: 'url', content: 'https://www.jkim.win/' },
 
             // Open Graph metadata
             {
                 name: 'og:title',
                 content:
-                    "I'm Justin Kim — Sharing Thoughts from Behind the Console",
+                    "Keeping a personal record of my mistakes and lessons learned as a programmer.",
             },
             { name: 'og:type', content: 'website' },
             { name: 'og:url', content: 'https://www.justink.dev/' },
             {
                 name: 'og:image',
-                content: 'https://blog.jkim.win/og-image.png',
-            }, // replace with real image
+                content: 'https://www.jkim.win/og-image.png',
+            },
             { name: 'og:image:alt', content: 'Blog Page Photo' },
             { name: 'og:image:width', content: '1200' },
             { name: 'og:image:height', content: '630' },
             {
                 name: 'og:description',
                 content:
-                    'Unfiltered reflections and insights from Justin Kim — capturing personal thoughts one "Console.WriteLine" at a time.',
+                    'Keeping a personal record of my mistakes and lessons learned as a programmer.',
             },
             { name: 'og:site_name', content: "Justin's Dank Blog" },
             { name: 'og:locale', content: 'en_CA' },
@@ -62,7 +62,7 @@ module.exports = function (api) {
             },
             {
                 name: 'twitter:image',
-                content: 'https://blog.jkim.win/og-image.png',
+                content: 'https://www.jkim.win/og-image.png',
             },
         ],
     }

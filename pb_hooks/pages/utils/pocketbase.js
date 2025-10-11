@@ -1,5 +1,15 @@
-const { POCKET_COLLECTION_ZENDESK_TICKETS }
+const {
+    POCKET_COLLECTION_ZENDESK_TICKETS,
+    POCKET_ZENDESKUSER_DISCORDUSER
+}
     = require(`${__hooks}/pages/utils/constants.js`);
+
+const {
+    getTicketId,
+    getTicketType,
+    getAssigneeId
+} = require(`${__hooks}/pages/utils/common.js`);
+
 
 function saveZendeskRecord(data) {
     if (!data) {
@@ -12,9 +22,13 @@ function saveZendeskRecord(data) {
         return e.json(404, { error: "zendesk_tickets collection not found" });
     }
 
-    let record = new Record(collection)
+    const assigneeId = parseInt(getAssigneeId(data) ?? "0")
 
+    let record = new Record(collection)
     record.set("data", JSON.stringify(data))
+    record.set("ticketId", getTicketId(data))
+    record.set("ticketType", getTicketType(data))
+    record.set("zendeskUserId", assigneeId)
     record.set("created", Date.now())
     record.set("updated", Date.now())
 
@@ -22,7 +36,56 @@ function saveZendeskRecord(data) {
 
 }
 
+function findRecentTicketByTicketNumber(data, timeInSeconds = 10) {
+    let ticketId
+    if (typeof data !== "number") {
+        ticketId = getTicketId(data);
+    }
+    else {
+        ticketId = data;
+    }
+
+    if (!ticketId) {
+        return null;
+    }
+
+    let record = new Record();
+    $app.recordQuery(POCKET_COLLECTION_ZENDESK_TICKETS)
+        .andWhere($dbx.hashExp({ "ticketId": ticketId }))
+        .orderBy("created DESC")
+        .limit(1)
+        .one(record)
+
+    // check if the record was created within the last `timeInSeconds` seconds
+    if (record) {
+        const createdTime = new Date(record.get("created")).getTime();
+        const currentTime = Date.now();
+        const timeDiff = (currentTime - createdTime)
+        if (timeDiff <= timeInSeconds * 1000) {
+            return record;
+        }
+    }
+    return null;
+}
+
+function getDiscordIdByAssigneeId(assignee_id) {
+    if (!assignee_id) {
+        return null;
+    }
+
+    let record = new Record();
+    $app.recordQuery(POCKET_ZENDESKUSER_DISCORDUSER)
+        .andWhere($dbx.hashExp({ "zendesk_id": assignee_id }))
+        .limit(1)
+        .one(record)
+
+    if (record) {
+        return record.get("discord_id") ?? null;
+    }
+}
 
 module.exports = {
-    saveZendeskRecord
+    saveZendeskRecord,
+    findRecentTicketByTicketNumber,
+    getDiscordIdByAssigneeId
 }
