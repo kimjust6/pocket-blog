@@ -3093,6 +3093,11 @@ html:has(.drawer-toggle:checked) {
   margin-bottom: 3rem;
 }
 
+.my-8 {
+  margin-top: 2rem;
+  margin-bottom: 2rem;
+}
+
 .-mt-20 {
   margin-top: -5rem;
 }
@@ -3135,6 +3140,10 @@ html:has(.drawer-toggle:checked) {
 
 .mt-6 {
   margin-top: 1.5rem;
+}
+
+.mb-8 {
+  margin-bottom: 2rem;
 }
 
 .inline-block {
@@ -3274,6 +3283,10 @@ html:has(.drawer-toggle:checked) {
   justify-content: flex-start;
 }
 
+.justify-end {
+  justify-content: flex-end;
+}
+
 .justify-center {
   justify-content: center;
 }
@@ -3308,6 +3321,10 @@ html:has(.drawer-toggle:checked) {
 
 .self-start {
   align-self: flex-start;
+}
+
+.self-end {
+  align-self: flex-end;
 }
 
 .overflow-hidden {

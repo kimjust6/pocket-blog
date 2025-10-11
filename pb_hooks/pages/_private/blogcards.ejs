@@ -49,7 +49,7 @@
     class="bg-gradient-to-br from-base-100 to-base-200 pt-16 flex flex-col justify-between <%= !isHomepage ? 'min-h-[calc(100vh-12.54rem)]' : 'pb-12' %>"
 >
     <div class="max-w-6xl mx-auto px-4" v-scope="SearchApp">
-        <div class="text-center mb-12">
+        <div class="text-center">
             <a href="/blog/posts" class="no-underline">
                 <h1 class="text-5xl font-bold">Latest Posts</h1>
             </a>
@@ -89,9 +89,33 @@
                         </button>
                     </div>
                 </div>
+                <!-- Back to Posts Button -->
+                <div class="my-8 border-base-300 w-full">
+                    <div class="flex justify-end w-full">
+                        <a
+                            href="/"
+                            class="btn btn-outline btn-sm gap-2 transition-all duration-200"
+                        >
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="16"
+                                height="16"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="2"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                            >
+                                <path d="m12 19-7-7 7-7" />
+                                <path d="M19 12H5" />
+                            </svg>
+                            Back Home
+                        </a>
+                    </div>
+                </div>
             <% } %>
         </div>
-
         <div class="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
             <% blogposts?.items?.forEach(blog => { const text =
             blog.content1.replace(/<[^>]*>/g, ''); const myImageUrl =
