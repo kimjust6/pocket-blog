@@ -46,7 +46,7 @@
 </script>
 
 <div
-    class="min-h-[calc(100vh-12.54rem)] bg-gradient-to-br from-base-200 to-base-100 pt-16 flex flex-col justify-between"
+    class="bg-gradient-to-br from-base-100 to-base-200 pt-16 flex flex-col justify-between <%= !isHomepage ? 'min-h-[calc(100vh-12.54rem)]' : 'pb-12' %>"
 >
     <div class="max-w-6xl mx-auto px-4" v-scope="SearchApp">
         <div class="text-center mb-12">
