@@ -1,8 +1,25 @@
 <script server>
     const { formatDateTime, getImageUrl } = resolve('../../utils/common')
-    const currentPage = blogposts?.page || 1
+    const { POCKET_BLOGPOSTS } = resolve('../../utils/constants')
+    
+    function fetchBlogPosts(page, perPage, query) {
+        const client = pb({ request })
+        let filter = 'isDeleted = false'
+        if (query) {
+            filter = `${filter} && (title ~ "${query}" || tags ~ "${query}" || content1 ~ "${query}" || content2 ~ "${query}")`
+        }
+
+        return client.collection(POCKET_BLOGPOSTS).getList(page, perPage, {
+            sort: '-created',
+            filter,
+        })
+    }
+
+    const currentPage = params?.page ?? 1
+    const perPage = params?.perPage ?? 6
+    
+    blogposts = fetchBlogPosts(currentPage, perPage, params.query) ?? []
     const totalPages = blogposts?.totalPages || 1
-    const perPage = blogposts?.perPage || 10
 </script>
 
 <script>
