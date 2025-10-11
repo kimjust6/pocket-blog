@@ -18,6 +18,10 @@
     }
 </script>
 
+<% if (singleBlog == null) { %>
+<%- include('pagenotfound.ejs') %>
+<% } else {  %>
+
 <div
     class="hero bg-base-100 py-12 min-h-[calc(100vh-12.54rem)] flex flex-col items-center justify-start blog-card-transition"
     style="--blog-card-id: blog-card-<%= singleBlog?.id %>"
@@ -92,3 +96,4 @@
         </div>
     </div>
 </div>
+<% } %>
