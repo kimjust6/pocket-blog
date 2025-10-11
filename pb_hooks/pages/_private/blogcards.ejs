@@ -7,14 +7,18 @@
 
 <script>
     const SearchApp = {
-        searchQuery: '<%= params.query %>',
+        searchQuery: '<%= params?.query || "" %>',
+        hasQuery: '<%= params?.query ? "true" : "" %>',
         handleSearch() {
             // Update query params in URL
             window.location.href = `?query=${encodeURIComponent(this.searchQuery)}`
         },
         clearSearch() {
             this.searchQuery = ''
-            window.location.href = '/blog/posts'
+            this.$refs.searchInput.focus()
+            if (this.hasQuery) {
+                window.location.href = '/blog/posts'
+            }
         },
         mounted() {
             this.$refs.searchInput.focus()
@@ -35,7 +39,7 @@
                 <input
                     autofocus
                     v-model="searchQuery"
-                    x-ref="searchInput"
+                    ref="searchInput"
                     class="input w-full border border-gray-600 pr-10" 
                     placeholder="Search blogs..." 
                     @keydown.enter="handleSearch" />

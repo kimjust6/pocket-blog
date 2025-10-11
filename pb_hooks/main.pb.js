@@ -69,9 +69,3 @@ routerAdd("GET", "/clippy/zendesk", (e) => {
     return e.json(405, { "message": "Method not allowed." })
 })
 
-
-
-
-
-
-
