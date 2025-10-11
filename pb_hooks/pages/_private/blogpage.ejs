@@ -1,5 +1,21 @@
 <script server>
     const { formatDateTime, getImageUrl } = resolve('../../utils/common')
+    const { POCKET_BLOGPOSTS } = resolve('../../utils/constants')
+
+    let singleBlog = null
+    if (params?.postId) {
+        const client = pb({ request })
+        try {
+            singleBlog = client
+                .collection(POCKET_BLOGPOSTS)
+                .getFirstListItem(
+                    `id = "${params.postId}" && isDeleted = false`,
+                    { sort: '-created' }
+                )
+        } catch (error) {
+            console.error('Error fetching single blog post: ', error)
+        }
+    }
 </script>
 
 <div

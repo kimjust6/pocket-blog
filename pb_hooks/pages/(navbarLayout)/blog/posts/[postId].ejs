@@ -1,26 +1,4 @@
 <script server>
-    const { POCKET_BLOGPOSTS } = resolve('../../utils/constants')
-
-    const client = pb({ request })
-    let blogposts
-    let singleBlog = null
-    let page = params.page ?? 1
-    const perPage = params.perPage ?? 6
-
-    if (params?.postId) {
-        try {
-            singleBlog = client
-                .collection(POCKET_BLOGPOSTS)
-                .getFirstListItem(
-                    `id = "${params.postId}" && isDeleted = false`,
-                    { sort: '-created' }
-                )
-        } catch (error) {
-            console.error('Error fetching single blog post: ', error)
-            singleBlog = null
-        }
-    }
-
     // let records = $app.findRecordsByFilter(
     //     'blogposts', // collection
     //     'isDeleted = false && tags ~ {:tag}', // filter (relation expand)
@@ -36,8 +14,6 @@
 
 <% if (typeof(params.postId) === "undefined") { %>
 <%- include('blogcards.ejs') %>
-<% } else if (singleBlog === null) { %>
-<%- include('pagenotfound.ejs') %>
 <% } else { %>
-<%- include('blogpage.ejs', { singleBlog }) %>
+<%- include('blogpage.ejs') %>
 <% } %>
