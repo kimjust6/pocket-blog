@@ -6,6 +6,8 @@ const DISCORD_API_ENDPOINT = "https://zen.jkim.win/api/discord/send-dm/";
 const ZENDESK_API_ENDPOINT = "https://yaksa.zendesk.com/agent/tickets/";
 const POCKET_COLLECTION_ZENDESK_TICKETS = "zendesk_tickets";
 
+const POCKET_COLLECTION_ADMIN_SETTINGS = "admin_settings";
+
 const ZENDESK_ASSIGNEE_ID_JUSTIN = "35387898477463";
 const DISCORD_ID_JUSTIN = "90909125164163072";
 
@@ -18,5 +20,6 @@ module.exports = {
     ZENDESK_API_ENDPOINT,
     POCKET_COLLECTION_ZENDESK_TICKETS,
     ZENDESK_ASSIGNEE_ID_JUSTIN,
-    DISCORD_ID_JUSTIN
+    DISCORD_ID_JUSTIN,
+    POCKET_COLLECTION_ADMIN_SETTINGS
 }
