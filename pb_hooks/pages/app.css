@@ -3310,6 +3310,10 @@ html:has(.drawer-toggle:checked) {
   overflow: hidden;
 }
 
+.text-wrap {
+  text-wrap: wrap;
+}
+
 .rounded-lg {
   border-radius: 0.5rem;
 }
@@ -3433,6 +3437,10 @@ html:has(.drawer-toggle:checked) {
 
 .pt-16 {
   padding-top: 4rem;
+}
+
+.pt-40 {
+  padding-top: 10rem;
 }
 
 .text-left {

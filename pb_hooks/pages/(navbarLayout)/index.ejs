@@ -1,26 +1,25 @@
-<div class="hero min-h-[calc(100vh-4rem)] bg-base-200">
+<script server>
+    const isHomepage = true
+</script>
+
+<div class="hero bg-base-200 pt-40">
     <div class="hero-content text-center">
-        <div class="max-w-md">
-            <h1 class="text-5xl font-bold -mt-20">
+        <div class="">
+            <h1 class="text-5xl font-bold">
                 <%= (data.metadata.find(meta => meta.name ===
                 "og:site_name")).content %>
             </h1>
-            <p class="pb-6 m-0">
-                <a
-                    class="no-underline hover:text-primary transition-all"
-                    href="/blog/posts"
-                    >Here</a
-                >, find out what mistakes I have made and lessons I may have
-                learned along the way.
-            </p>
             <a href="/blog/posts" class="no-underline">
                 <div class="mockup-code text-left group transition-all">
                     <pre
-                        class="h-full group-hover:text-primary transition-all"
+                        class="h-full group-hover:text-primary transition-all text-wrap"
                         data-prefix="$"
-                    ><code>Console.WriteLine("my thoughts...");</code></pre>
+                    >
+find out what mistakes I have made and lessons I may have learned along the way.</pre
+                    >
                 </div>
             </a>
         </div>
     </div>
 </div>
+<%- include("blogcards.ejs", { isHomepage }) %>
