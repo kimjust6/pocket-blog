@@ -55,35 +55,37 @@
                 <p class="mt-4 text-lg text-base-content/80">
                     Explore recent insights, thoughts, and stories.
                 </p>
-                <div class="relative flex justify-center">
-                    <input
-                        autofocus
-                        v-model="searchQuery"
-                        ref="searchInput"
-                        class="input w-full max-w-xl border border-gray-600 pr-10" 
-                        placeholder="Search blogs..." 
-                        @keydown.enter="handleSearch" />
-                    <button
-                        v-show="searchQuery"
-                        @click="clearSearch"
-                        class="absolute right-3 top-1/2 !-translate-y-1/2 btn btn-ghost btn-sm btn-circle active:!-translate-y-1/2"
-                        type="button"
-                    >
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            class="h-5 w-5"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
+                <div class="flex justify-center">
+                    <div class="relative w-full max-w-xl">
+                        <input
+                            autofocus
+                            v-model="searchQuery"
+                            ref="searchInput"
+                            class="input w-full border border-gray-600 pr-10" 
+                            placeholder="Search blogs..." 
+                            @keydown.enter="handleSearch" />
+                        <button
+                            v-show="searchQuery"
+                            @click="clearSearch"
+                            class="absolute right-3 top-1/2 !-translate-y-1/2 btn btn-ghost btn-sm btn-circle active:!-translate-y-1/2"
+                            type="button"
                         >
-                            <path
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                stroke-width="2"
-                                d="M6 18L18 6M6 6l12 12"
-                            />
-                        </svg>
-                    </button>
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                class="h-5 w-5"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke="currentColor"
+                            >
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    stroke-width="2"
+                                    d="M6 18L18 6M6 6l12 12"
+                                />
+                            </svg>
+                        </button>
+                    </div>
                 </div>
             <% } %>
         </div>
