@@ -6,7 +6,7 @@ module.exports = function (api) {
             {
                 name: 'title',
                 content:
-                    "Keeping a personal record of my mistakes and lessons learned as a programmer.",
+                    "The Justin Blog",
             },
             {
                 name: 'description',
@@ -19,7 +19,7 @@ module.exports = function (api) {
             {
                 name: 'og:title',
                 content:
-                    "Keeping a personal record of my mistakes and lessons learned as a programmer.",
+                    "The Justin Blog",
             },
             { name: 'og:type', content: 'website' },
             { name: 'og:url', content: 'https://www.justink.dev/' },
@@ -53,12 +53,12 @@ module.exports = function (api) {
             {
                 name: 'twitter:title',
                 content:
-                    "I'm Justin Kim — Sharing Thoughts from Behind the Console",
+                    "The Justin Blog",
             },
             {
                 name: 'twitter:description',
                 content:
-                    'Personal musings, coding thoughts, and raw insights—straight from the console.',
+                    'Keeping a personal record of my mistakes and lessons learned as a programmer.',
             },
             {
                 name: 'twitter:image',

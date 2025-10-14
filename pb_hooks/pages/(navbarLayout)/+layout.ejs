@@ -62,7 +62,9 @@
         <meta name="<%= ogTag.name %>" content="<%= ogTag.content %>" />
         <% }); %>
 
-        <title></title>
+        <title>
+            <%= data.metadata.find(x => x.name === 'title')?.content %>
+        </title>
         <link href="<%=asset('/app.css')%>" rel="stylesheet" />
         <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
     </head>
