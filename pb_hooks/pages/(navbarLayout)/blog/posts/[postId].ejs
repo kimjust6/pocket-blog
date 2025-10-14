@@ -1,56 +1,4 @@
 <script server>
-    const { POCKET_BLOGPOSTS } = resolve('../../utils/constants')
-
-    let isLoading = true
-    // Get an authenticated client for the current request
-
-    const client = pb({ request })
-    let blogposts
-    let singleBlog = null
-    let page = params.page ?? 1
-    const perPage = params.perPage ?? 6
-
-    function fetchBlogPosts(page, perPage, query) {
-        if (query) {
-            return client.collection(POCKET_BLOGPOSTS).getList(page, perPage, {
-                sort: '-created',
-                filter: `isDeleted = false && (title ~ "${query}" || tags ~ "${query}" || content1 ~ "${query}" || content2 ~ "${query}")`,
-            })
-        }
-
-        return client.collection(POCKET_BLOGPOSTS).getList(page, perPage, {
-            sort: '-created',
-            filter: 'isDeleted = false',
-        })
-    }
-
-    if (params?.postId) {
-        try {
-            singleBlog = client
-                .collection(POCKET_BLOGPOSTS)
-                .getFirstListItem(
-                    `id = "${params.postId}" && isDeleted = false`,
-                    { sort: '-created' }
-                )
-        } catch (error) {
-            console.error('Error fetching single blog post: ', error)
-            singleBlog = null
-        }
-    } else {
-        try {
-            blogposts = fetchBlogPosts(page, perPage, params.query)
-            if (blogposts?.page > blogposts.totalPages) {
-                page = blogposts.totalPages
-            }
-
-            blogposts = fetchBlogPosts(page, perPage, params.query)
-        } catch (error) {
-            console.error('Error fetching blog posts: ', error)
-            blogposts = { items: [] }
-        }
-    }
-    isLoading = false
-
     // let records = $app.findRecordsByFilter(
     //     'blogposts', // collection
     //     'isDeleted = false && tags ~ {:tag}', // filter (relation expand)
@@ -64,12 +12,8 @@
     // })
 </script>
 
-<% if (isLoading) { %>
-<%- include('loading.ejs') %>
-<% } else if (typeof(params.postId) === "undefined") { %>
-<%- include('blogcards.ejs', { blogposts }) %>
-<% } else if (singleBlog === null) { %>
-<%- include('pagenotfound.ejs') %>
+<% if (typeof(params.postId) === "undefined") { %>
+<%- include('blogcards.ejs') %>
 <% } else { %>
-<%- include('blogpage.ejs', { singleBlog }) %>
+<%- include('blogpage.ejs') %>
 <% } %>

@@ -1,4 +1,3 @@
-<script src="/js/petite-vue.js"></script>
 <script type="module">
     import { createApp } from '/js/petite-vue.es.js'
     // import pocketbase from 'https://cdn.jsdelivr.net/npm/pocketbase@0.26.2/+esm'
@@ -63,7 +62,9 @@
         <meta name="<%= ogTag.name %>" content="<%= ogTag.content %>" />
         <% }); %>
 
-        <title></title>
+        <title>
+            <%= data.metadata.find(x => x.name === 'title')?.content %>
+        </title>
         <link href="<%=asset('/app.css')%>" rel="stylesheet" />
         <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
     </head>
@@ -97,7 +98,7 @@
                     </div>
 
                     <div class="menu menu-horizontal mx-2 flex-1 px-2">
-                        <li><a href="/">Home </a></li>
+                        <a href="/">Home </a>
                     </div>
                     <div class="hidden flex-none lg:block">
                         <ul class="menu menu-horizontal">

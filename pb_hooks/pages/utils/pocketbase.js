@@ -1,6 +1,7 @@
 const {
     POCKET_COLLECTION_ZENDESK_TICKETS,
-    POCKET_ZENDESKUSER_DISCORDUSER
+    POCKET_ZENDESKUSER_DISCORDUSER,
+    POCKET_COLLECTION_ADMIN_SETTINGS
 }
     = require(`${__hooks}/pages/utils/constants.js`);
 
@@ -11,6 +12,11 @@ const {
 } = require(`${__hooks}/pages/utils/common.js`);
 
 
+/**
+ * 
+ * @param {Object} data 
+ * @returns 
+ */
 function saveZendeskRecord(data) {
     if (!data) {
         throw new Error("Invalid collection or data");
@@ -36,6 +42,13 @@ function saveZendeskRecord(data) {
 
 }
 
+
+/**
+ * 
+ * @param {number} data 
+ * @param {number} timeInSeconds 
+ * @returns 
+ */
 function findRecentTicketByTicketNumber(data, timeInSeconds = 10) {
     let ticketId
     if (typeof data !== "number") {
@@ -55,19 +68,23 @@ function findRecentTicketByTicketNumber(data, timeInSeconds = 10) {
         .orderBy("created DESC")
         .limit(1)
         .one(record)
-
     // check if the record was created within the last `timeInSeconds` seconds
     if (record) {
         const createdTime = new Date(record.get("created")).getTime();
         const currentTime = Date.now();
         const timeDiff = (currentTime - createdTime)
-        if (timeDiff <= timeInSeconds * 1000) {
+        if (timeDiff && timeDiff <= timeInSeconds * 1000) {
             return record;
         }
     }
     return null;
 }
 
+/**
+ * 
+ * @param {string} assignee_id 
+ * @returns {string|null}
+ */
 function getDiscordIdByAssigneeId(assignee_id) {
     if (!assignee_id) {
         return null;
@@ -84,8 +101,28 @@ function getDiscordIdByAssigneeId(assignee_id) {
     }
 }
 
+/**
+ *
+ * @param {string} key
+ * @returns {string|null}
+ */
+
+function getAdminSetting(key) {
+    if (!key) {
+        return null;
+    }
+    let record = new Record();
+    $app.recordQuery(POCKET_COLLECTION_ADMIN_SETTINGS)
+        .andWhere($dbx.hashExp({ "key": key }))
+        .limit(1)
+        .one(record)
+
+    return record.get("value") ?? null;
+}
+
 module.exports = {
     saveZendeskRecord,
     findRecentTicketByTicketNumber,
-    getDiscordIdByAssigneeId
+    getDiscordIdByAssigneeId,
+    getAdminSetting
 }

@@ -1,20 +1,43 @@
 <script server>
     const { formatDateTime, getImageUrl } = resolve('../../utils/common')
-    const currentPage = blogposts?.page || 1
+    const { POCKET_BLOGPOSTS } = resolve('../../utils/constants')
+
+    if (typeof isHomepage === 'undefined') {
+        var isHomepage = false
+    }
+    function fetchBlogPosts(page, perPage, query) {
+        const client = pb({ request })
+        let filter = 'isDeleted = false'
+        if (query) {
+            filter = `${filter} && (title ~ "${query}" || tags ~ "${query}" || content1 ~ "${query}" || content2 ~ "${query}")`
+        }
+
+        return client.collection(POCKET_BLOGPOSTS).getList(page, perPage, {
+            sort: '-created',
+            filter,
+        })
+    }
+    const currentPage = params?.page ?? 1
+    const perPage = params?.perPage ?? 6
+    
+    blogposts = fetchBlogPosts(currentPage, perPage, params.query) ?? []
     const totalPages = blogposts?.totalPages || 1
-    const perPage = blogposts?.perPage || 10
 </script>
 
 <script>
     const SearchApp = {
-        searchQuery: '<%= params.query %>',
+        searchQuery: '<%= params?.query || "" %>',
+        hasQuery: '<%= params?.query ? "true" : "" %>',
         handleSearch() {
             // Update query params in URL
             window.location.href = `?query=${encodeURIComponent(this.searchQuery)}`
         },
         clearSearch() {
             this.searchQuery = ''
-            window.location.href = '/blog/posts'
+            this.$refs.searchInput.focus()
+            if (this.hasQuery) {
+                window.location.href = '/blog/posts'
+            }
         },
         mounted() {
             this.$refs.searchInput.focus()
@@ -23,51 +46,81 @@
 </script>
 
 <div
-    class="min-h-[calc(100vh-12.54rem)] bg-gradient-to-br from-base-200 to-base-100 pt-16 flex flex-col justify-between"
+    class="bg-gradient-to-br from-base-100 to-base-200 pt-16 flex flex-col justify-between <%= !isHomepage ? 'min-h-[calc(100vh-12.54rem)]' : 'pb-12' %>"
 >
     <div class="max-w-6xl mx-auto px-4" v-scope="SearchApp">
-        <div class="text-center mb-12">
-            <h1 class="text-5xl font-bold">Latest Posts</h1>
-            <p class="mt-4 text-lg text-base-content/80">
-                Explore recent insights, thoughts, and stories.
-            </p>
-            <div class="relative">
-                <input
-                    autofocus
-                    v-model="searchQuery"
-                    x-ref="searchInput"
-                    class="input w-full border border-gray-600 pr-10" 
-                    placeholder="Search blogs..." 
-                    @keydown.enter="handleSearch" />
-                <button
-                    v-show="searchQuery"
-                    @click="clearSearch"
-                    class="absolute right-3 top-1/2 !-translate-y-1/2 btn btn-ghost btn-sm btn-circle active:!-translate-y-1/2"
-                    type="button"
-                >
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        class="h-5 w-5"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                    >
-                        <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            stroke-width="2"
-                            d="M6 18L18 6M6 6l12 12"
-                        />
-                    </svg>
-                </button>
-            </div>
+        <div class="text-center">
+            <a href="/blog/posts" class="no-underline">
+                <h1 class="text-5xl font-bold">Latest Posts</h1>
+            </a>
+            <% if (!isHomepage) { %>
+                <p class="mt-4 text-lg text-base-content/80">
+                    Explore recent insights, thoughts, and stories.
+                </p>
+                <div class="flex justify-center">
+                    <div class="relative w-full max-w-xl">
+                        <input
+                            autofocus
+                            v-model="searchQuery"
+                            ref="searchInput"
+                            class="input w-full border border-gray-600 pr-10" 
+                            placeholder="Search blogs..." 
+                            @keydown.enter="handleSearch" />
+                        <button
+                            v-show="searchQuery"
+                            @click="clearSearch"
+                            class="absolute right-3 top-1/2 !-translate-y-1/2 btn btn-ghost btn-sm btn-circle active:!-translate-y-1/2"
+                            type="button"
+                        >
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                class="h-5 w-5"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke="currentColor"
+                            >
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    stroke-width="2"
+                                    d="M6 18L18 6M6 6l12 12"
+                                />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+                <!-- Back to Posts Button -->
+                <div class="my-8 border-base-300 w-full">
+                    <div class="flex justify-end w-full">
+                        <a
+                            href="/"
+                            class="btn btn-outline btn-sm gap-2 transition-all duration-200"
+                        >
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="16"
+                                height="16"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="2"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                            >
+                                <path d="m12 19-7-7 7-7" />
+                                <path d="M19 12H5" />
+                            </svg>
+                            Back Home
+                        </a>
+                    </div>
+                </div>
+            <% } %>
         </div>
-
         <div class="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-            <% blogposts?.items?.forEach(blog => { const text =
-            blog.content1.replace(/<[^>]*>/g, ''); const myImageUrl =
-            getImageUrl(blog) ?`${getImageUrl(blog)}?thumb=350x0` :
-            blog.coverImageAlt %>
+            <% blogposts?.items?.forEach(blog => { 
+                const text = blog.content1.replace(/<[^>]*>/g, ''); 
+                const myImageUrl = getImageUrl(blog) ? `${getImageUrl(blog)}?thumb=350x0` 
+                : blog.coverImageAlt %>
 
             <a href="/blog/posts/<%= blog.id %>" class="no-underline group">
                 <div
@@ -77,7 +130,7 @@
                     <figure class="h-48 overflow-hidden m-0 rounded-t-2xl">
                         <img
                             src="<%= myImageUrl%>"
-                            alt="Blog Image"
+                            alt="<%= blog.title %> Image"
                             class="w-full h-48 object-cover blog-image-transition rounded-t-2xl"
                             style="--blog-image-id: blog-image-<%= blog.id %>"
                             loading="lazy"
@@ -88,9 +141,9 @@
                         <div class="flex">
                             <% if (blog.tags && blog.tags?.length > 0) {
                             blog.tags?.split(';').forEach(tag => { %>
-                            <div class="pb-4">
+                            <div class="pb-4 text-wrap">
                                 <span
-                                    class="badge badge-outline badge-sm mr-2"
+                                    class="badge badge-outline badge-sm mr-2 text-nowrap"
                                     ><%= tag %>
                                 </span>
                             </div>
@@ -115,28 +168,29 @@
             <% }) %>
         </div>
     </div>
+    <% if (!isHomepage) { %>
+        <!-- Pagination -->
+        <div class="flex justify-center my-12">
+            <div class="join">
+                <a href="?page=<%= currentPage - 1 %>" 
+                class="join-item btn btn-sm"
+                <% if (currentPage <= 1) { %> disabled <% } %>>
+                «
+                </a>
 
-    <!-- Pagination -->
-    <div class="flex justify-center my-12">
-        <div class="join">
-            <a href="?page=<%= currentPage - 1 %>" 
-            class="join-item btn btn-sm"
-            <% if (currentPage <= 1) { %> disabled <% } %>>
-            «
-            </a>
+                <% for (let i = 1; i <= totalPages; i++) { %>
+                <a href="?page=<%= i %>" 
+                    class="join-item btn btn-sm <%= currentPage === i ? 'btn-active' : '' %>">
+                    <%= i %>
+                </a>
+                <% } %>
 
-            <% for (let i = 1; i <= totalPages; i++) { %>
-            <a href="?page=<%= i %>" 
-                class="join-item btn btn-sm <%= currentPage === i ? 'btn-active' : '' %>">
-                <%= i %>
-            </a>
-            <% } %>
-
-            <a href="?page=<%= currentPage + 1 %>" 
-            class="join-item btn btn-sm"
-            <% if (currentPage >= totalPages) { %> disabled <% } %>>
-            »
-            </a>
+                <a href="?page=<%= currentPage + 1 %>" 
+                class="join-item btn btn-sm"
+                <% if (currentPage >= totalPages) { %> disabled <% } %>>
+                »
+                </a>
+            </div>
         </div>
-    </div>
+    <% } %>
 </div>

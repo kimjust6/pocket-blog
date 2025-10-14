@@ -1,7 +1,57 @@
 <script server>
     const { formatDateTime, getImageUrl } = resolve('../../utils/common')
-</script>
+    const { POCKET_BLOGPOSTS } = resolve('../../utils/constants')
 
+    let singleBlog = null
+    let imageUrl = null
+    if (params?.postId) {
+        const client = pb({ request })
+        try {
+            singleBlog = client
+                .collection(POCKET_BLOGPOSTS)
+                .getFirstListItem(
+                    `id = "${params.postId}" && isDeleted = false`,
+                    { sort: '-created' }
+                )
+            if (!singleBlog) {
+                return
+            }
+            // Update the page title metadata
+            const newTitle = `${singleBlog.title} | The Justin Blog`
+            data.metadata
+                .filter((m) => m.name.includes('title'))
+                .forEach((m) => (m.content = newTitle))
+            // replace the metadata image as well
+            data.metadata
+                .filter(
+                    (m) => m.name === 'og:image' || m.name === 'twitter:image'
+                )
+                .forEach((m) => (m.content = getImageUrl(singleBlog)))
+            // update the description metadata with the first paragraph of the blog content
+
+            const description =
+                singleBlog.content1.match(/<p>(.*?)<\/p>/)[1] ?? ''
+            data.metadata
+                .filter(
+                    (m) =>
+                        m.name === 'description' ||
+                        m.name === 'og:description' ||
+                        m.name === 'twitter:description'
+                )
+                .forEach((m) => (m.content = description))
+        } catch (error) {
+            console.error('Error fetching single blog post: ', error)
+        }
+        //get length of imageUrl
+        imageUrl =
+            singleBlog?.coverImageAlt?.length == 0
+                ? getImageUrl(singleBlog)
+                : singleBlog?.coverImageAlt
+    }
+</script>
+<% if (singleBlog == null) { %>
+<%- include('pagenotfound.ejs') %>
+<% } else {  %>
 <div
     class="hero bg-base-100 py-12 min-h-[calc(100vh-12.54rem)] flex flex-col items-center justify-start blog-card-transition"
     style="--blog-card-id: blog-card-<%= singleBlog?.id %>"
@@ -15,7 +65,7 @@
         </h1>
         <!-- Blog Image -->
         <img
-            src="<%= singleBlog?.coverImageAlt ?? getImageUrl(singleBlog) %>"
+            src="<%= imageUrl %>"
             class="rounded-lg shadow-lg w-full h-auto max-h-96 object-cover m-0 blog-image-transition"
             style="
                 --blog-image-id: blog-image-<%= singleBlog?.id %>;
@@ -41,7 +91,7 @@
                             >Posted:
                             <strong>
                                 <%= formatDateTime(new Date(singleBlog?.created))
-                        %>
+                            %>
                             </strong></span
                         >
                         <a
@@ -62,7 +112,7 @@
                                 <path d="m12 19-7-7 7-7" />
                                 <path d="M19 12H5" />
                             </svg>
-                            Back to Posts
+                            View all posts
                         </a>
                     </div>
                 </div>
@@ -76,3 +126,4 @@
         </div>
     </div>
 </div>
+<% } %>
