@@ -61,6 +61,10 @@ function formatDateTime(date) {
     return `${month} ${day}, ${year}`
 }
 
+function getBaseUrl() {
+    return 'https://www.jkim.win';
+}
+
 /**
  * 
  * @param {Object} blog 
@@ -70,7 +74,7 @@ function getImageUrl(blog) {
     if (blog && blog?.coverImage && blog?.collectionId && blog?.id) {
 
         return (
-            `/api/files/${blog.collectionId}/${blog.id}/${blog.coverImage}`
+            `${getBaseUrl()}/api/files/${blog.collectionId}/${blog.id}/${blog.coverImage}`
         )
     }
     return null;

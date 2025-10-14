@@ -12,25 +12,37 @@
                     `id = "${params.postId}" && isDeleted = false`,
                     { sort: '-created' }
                 )
-            if (singleBlog) {
-                const newTitle = `${singleBlog.title} | The Justin Blog`
-
-                data.metadata
-                    .filter((m) => m.name.includes('title'))
-                    .forEach((m) => (m.content = newTitle))
+            if (!singleBlog) {
+                return
             }
+            // Update the page title metadata
+            const newTitle = `${singleBlog.title} | The Justin Blog`
+            data.metadata
+                .filter((m) => m.name.includes('title'))
+                .forEach((m) => (m.content = newTitle))
             // replace the metadata image as well
             data.metadata
                 .filter(
                     (m) => m.name === 'og:image' || m.name === 'twitter:image'
                 )
                 .forEach((m) => (m.content = getImageUrl(singleBlog)))
+            // update the description metadata with the first paragraph of the blog content
+
+            const description =
+                singleBlog.content1.match(/<p>(.*?)<\/p>/)[1] ?? ''
+            data.metadata
+                .filter(
+                    (m) =>
+                        m.name === 'description' ||
+                        m.name === 'og:description' ||
+                        m.name === 'twitter:description'
+                )
+                .forEach((m) => (m.content = description))
         } catch (error) {
             console.error('Error fetching single blog post: ', error)
         }
     }
 </script>
-
 <% if (singleBlog == null) { %>
 <%- include('pagenotfound.ejs') %>
 <% } else {  %>
