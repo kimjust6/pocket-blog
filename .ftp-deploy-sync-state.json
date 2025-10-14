@@ -1,7 +1,7 @@
 {
     "description": "DO NOT DELETE THIS FILE. This file is used to keep track of which files have been synced in the most recent deployment. If you delete this file a resync will need to be done (which can take a while) - read more: https://github.com/SamKirkland/FTP-Deploy-Action",
     "version": "1.0.0",
-    "generatedTime": 1760398485132,
+    "generatedTime": 1760402626274,
     "data": [
         {
             "type": "file",
@@ -52,8 +52,8 @@
         {
             "type": "file",
             "name": "pb_hooks/main.pb.js",
-            "size": 3482,
-            "hash": "5960fa87fb4ba49b25bbd6f08ee7f278301014eee389905c1234749111832422"
+            "size": 3481,
+            "hash": "83bf356f4336a0ecafb9040765c9efb5fea68515e9105616bb5325ee03a68229"
         },
         {
             "type": "folder",
@@ -90,8 +90,8 @@
         {
             "type": "file",
             "name": "pb_hooks/pages/app.css",
-            "size": 88785,
-            "hash": "5ce237834425834ae4d847f6f508aecb08da2b11cbca6f69936d72f53e342a4b"
+            "size": 88824,
+            "hash": "acbdff52175aea568f0c2017519c439c6c99c6002af6db0561f8cd5f440232d3"
         },
         {
             "type": "folder",
@@ -188,8 +188,12 @@
         {
             "type": "file",
             "name": "pb_hooks/pages/_private/blogcards.ejs",
-            "size": 8177,
-            "hash": "9a3e23d56d86081bbb157892e80c2c784bb3e7ba13c5a1fb3a1a5371cc9c4788"
+            "size": 8199,
+            "hash": "60e7eb957dcfa0aba3f253349a67dd4d9c5e69d431f6030e19118e0f6db07cfb"
+        },
+        {
+            "type": "folder",
+            "name": "pb_hooks/pages/(navbarLayout)/zen"
         },
         {
             "type": "file",
@@ -222,8 +226,14 @@
         {
             "type": "file",
             "name": "pb_hooks/pages/(navbarLayout)/+layout.ejs",
-            "size": 5024,
-            "hash": "a2235aaf6f0b2c1d030cb1ba84629c5fe86ebcc7b357a6e7727c4b1536d640dc"
+            "size": 5015,
+            "hash": "eac839c7c372e13b1671f677c843340a88789852a628615fbd7d466c66527734"
+        },
+        {
+            "type": "file",
+            "name": "pb_hooks/pages/(navbarLayout)/zen/index.ejs",
+            "size": 31,
+            "hash": "4d5c6928a199aa74d4d34c27cdb69cdf4330f655d2ebb36668a0f23262b2af28"
         },
         {
             "type": "folder",

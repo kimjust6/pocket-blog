@@ -141,9 +141,9 @@
                         <div class="flex">
                             <% if (blog.tags && blog.tags?.length > 0) {
                             blog.tags?.split(';').forEach(tag => { %>
-                            <div class="pb-4">
+                            <div class="pb-4 text-wrap">
                                 <span
-                                    class="badge badge-outline badge-sm mr-2"
+                                    class="badge badge-outline badge-sm mr-2 text-nowrap"
                                     ><%= tag %>
                                 </span>
                             </div>

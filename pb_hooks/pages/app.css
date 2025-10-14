@@ -3311,6 +3311,10 @@ html:has(.drawer-toggle:checked) {
   text-wrap: wrap;
 }
 
+.text-nowrap {
+  text-wrap: nowrap;
+}
+
 .rounded-lg {
   border-radius: 0.5rem;
 }
