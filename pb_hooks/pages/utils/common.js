@@ -72,7 +72,6 @@ function getBaseUrl() {
  */
 function getImageUrl(blog) {
     if (blog && blog?.coverImage && blog?.collectionId && blog?.id) {
-
         return (
             `${getBaseUrl()}/api/files/${blog.collectionId}/${blog.id}/${blog.coverImage}`
         )
