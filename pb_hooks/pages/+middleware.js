@@ -11,7 +11,7 @@ module.exports = function (api) {
             {
                 name: 'description',
                 content:
-                    'Keeping a personal record of my mistakes and lessons learned as a programmer.',
+                    'Keeping a personal record of my mistakes and lessons learned as a developer.',
             },
             { name: 'url', content: 'https://www.jkim.win/' },
 
@@ -33,7 +33,7 @@ module.exports = function (api) {
             {
                 name: 'og:description',
                 content:
-                    'Keeping a personal record of my mistakes and lessons learned as a programmer.',
+                    'Keeping a personal record of my mistakes and lessons learned as a developer.',
             },
             { name: 'og:site_name', content: "The Justin Blog" },
             { name: 'og:locale', content: 'en_CA' },
@@ -58,7 +58,7 @@ module.exports = function (api) {
             {
                 name: 'twitter:description',
                 content:
-                    'Keeping a personal record of my mistakes and lessons learned as a programmer.',
+                    'Keeping a personal record of my mistakes and lessons learned as a developer.',
             },
             {
                 name: 'twitter:image',

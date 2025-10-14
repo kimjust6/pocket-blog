@@ -12,6 +12,19 @@
                     `id = "${params.postId}" && isDeleted = false`,
                     { sort: '-created' }
                 )
+            if (singleBlog) {
+                const newTitle = `${singleBlog.title} | The Justin Blog`
+
+                data.metadata
+                    .filter((m) => m.name.includes('title'))
+                    .forEach((m) => (m.content = newTitle))
+            }
+            // replace the metadata image as well
+            data.metadata
+                .filter(
+                    (m) => m.name === 'og:image' || m.name === 'twitter:image'
+                )
+                .forEach((m) => (m.content = getImageUrl(singleBlog)))
         } catch (error) {
             console.error('Error fetching single blog post: ', error)
         }
