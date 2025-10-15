@@ -151,6 +151,36 @@ function sendDiscordMessage(message, userId = DISCORD_ID_JUSTIN) {
     }
 }
 
+/**
+ * Execute a function after a random delay (0..maxSeconds) using PocketBase cron.
+ * Falls back to 1 second window if invalid maxSeconds provided.
+ * @param {Function} fn callback to execute
+ * @param {number} maxSeconds upper bound of random delay window (seconds)
+ */
+function runAfterRandomDelay(fn, maxSeconds = 1) {
+    try {
+        if (typeof fn !== 'function') {
+            console.error('runAfterRandomDelay: fn must be a function');
+            return;
+        }
+        let windowSec = parseFloat(maxSeconds);
+        if (isNaN(windowSec) || windowSec < 0) {
+            windowSec = 1;
+        }
+        const delayMs = Math.random() * windowSec * 1000; // 0..maxSeconds (ms)
+        if (typeof setTimeout === 'function') {
+            setTimeout(() => {
+                try { fn(); } catch (err) { console.error('runAfterRandomDelay execution error', err); }
+            }, delayMs);
+        } else {
+            // Fallback: execute immediately if timers unsupported.
+            try { fn(); } catch (err) { console.error('runAfterRandomDelay immediate fallback error', err); }
+        }
+    } catch (err) {
+        console.error('runAfterRandomDelay setup failed', err);
+    }
+}
+
 module.exports = {
     formatDateTime,
     getImageUrl,
@@ -160,5 +190,6 @@ module.exports = {
     sendDiscordMessage,
     getTicketId,
     getTicketType,
-    getAssigneeId
+    getAssigneeId,
+    runAfterRandomDelay
 }

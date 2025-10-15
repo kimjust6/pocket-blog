@@ -6,7 +6,8 @@ routerAdd("POST", "/clippy/zendesk", (e) => {
         sendDiscordMessage,
         getZendeskUrl,
         getAssigneeId,
-        isSlaBreaching
+        isSlaBreaching,
+        runAfterRandomDelay
     } = require(`${__hooks}/pages/utils/common.js`);
 
     const {
@@ -21,51 +22,63 @@ routerAdd("POST", "/clippy/zendesk", (e) => {
     } = require(`${__hooks}/pages/utils/constants.js`);
 
 
+    let data;
     try {
-        let data = e.requestInfo()
-        const url = getZendeskUrl(data);
-
-        let assigneeId
-        let discordId
-        try {
-
-            assigneeId = getAssigneeId(data);
-            discordId = getDiscordIdByAssigneeId(assigneeId);
-        }
-        catch (error) {
-            console.error("Error getting Discord ID from PocketBase:", error);
-        }
-
-        if (discordId) {
-            try {
-                const setting = getAdminSetting(POCKET_ADMIN_IGNORE_DUPLICATE_ZENDESK_CALLBACK_IN_SECONDS) ?? "10";
-                const recentTicket = findRecentTicketByTicketNumber(data, parseInt(setting));
-                if (!recentTicket) {
-                    // forward to discord bot
-                    sendDiscordMessage(`Your ticket has been updated: ${url ?? 'No URL available'}`);
-                }
-            } catch (error) {
-                console.error("Error sending ticket update message:", error);
-            }
-        };
-
-        saveZendeskRecord(data);
-
-        if (isSlaBreaching(data)) {
-            try {
-                // forward to discord bot
-                sendDiscordMessage(`SLA breaching soon: ${url || 'No URL available'}`);
-            }
-            catch (error) {
-                console.error("Error sending SLA breaching message:", error);
-            }
-        };
-
-        return e.json(201, { data })
+        data = e.requestInfo();
     } catch (err) {
-        throw err;
+        console.error("Failed to parse request info", err);
+        return e.json(400, { message: "Invalid request" });
     }
 
+    // Return immediately; do async work after random short delay to reduce duplicate race conditions.
+    runAfterRandomDelay(() => {
+        processTicketUpdate();
+    }, 3);
+
+    return e.json(202, { status: "accepted" });
+
+    function processTicketUpdate() {
+        try {
+            const url = getZendeskUrl(data);
+            let discordId = null;
+            try {
+                const assigneeId = getAssigneeId(data);
+                discordId = assigneeId ? getDiscordIdByAssigneeId(assigneeId) : null;
+            } catch (error) {
+                console.error("Error getting Discord ID from PocketBase:", error);
+            }
+
+            if (discordId) {
+                try {
+                    const settingRaw = getAdminSetting(POCKET_ADMIN_IGNORE_DUPLICATE_ZENDESK_CALLBACK_IN_SECONDS) ?? "10";
+                    const windowSec = parseInt(settingRaw, 10);
+                    const recentTicket = findRecentTicketByTicketNumber(data, isNaN(windowSec) ? 10 : windowSec);
+                    if (!recentTicket) {
+                        sendDiscordMessage(`Your ticket has been updated: ${url ?? 'No URL available'}`);
+                    }
+                } catch (error) {
+                    console.error("Error sending ticket update message:", error);
+                }
+            }
+
+            try {
+                saveZendeskRecord(data);
+            } catch (err) {
+                console.error("Error saving Zendesk record", err);
+            }
+
+            if (isSlaBreaching(data)) {
+                try {
+                    sendDiscordMessage(`SLA breaching soon: ${url || 'No URL available'}`);
+                }
+                catch (error) {
+                    console.error("Error sending SLA breaching message:", error);
+                }
+            }
+        } catch (err) {
+            console.error("Unexpected error in delayed processing", err);
+        }
+    }
 });
 
 routerAdd("GET", "/clippy/zendesk", (e) => {
