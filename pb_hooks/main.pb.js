@@ -60,7 +60,8 @@ routerAdd("POST", "/clippy/zendesk", (e) => {
                 console.error("Error sending SLA breaching message:", error);
             }
         };
-        return { status: 201, data };
+
+        return e.json(201, { data })
     } catch (err) {
         throw err;
     }
