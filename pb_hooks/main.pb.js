@@ -18,7 +18,8 @@ routerAdd("POST", "/clippy/zendesk", (e) => {
     } = require(`${__hooks}/pages/utils/pocketbase.js`);
 
     const {
-        POCKET_ADMIN_IGNORE_DUPLICATE_ZENDESK_CALLBACK_IN_SECONDS
+        POCKET_ADMIN_IGNORE_DUPLICATE_ZENDESK_CALLBACK_IN_SECONDS,
+        POCKET_ADMIN_MAX_RANDOM_DELAY_IN_SECONDS
     } = require(`${__hooks}/pages/utils/constants.js`);
 
 
@@ -30,10 +31,12 @@ routerAdd("POST", "/clippy/zendesk", (e) => {
         return e.json(400, { message: "Invalid request" });
     }
 
+    const MAX_RANDOM_DELAY_IN_SECONDS = parseInt(getAdminSetting(POCKET_ADMIN_MAX_RANDOM_DELAY_IN_SECONDS) ?? "3");
+    
     // Return immediately; do async work after random short delay to reduce duplicate race conditions.
     runAfterRandomDelay(() => {
         processTicketUpdate();
-    }, 3);
+    }, MAX_RANDOM_DELAY_IN_SECONDS);
 
     return e.json(202, { status: "accepted" });
 

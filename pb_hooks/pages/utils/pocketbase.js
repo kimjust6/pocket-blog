@@ -91,14 +91,18 @@ function getDiscordIdByAssigneeId(assignee_id) {
     }
 
     let record = new Record();
-    $app.recordQuery(POCKET_ZENDESKUSER_DISCORDUSER)
-        .andWhere($dbx.hashExp({ "zendesk_id": assignee_id }))
-        .limit(1)
-        .one(record)
+    try {
 
-    if (record) {
-        return record.get("discord_id") ?? null;
+        $app.recordQuery(POCKET_ZENDESKUSER_DISCORDUSER)
+            .andWhere($dbx.hashExp({ "zendesk_id": assignee_id }))
+            .limit(1)
+            .one(record)
+    } catch (error) {
+        console.error("Error getting Discord ID from PocketBase:", error);
+        return null;
     }
+
+    return record.get("discord_id") ?? null;
 }
 
 /**
@@ -112,10 +116,17 @@ function getAdminSetting(key) {
         return null;
     }
     let record = new Record();
-    $app.recordQuery(POCKET_COLLECTION_ADMIN_SETTINGS)
-        .andWhere($dbx.hashExp({ "key": key }))
-        .limit(1)
-        .one(record)
+    try {
+
+        $app.recordQuery(POCKET_COLLECTION_ADMIN_SETTINGS)
+            .andWhere($dbx.hashExp({ "key": key }))
+            .limit(1)
+            .one(record)
+    }
+    catch (err) {
+        console.error("Error querying admin settings:", err);
+        return null;
+    }
 
     return record.get("value") ?? null;
 }
