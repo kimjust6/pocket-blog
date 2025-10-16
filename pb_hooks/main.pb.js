@@ -32,7 +32,7 @@ routerAdd("POST", "/clippy/zendesk", (e) => {
     }
 
     const MAX_RANDOM_DELAY_IN_SECONDS = parseInt(getAdminSetting(POCKET_ADMIN_MAX_RANDOM_DELAY_IN_SECONDS) ?? "3");
-    
+
     // Return immediately; do async work after random short delay to reduce duplicate race conditions.
     runAfterRandomDelay(() => {
         processTicketUpdate();
@@ -57,7 +57,7 @@ routerAdd("POST", "/clippy/zendesk", (e) => {
                     const windowSec = parseInt(settingRaw, 10);
                     const recentTicket = findRecentTicketByTicketNumber(data, isNaN(windowSec) ? 10 : windowSec);
                     if (!recentTicket) {
-                        sendDiscordMessage(`Your ticket has been updated: ${url ?? 'No URL available'}`);
+                        sendDiscordMessage(`Your ticket has been updated: ${url ?? 'No URL available'}`, discordId);
                     }
                 } catch (error) {
                     console.error("Error sending ticket update message:", error);
