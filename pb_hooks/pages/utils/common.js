@@ -1,9 +1,12 @@
+const { getAdminSetting } = require("./pocketbase");
+
 const {
     POCKET_SLA_BREACHING_SOON,
     DISCORD_API_ENDPOINT,
     ZENDESK_API_ENDPOINT,
     ZENDESK_ASSIGNEE_ID_JUSTIN,
-    DISCORD_ID_JUSTIN
+    DISCORD_ID_JUSTIN,
+    POCKET_ADMIN_DISCORD_BOT_TOKEN,
 } = require(`${__hooks}/pages/utils/constants.js`);
 
 
@@ -181,6 +184,14 @@ function runAfterRandomDelay(fn, maxSeconds = 1) {
     }
 }
 
+/**
+ * 
+ * @returns {string} discord bot token
+ */
+function getDiscordBotToken() {
+    return process?.env?.DISCORD_BOT_TOKEN || getAdminSetting(POCKET_ADMIN_DISCORD_BOT_TOKEN);
+}
+
 module.exports = {
     formatDateTime,
     getImageUrl,
@@ -191,5 +202,6 @@ module.exports = {
     getTicketId,
     getTicketType,
     getAssigneeId,
-    runAfterRandomDelay
+    runAfterRandomDelay,
+    getDiscordBotToken
 }
