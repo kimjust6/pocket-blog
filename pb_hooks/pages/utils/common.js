@@ -1,9 +1,7 @@
 const {
     POCKET_SLA_BREACHING_SOON,
-    DISCORD_API_ENDPOINT,
     ZENDESK_API_ENDPOINT,
     ZENDESK_ASSIGNEE_ID_JUSTIN,
-    DISCORD_ID_JUSTIN
 } = require(`${__hooks}/pages/utils/constants.js`);
 
 
@@ -126,32 +124,6 @@ function getZendeskUrl(data) {
 }
 
 /**
- *
- * @param {string} message
- * @param {string} userId
- */
-function sendDiscordMessage(message, userId = DISCORD_ID_JUSTIN) {
-    const discordApiEndpoint = DISCORD_API_ENDPOINT;
-    const payload = {
-        userId,
-        message,
-    };
-
-    try {
-        $http.send({
-            url: discordApiEndpoint,
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(payload),
-        });
-    } catch (error) {
-        console.error("Error sending Discord message:", error);
-    }
-}
-
-/**
  * Execute a function after a random delay (0..maxSeconds) using PocketBase cron.
  * Falls back to 1 second window if invalid maxSeconds provided.
  * @param {Function} fn callback to execute
@@ -181,15 +153,15 @@ function runAfterRandomDelay(fn, maxSeconds = 1) {
     }
 }
 
+
 module.exports = {
     formatDateTime,
     getImageUrl,
     getZendeskUrl,
     isJustinsTicket,
     isSlaBreaching,
-    sendDiscordMessage,
     getTicketId,
     getTicketType,
     getAssigneeId,
-    runAfterRandomDelay
+    runAfterRandomDelay,
 }

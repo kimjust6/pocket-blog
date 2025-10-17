@@ -3,7 +3,6 @@
 routerAdd("POST", "/clippy/zendesk", (e) => {
 
     const {
-        sendDiscordMessage,
         getZendeskUrl,
         getAssigneeId,
         isSlaBreaching,
@@ -11,6 +10,7 @@ routerAdd("POST", "/clippy/zendesk", (e) => {
     } = require(`${__hooks}/pages/utils/common.js`);
 
     const {
+        sendDiscordMessage,
         saveZendeskRecord,
         findRecentTicketByTicketNumber,
         getDiscordIdByAssigneeId,
@@ -21,7 +21,6 @@ routerAdd("POST", "/clippy/zendesk", (e) => {
         POCKET_ADMIN_IGNORE_DUPLICATE_ZENDESK_CALLBACK_IN_SECONDS,
         POCKET_ADMIN_MAX_RANDOM_DELAY_IN_SECONDS
     } = require(`${__hooks}/pages/utils/constants.js`);
-
 
     let data;
     try {
