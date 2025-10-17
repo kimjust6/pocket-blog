@@ -6,7 +6,8 @@ routerAdd("POST", "/clippy/zendesk", (e) => {
         getZendeskUrl,
         getAssigneeId,
         isSlaBreaching,
-        runAfterRandomDelay
+        runAfterRandomDelay,
+        generateNormalTicketMessage
     } = require(`${__hooks}/pages/utils/common.js`);
 
     const {
@@ -56,7 +57,8 @@ routerAdd("POST", "/clippy/zendesk", (e) => {
                     const windowSec = parseInt(settingRaw, 10);
                     const recentTicket = findRecentTicketByTicketNumber(data, isNaN(windowSec) ? 10 : windowSec);
                     if (!recentTicket) {
-                        sendDiscordMessage(`Your ticket has been updated: ${url ?? 'No URL available'}`, discordId);
+                        const myMessage = generateNormalTicketMessage(data);
+                        sendDiscordMessage(myMessage, discordId);
                     }
                 } catch (error) {
                     console.error("Error sending ticket update message:", error);

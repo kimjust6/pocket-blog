@@ -32,6 +32,28 @@ function getTicketId(data) {
  * @param {Object} data
  * @returns {string|null}
  */
+function getTicketTitle(data) {
+    const body = privateGetBody(data);
+    return body?.detail?.subject;
+}
+
+function generateNormalTicketMessage(data) {
+    const title = getTicketTitle(data);
+    const id = getTicketId(data);
+    const url = getZendeskUrl(data);
+    if (url && id && title) {
+        return `Ticket ${id}: [${title}](${url}) has an update`;
+    }
+    else {
+        return `Your ticket has been updated: ${url ?? 'No URL available'}`;
+    }
+}
+
+/**
+ *
+ * @param {Object} data
+ * @returns {string|null}
+ */
 function getTicketType(data) {
     const body = privateGetBody(data);
     return body?.type ?? body?.detail?.type ?? null;
@@ -164,4 +186,5 @@ module.exports = {
     getTicketType,
     getAssigneeId,
     runAfterRandomDelay,
+    generateNormalTicketMessage
 }
