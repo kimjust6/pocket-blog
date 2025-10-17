@@ -193,137 +193,83 @@ function getDiscordBotToken() {
 }
 
 function sendDiscordMessage2(message, userId = DISCORD_ID_JUSTIN) {
-    // Use server-side helper to fetch the Discord Bot token (kept out of source)
-    const DISCORD_BOT_TOKEN = getDiscordBotToken()
-
-    let result = null
-    let dmChannel = null
-    let diagnostics = {}
-
-    function decodeBody(raw) {
-        if (raw == null) return ''
-        if (typeof raw === 'string') return raw
-        if (raw instanceof Uint8Array) {
-            try {
-                return new TextDecoder().decode(raw)
-            } catch {
-                return ''
-            }
-        }
-        if (Array.isArray(raw)) {
-            try {
-                return new TextDecoder().decode(Uint8Array.from(raw))
-            } catch {
-                return raw.map((n) => String.fromCharCode(n)).join('')
-            }
-        }
-        return ''
+    const token = getDiscordBotToken();
+    if (!token) {
+        return { ok: false, error: 'Missing Discord bot token', diagnostics: {} };
     }
 
-    function safeParse(raw) {
-        const text = decodeBody(raw)
-        if (!text.trim()) return null
-        try {
-            return JSON.parse(text)
-        } catch (err) {
-            return { _raw: text.slice(0, 500), _parseError: err.message }
-        }
-    }
+    // Small internal helpers
+    const decodeBody = (raw) => {
+        if (raw == null) return '';
+        if (typeof raw === 'string') return raw;
+        if (raw instanceof Uint8Array) { try { return new TextDecoder().decode(raw); } catch { return ''; } }
+        if (Array.isArray(raw)) { try { return new TextDecoder().decode(Uint8Array.from(raw)); } catch { return raw.map(n => String.fromCharCode(n)).join(''); } }
+        return '';
+    };
+    const parseJson = (raw) => {
+        const txt = decodeBody(raw);
+        if (!txt.trim()) return null;
+        try { return JSON.parse(txt); } catch (err) { return { _raw: txt.slice(0, 300), _parseError: err.message }; }
+    };
+    const readStatus = (res) => res?.status ?? res?.statusCode ?? res?.code ?? null;
+    const mkError = (phase, status, extra) => `${phase} failed: ${extra || ('HTTP ' + status)}`;
 
+    const diagnostics = {};
     try {
-        if (!DISCORD_BOT_TOKEN) {
-            throw new Error(
-                'Missing Discord bot token (configure in admin settings)'
-            )
-        }
-
-        // Step 1: Create DM channel
-        const dmResponse = $http.send({
+        // 1. Create DM channel
+        const dmRes = $http.send({
             url: 'https://discord.com/api/v10/users/@me/channels',
             method: 'POST',
-            headers: {
-                Authorization: 'Bot ' + DISCORD_BOT_TOKEN,
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ recipient_id: userId }),
-        })
-        const dmStatus =
-            dmResponse.status ??
-            dmResponse.statusCode ??
-            dmResponse.code ??
-            null
-        const dmJson = safeParse(dmResponse.body)
+            headers: { Authorization: 'Bot ' + token, 'Content-Type': 'application/json' },
+            body: JSON.stringify({ recipient_id: userId })
+        });
+        const dmStatus = readStatus(dmRes);
+        const dmJson = parseJson(dmRes.body);
         diagnostics.dm = {
             status: dmStatus,
-            responseKeys: Object.keys(dmResponse || {}),
-            rawBodyPreview: decodeBody(dmResponse.body).slice(0, 200),
-            parsed: dmJson,
+            keys: Object.keys(dmRes || {}),
+            preview: decodeBody(dmRes.body).slice(0, 120),
+            parsedHasId: !!dmJson?.id,
+            parseError: dmJson?._parseError
+        };
+        const dmOk = (dmStatus === 200) || (!dmStatus && dmJson?.id);
+        if (!dmOk) {
+            const reason = dmStatus === 401 ? 'unauthorized (token)' : dmStatus === 403 ? 'forbidden (privacy / no mutual server)' : dmStatus === 429 ? 'rate limited' : 'HTTP ' + dmStatus;
+            return { ok: false, error: mkError('channel create', dmStatus, reason), diagnostics };
         }
-        const channelId = dmJson && dmJson.id
-        const isSuccess = dmStatus === 200 || (!dmStatus && channelId)
-        if (!isSuccess) {
-            const reason =
-                dmStatus === 401
-                    ? 'Unauthorized (check bot token)'
-                    : dmStatus === 403
-                        ? 'Forbidden (privacy settings / no mutual server)'
-                        : dmStatus === 429
-                            ? 'Rate limited'
-                            : 'HTTPS ' + dmStatus
-            throw new Error('Failed to create DM channel: ' + reason)
-        }
-        if (!dmJson || dmJson._parseError) {
-            throw new Error('DM channel response could not be parsed')
-        }
-        dmChannel = dmJson
-
-        if (!dmChannel || !dmChannel.id) {
-            throw new Error('DM channel response malformed or missing id')
+        if (!dmJson || dmJson._parseError || !dmJson.id) {
+            return { ok: false, error: 'channel create parse error', diagnostics };
         }
 
-        // Step 2: Send message
-        const sendResponse = $http.send({
-            url: `https://discord.com/api/v10/channels/${dmChannel.id}/messages`,
+        // 2. Send message
+        const msgRes = $http.send({
+            url: `https://discord.com/api/v10/channels/${dmJson.id}/messages`,
             method: 'POST',
-            headers: {
-                Authorization: 'Bot ' + DISCORD_BOT_TOKEN,
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ content: message }),
-        })
-        const sendStatus =
-            sendResponse.status ??
-            sendResponse.statusCode ??
-            sendResponse.code ??
-            null
-        const sendJson = safeParse(sendResponse.body)
+            headers: { Authorization: 'Bot ' + token, 'Content-Type': 'application/json' },
+            body: JSON.stringify({ content: message })
+        });
+        const msgStatus = readStatus(msgRes);
+        const msgJson = parseJson(msgRes.body);
         diagnostics.send = {
-            status: sendStatus,
-            responseKeys: Object.keys(sendResponse || {}),
-            rawBodyPreview: decodeBody(sendResponse.body).slice(0, 200),
-            parsed: sendJson,
+            status: msgStatus,
+            keys: Object.keys(msgRes || {}),
+            preview: decodeBody(msgRes.body).slice(0, 120),
+            parsedHasId: !!msgJson?.id,
+            parseError: msgJson?._parseError
+        };
+        const msgOk = (msgStatus === 200) || (!msgStatus && (msgJson?.id || msgJson?.message?.id));
+        if (!msgOk) {
+            const reason = msgStatus === 401 ? 'unauthorized (scope)' : msgStatus === 403 ? 'forbidden (channel)' : msgStatus === 429 ? 'rate limited' : 'HTTP ' + msgStatus;
+            return { ok: false, error: mkError('message send', msgStatus, reason), diagnostics };
         }
-        const sendId = sendJson && (sendJson.id || sendJson.message?.id)
-        const sendSuccess = sendStatus === 200 || (!sendStatus && sendId)
-        if (!sendSuccess) {
-            const reason =
-                sendStatus === 401
-                    ? 'Unauthorized (token invalid or missing scope)'
-                    : sendStatus === 403
-                        ? 'Forbidden (cannot send to that channel)'
-                        : sendStatus === 429
-                            ? 'Rate limited'
-                            : 'HTTPS ' + sendStatus
-            throw new Error('Failed to send message: ' + reason)
+        if (!msgJson || msgJson._parseError) {
+            return { ok: false, error: 'message parse error', diagnostics };
         }
-        if (!sendJson || sendJson._parseError) {
-            throw new Error('Message response could not be parsed')
-        }
-        result = sendJson
+
+        return { ok: true, channel: dmJson, message: msgJson, diagnostics };
     } catch (err) {
-        error = err?.message || String(err)
+        return { ok: false, error: err?.message || String(err), diagnostics };
     }
-    return result
 }
 
 
