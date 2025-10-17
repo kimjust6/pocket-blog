@@ -7,7 +7,8 @@ routerAdd("POST", "/clippy/zendesk", (e) => {
         getAssigneeId,
         isSlaBreaching,
         runAfterRandomDelay,
-        generateNormalTicketMessage
+        generateNormalTicketMessage,
+        generateSlaBreachingSoonMessage
     } = require(`${__hooks}/pages/utils/common.js`);
 
     const {
@@ -41,46 +42,42 @@ routerAdd("POST", "/clippy/zendesk", (e) => {
     return e.json(202, { status: "accepted" });
 
     function processTicketUpdate() {
+        let discordId = null;
         try {
-            const url = getZendeskUrl(data);
-            let discordId = null;
+            const assigneeId = getAssigneeId(data);
+            discordId = assigneeId ? getDiscordIdByAssigneeId(assigneeId) : null;
+        } catch (error) {
+            console.error("Error getting Discord ID from PocketBase:", error);
+        }
+
+        if (discordId) {
             try {
-                const assigneeId = getAssigneeId(data);
-                discordId = assigneeId ? getDiscordIdByAssigneeId(assigneeId) : null;
+                const settingRaw = getAdminSetting(POCKET_ADMIN_IGNORE_DUPLICATE_ZENDESK_CALLBACK_IN_SECONDS) ?? "10";
+                const windowSec = parseInt(settingRaw, 10);
+                const recentTicket = findRecentTicketByTicketNumber(data, isNaN(windowSec) ? 10 : windowSec);
+                if (!recentTicket) {
+                    const myMessage = generateNormalTicketMessage(data);
+                    sendDiscordMessage(myMessage, discordId);
+                }
             } catch (error) {
-                console.error("Error getting Discord ID from PocketBase:", error);
+                console.error("Error sending ticket update message:", error);
             }
+        }
 
-            if (discordId) {
-                try {
-                    const settingRaw = getAdminSetting(POCKET_ADMIN_IGNORE_DUPLICATE_ZENDESK_CALLBACK_IN_SECONDS) ?? "10";
-                    const windowSec = parseInt(settingRaw, 10);
-                    const recentTicket = findRecentTicketByTicketNumber(data, isNaN(windowSec) ? 10 : windowSec);
-                    if (!recentTicket) {
-                        const myMessage = generateNormalTicketMessage(data);
-                        sendDiscordMessage(myMessage, discordId);
-                    }
-                } catch (error) {
-                    console.error("Error sending ticket update message:", error);
-                }
-            }
-
-            try {
-                saveZendeskRecord(data);
-            } catch (err) {
-                console.error("Error saving Zendesk record", err);
-            }
-
-            if (isSlaBreaching(data)) {
-                try {
-                    sendDiscordMessage(`SLA breaching soon: ${url || 'No URL available'}`);
-                }
-                catch (error) {
-                    console.error("Error sending SLA breaching message:", error);
-                }
-            }
+        try {
+            saveZendeskRecord(data);
         } catch (err) {
-            console.error("Unexpected error in delayed processing", err);
+            console.error("Error saving Zendesk record", err);
+        }
+
+        if (isSlaBreaching(data)) {
+            try {
+                const myMessage = generateSlaBreachingSoonMessage(data);
+                sendDiscordMessage(myMessage);
+            }
+            catch (error) {
+                console.error("Error sending SLA breaching message:", error);
+            }
         }
     }
 });

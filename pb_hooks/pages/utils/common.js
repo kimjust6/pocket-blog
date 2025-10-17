@@ -42,10 +42,22 @@ function generateNormalTicketMessage(data) {
     const id = getTicketId(data);
     const url = getZendeskUrl(data);
     if (url && id && title) {
-        return `Ticket ${id}: [${title}](${url}) has an update`;
+        return ` Updated | ${id}: [${title}](${url})`;
     }
     else {
         return `Your ticket has been updated: ${url ?? 'No URL available'}`;
+    }
+}
+
+function generateSlaBreachingSoonMessage(data) {
+    const title = getTicketTitle(data);
+    const id = getTicketId(data);
+    const url = getZendeskUrl(data);
+    if (url && id && title) {
+        return ` Check SLA | ${id}: [${title}](${url})`;
+    }
+    else {
+        return `SLA breaching soon: ${url ?? 'No URL available'}`;
     }
 }
 
@@ -186,5 +198,6 @@ module.exports = {
     getTicketType,
     getAssigneeId,
     runAfterRandomDelay,
-    generateNormalTicketMessage
+    generateNormalTicketMessage,
+    generateSlaBreachingSoonMessage
 }
