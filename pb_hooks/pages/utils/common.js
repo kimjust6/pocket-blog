@@ -7,7 +7,8 @@ const {
     POCKET_COLLECTION_ADMIN_SETTINGS,
     POCKET_ADMIN_DISCORD_BOT_TOKEN,
     DISCORD_API_ENDPOINT,
-    DISCORD_ID_JUSTIN
+    DISCORD_ID_JUSTIN,
+    POCKET_COLLECTION_ZENDESK_ORGANIZATIONS
 } = require(`${__hooks}/pages/utils/constants.js`);
 
 
@@ -428,7 +429,7 @@ function getOrganizationById(id) {
 
     let record = new Record();
     try {
-        $app.recordQuery("zendesk_organizations")
+        $app.recordQuery(POCKET_COLLECTION_ZENDESK_ORGANIZATIONS)
             .andWhere($dbx.hashExp({ organizationId: id }))
             .limit(1)
             .one(record);
@@ -460,11 +461,12 @@ function generateNormalTicketMessage(data) {
 }
 
 function generateSlaBreachingSoonMessage(data) {
+    const organizationName = `Check SLA ${getOrganizationName(data)}` ?? "Check SLA";
     const title = getTicketTitle(data);
     const id = getTicketId(data);
     const url = getZendeskUrl(data);
     if (url && id && title) {
-        return ` Check SLA | ${id}: [${title}](${url})`;
+        return ` ${organizationName} | ${id}: [${title}](${url})`;
     }
     else {
         return `SLA breaching soon: ${url ?? 'No URL available'}`;
