@@ -3,21 +3,17 @@
 routerAdd("POST", "/clippy/zendesk", (e) => {
 
     const {
-        getZendeskUrl,
         getAssigneeId,
         isSlaBreaching,
         runAfterRandomDelay,
-        generateNormalTicketMessage,
-        generateSlaBreachingSoonMessage
-    } = require(`${__hooks}/pages/utils/common.js`);
-
-    const {
         sendDiscordMessage,
         saveZendeskRecord,
         findRecentTicketByTicketNumber,
         getDiscordIdByAssigneeId,
-        getAdminSetting
-    } = require(`${__hooks}/pages/utils/pocketbase.js`);
+        getAdminSetting,
+        generateNormalTicketMessage,
+        generateSlaBreachingSoonMessage,
+    } = require(`${__hooks}/pages/utils/common.js`);
 
     const {
         POCKET_ADMIN_IGNORE_DUPLICATE_ZENDESK_CALLBACK_IN_SECONDS,
