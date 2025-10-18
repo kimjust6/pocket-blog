@@ -1,7 +1,7 @@
 {
     "description": "DO NOT DELETE THIS FILE. This file is used to keep track of which files have been synced in the most recent deployment. If you delete this file a resync will need to be done (which can take a while) - read more: https://github.com/SamKirkland/FTP-Deploy-Action",
     "version": "1.0.0",
-    "generatedTime": 1760643127364,
+    "generatedTime": 1760761995038,
     "data": [
         {
             "type": "file",
@@ -182,8 +182,8 @@
         {
             "type": "file",
             "name": "pb_hooks/main.pb.js",
-            "size": 3081,
-            "hash": "f62686e5a3a8da0437cbc4d7f3f57f172517d9801b13d1a122135c1c32fc2b8d"
+            "size": 2801,
+            "hash": "a060f0099f327de3bea1dbecd64478cbdc6a171f5029bc8a018c40249664e175"
         },
         {
             "type": "folder",
@@ -220,8 +220,8 @@
         {
             "type": "file",
             "name": "pb_hooks/pages/app.css",
-            "size": 92057,
-            "hash": "2f837550fc64cc3fa027541e50aaeacd69e8533e8bacc0cdfa670cf78c397f7b"
+            "size": 89479,
+            "hash": "42d04ed119df90c74b43c21c6dc8864a931da680004eb0a4a5f7ba2fa4a103ed"
         },
         {
             "type": "folder",
@@ -246,8 +246,8 @@
         {
             "type": "file",
             "name": "pb_hooks/pages/utils/pocketbase.js",
-            "size": 3162,
-            "hash": "acda3d60f4b1aa07f82d816b8dad310b97829fb3ee11d1268fec9412f82e8050"
+            "size": 0,
+            "hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
         },
         {
             "type": "file",
@@ -258,14 +258,14 @@
         {
             "type": "file",
             "name": "pb_hooks/pages/utils/constants.js",
-            "size": 1313,
-            "hash": "200da18f215793ef2d90ca329c8cbdcf3c803c61e984464fd4d62ca36ae3c35f"
+            "size": 1347,
+            "hash": "5dc800cd4e84b8fbed8f65baa2a6e4fff1c4ce5f15b67dbfd9b6a890961c7b79"
         },
         {
             "type": "file",
             "name": "pb_hooks/pages/utils/common.js",
-            "size": 8750,
-            "hash": "dfa6ea30c4d65aca4ac9daa8d38edbd260d1293a2fecaff918dcd0d6327c8aeb"
+            "size": 13773,
+            "hash": "f5a1d26dc2fb6c12c456fb066e64b2242125b894bffbfe3e3d1772cc01e88f0e"
         },
         {
             "type": "file",
@@ -340,8 +340,8 @@
         {
             "type": "file",
             "name": "pb_hooks/pages/(navbarLayout)/index.ejs",
-            "size": 911,
-            "hash": "6c2fe2004564a29a41f3e133d48431a1fe856de709e1f75a44ef88950dc7673f"
+            "size": 1040,
+            "hash": "fb084ea26497c53feec48e9e368308b616cba35febc1eb1e82444c83b91976cf"
         },
         {
             "type": "file",
