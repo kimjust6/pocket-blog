@@ -1,7 +1,7 @@
 <script server>
     const client = pb({ request })
     const blogposts = client.collection('blogposts').getFullList({
-        sort: '-created',
+        sort: '-updated',
         filter: 'isDeleted = false',
     })
 

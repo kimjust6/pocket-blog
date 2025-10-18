@@ -11,7 +11,7 @@
                 .collection(POCKET_BLOGPOSTS)
                 .getFirstListItem(
                     `id = "${params.postId}" && isDeleted = false`,
-                    { sort: '-created' }
+                    { sort: '-updated' }
                 )
             if (!singleBlog) {
                 return
@@ -90,7 +90,7 @@
                         <span
                             >Posted:
                             <strong>
-                                <%= formatDateTime(new Date(singleBlog?.created))
+                                <%= formatDateTime(new Date(singleBlog?.updated))
                             %>
                             </strong></span
                         >

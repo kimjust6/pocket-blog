@@ -1,16 +1,4 @@
-<script server>
-    // let records = $app.findRecordsByFilter(
-    //     'blogposts', // collection
-    //     'isDeleted = false && tags ~ {:tag}', // filter (relation expand)
-    //     '-created', // sort
-    //     10, // limit
-    //     0, // offset
-    //     { tag: 'random' } // filter params
-    // )
-    // records.forEach((record) => {
-    //     $app.expandRecord(record, ['user'], null)
-    // })
-</script>
+<script server></script>
 
 <% if (typeof(params.postId) === "undefined") { %>
 <%- include('blogcards.ejs') %>
