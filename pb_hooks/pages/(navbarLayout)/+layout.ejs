@@ -29,11 +29,23 @@
             theme: localStorage.getItem('theme') || 'dark',
             mounted() {
                 document.documentElement.setAttribute('data-theme', this.theme)
+                // Add or remove 'dark' class for Tailwind dark mode
+                if (this.theme === 'dark') {
+                    document.documentElement.classList.add('dark')
+                } else {
+                    document.documentElement.classList.remove('dark')
+                }
             },
             toggleTheme() {
                 this.theme = this.theme === 'dark' ? 'nord' : 'dark'
                 document.documentElement.setAttribute('data-theme', this.theme)
                 localStorage.setItem('theme', this.theme)
+                // Toggle 'dark' class for Tailwind dark mode
+                if (this.theme === 'dark') {
+                    document.documentElement.classList.add('dark')
+                } else {
+                    document.documentElement.classList.remove('dark')
+                }
             },
         }
     }
@@ -78,6 +90,12 @@
             ;(function () {
                 const theme = localStorage.getItem('theme') || 'dark'
                 document.documentElement.setAttribute('data-theme', theme)
+                // Add 'dark' class for Tailwind dark mode
+                if (theme === 'dark') {
+                    document.documentElement.classList.add('dark')
+                } else {
+                    document.documentElement.classList.remove('dark')
+                }
             })()
         </script>
 

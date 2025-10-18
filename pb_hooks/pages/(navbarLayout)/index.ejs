@@ -4,7 +4,7 @@
 
 <div class="hero bg-base-100 pt-40">
     <div class="hero-content text-center">
-        <div class="">
+        <div>
             <a href="/" class="no-underline">
                 <h1 class="text-5xl font-bold">
                     <%= (data.metadata.find(meta => meta.name ===
@@ -12,9 +12,11 @@
                 </h1>
             </a>
             <a href="/blog/posts" class="no-underline">
-                <div class="mockup-code text-left group transition-all">
+                <div
+                    class="mockup-code text-left group transition-all bg-base-300 dark:bg-base-200"
+                >
                     <pre
-                        class="h-full group-hover:text-primary transition-all text-wrap"
+                        class="h-full group-hover:text-primary transition-all bg-base-300 dark:bg-base-200 text-wrap dark:text-base-content text-info-content"
                         data-prefix="$"
                     >
 read about the lessons I have learned from the mistakes I have made. </pre
