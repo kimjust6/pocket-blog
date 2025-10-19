@@ -243,6 +243,51 @@ function findRecentTicketByTicketNumber(data, timeInSeconds = 10) {
     return null;
 }
 
+
+/**
+ * 
+ * @param {number} data 
+ * @param {number} timeInSeconds 
+ * @returns {Array|null}
+ */
+function findRecentTicketsByTicketNumber(data, timeInSeconds = 10) {
+    let ticketId
+    if (typeof data !== "number") {
+        ticketId = getTicketId(data);
+    }
+    else {
+        ticketId = data;
+    }
+
+    if (!ticketId) {
+        return null;
+    }
+
+    const records = arrayOf(new Record());
+    $app.recordQuery(POCKET_COLLECTION_ZENDESK_TICKETS)
+        .andWhere($dbx.hashExp({ "ticketId": ticketId }))
+        .orderBy("created DESC")
+        .limit(20)
+        .all(records);
+
+    // filter records created within the last `timeInSeconds` seconds
+    if (records && records.length > 0) {
+        const currentTime = Date.now();
+        const recentRecords = [];
+        for (let i = 0; i < records.length; i++) {
+            const record = records[i];
+            const createdTime = new Date(record.get("created")).getTime();
+            const timeDiff = (currentTime - createdTime);
+            if (timeDiff <= timeInSeconds * 1000) {
+                recentRecords.push(record);
+            }
+        }
+        return recentRecords.length > 0 ? recentRecords : null;
+    }
+    return null;
+}
+
+
 /**
  * 
  * @param {string} assignee_id 
@@ -496,6 +541,7 @@ module.exports = {
     privateGetBody,
     saveZendeskRecord,
     findRecentTicketByTicketNumber,
+    findRecentTicketsByTicketNumber,
     getDiscordIdByAssigneeId,
     getAdminSetting,
     getDiscordBotToken,
