@@ -44,11 +44,6 @@ routerAdd("POST", "/clippy/zendesk", (e) => {
 
 
     function processTicketUpdate() {
-        const recentTickets = findRecentTicketsByTicketNumber(data, 10);
-        if (recentTickets?.length > 1) {
-            return e.json(200, { message: "recent tickets were found. No action taken" });
-        }
-
         let discordId = null;
         try {
             const assigneeId = getAssigneeId(data);
@@ -60,9 +55,9 @@ routerAdd("POST", "/clippy/zendesk", (e) => {
         if (discordId) {
             try {
                 const settingRaw = getAdminSetting(POCKET_ADMIN_IGNORE_DUPLICATE_ZENDESK_CALLBACK_IN_SECONDS) ?? "10";
-                const windowSec = parseInt(settingRaw, 10);
-                const recentTicket = findRecentTicketByTicketNumber(data, isNaN(windowSec) ? 10 : windowSec);
-                if (!recentTicket) {
+                const appsettingsDelaySeconds = parseInt(settingRaw, 10);
+                const recentTickets = findRecentTicketsByTicketNumber(data, isNaN(appsettingsDelaySeconds) ? 10 : appsettingsDelaySeconds);
+                if (recentTickets?.length < 1) {
                     const myMessage = generateNormalTicketMessage(data);
                     sendDiscordMessage(myMessage, discordId);
                 }

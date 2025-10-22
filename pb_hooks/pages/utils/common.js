@@ -279,9 +279,12 @@ function findRecentTicketsByTicketNumber(data, timeInSeconds = 10) {
     if (!ticketId) {
         return [];
     }
+    const now = Date.now();
+    const dateStart = now - timeInSeconds * 1000;
+    const dateEnd = now;
+    console.log({ dateStart, dateEnd });
+    sendDiscordMessage(JSON.stringify({ dateStart, dateEnd }, null, 2));
 
-    const dateStart = Date.now() - timeInSeconds * 1000;
-    const dateEnd = Date.now();
 
     const records = $app.findRecordsByFilter(
         POCKET_COLLECTION_ZENDESK_TICKETS,
@@ -367,7 +370,6 @@ function getDiscordBotToken() {
  * @param {string} userId
  */
 function sendDiscordMessage2(message, userId = DISCORD_ID_JUSTIN) {
-    const discordApiEndpoint = DISCORD_API_ENDPOINT;
     const payload = {
         userId,
         message,
@@ -375,7 +377,7 @@ function sendDiscordMessage2(message, userId = DISCORD_ID_JUSTIN) {
 
     try {
         $http.send({
-            url: discordApiEndpoint,
+            url: DISCORD_API_ENDPOINT,
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
