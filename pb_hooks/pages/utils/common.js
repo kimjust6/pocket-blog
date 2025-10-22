@@ -282,9 +282,6 @@ function findRecentTicketsByTicketNumber(data, timeInSeconds = 10) {
     const now = Date.now();
     const dateStart = now - timeInSeconds * 1000;
     const dateEnd = now;
-    console.log({ dateStart, dateEnd });
-    sendDiscordMessage(JSON.stringify({ dateStart, dateEnd }, null, 2));
-
 
     const records = $app.findRecordsByFilter(
         POCKET_COLLECTION_ZENDESK_TICKETS,
@@ -365,18 +362,17 @@ function getDiscordBotToken() {
 
 
 /**
- *
- * @param {string} message
- * @param {string} userId
- */
+    * Send Discord message using external API endpoint
+    * @param {string} message - The message to send
+    * @param {string} userId - Discord user ID
+    */
 function sendDiscordMessage2(message, userId = DISCORD_ID_JUSTIN) {
     const payload = {
         userId,
         message,
     };
-
     try {
-        $http.send({
+        const res = $http.send({
             url: DISCORD_API_ENDPOINT,
             method: "POST",
             headers: {
@@ -384,8 +380,15 @@ function sendDiscordMessage2(message, userId = DISCORD_ID_JUSTIN) {
             },
             body: JSON.stringify(payload),
         });
+
+        const status = res?.status ?? res?.statusCode ?? 0;
+        if (status !== 200) {
+            console.log("❌ Discord webhook failed:", status);
+        } else {
+            console.log("✅ Discord message sent!");
+        }
     } catch (error) {
-        console.error("Error sending Discord message:", error);
+        console.error("❌ Error sending Discord message:", error);
     }
 }
 

@@ -8,7 +8,6 @@ routerAdd("POST", "/clippy/zendesk", (e) => {
         runAfterDelay,
         sendDiscordMessage,
         saveZendeskRecord,
-        findRecentTicketByTicketNumber,
         findRecentTicketsByTicketNumber,
         getDiscordIdByAssigneeId,
         getAdminSetting,
@@ -18,7 +17,7 @@ routerAdd("POST", "/clippy/zendesk", (e) => {
 
     const {
         POCKET_ADMIN_IGNORE_DUPLICATE_ZENDESK_CALLBACK_IN_SECONDS,
-        POCKET_ADMIN_MAX_RANDOM_DELAY_IN_SECONDS
+        POCKET_ADMIN_MAX_RANDOM_DELAY_IN_SECONDS,
     } = require(`${__hooks}/pages/utils/constants.js`);
 
     let data;
@@ -84,3 +83,58 @@ routerAdd("GET", "/clippy/zendesk", (e) => {
     return e.json(405, { "message": "Method not allowed." })
 })
 
+
+// Hook for when a new zendesk_tickets record is created
+onRecordAfterCreateSuccess((e) => {
+    const DISCORD_API_ENDPOINT = "https://zen.jkim.win/api/discord/send-dm/";
+    const DISCORD_ID_JUSTIN = "90909125164163072";
+
+    /**
+     * Send Discord message using external API endpoint
+     * @param {string} message - The message to send
+     * @param {string} userId - Discord user ID
+     */
+    function sendDiscordMessage2(message, userId = DISCORD_ID_JUSTIN) {
+        const payload = {
+            userId,
+            message,
+        };
+
+        try {
+            const res = $http.send({
+                url: DISCORD_API_ENDPOINT,
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(payload),
+            });
+
+            const status = res?.status ?? res?.statusCode ?? 0;
+            if (status !== 200) {
+                console.log("❌ Discord webhook failed:", status);
+            } else {
+                console.log("✅ Discord message sent!");
+            }
+        } catch (error) {
+            console.error("❌ Error sending Discord message:", error);
+        }
+    }
+
+    // Get record data safely
+    const recordData = {
+        id: e.record?.id,
+        collection: e.collection?.name,
+        ticketId: e.record?.get("ticketId"),
+        ticketType: e.record?.get("ticketType"),
+    };
+
+    const message = `🆕 New Zendesk Ticket Created!\nCollection: ${recordData.collection}\nTicket ID: ${recordData.ticketId}\nType: ${recordData.ticketType}\nRecord ID: ${recordData.id}`;
+
+    // Send Discord message
+    try {
+        sendDiscordMessage2(message);
+    } catch (error) {
+        console.error("❌ Error in Discord notification:", error);
+    }
+}, "zendesk_tickets")
