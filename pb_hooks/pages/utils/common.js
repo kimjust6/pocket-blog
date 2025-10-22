@@ -158,17 +158,33 @@ function runAfterRandomDelay(fn, maxSeconds = 1) {
         if (isNaN(windowSec) || windowSec < 0) {
             windowSec = 1;
         }
-        const delayMs = Math.random() * windowSec * 1000; // 0..maxSeconds (ms)
+        const delayInSeconds = Math.random() * windowSec; // 0..maxSeconds (ms)
+        runAfterDelay(fn, delayInSeconds);
+    } catch (err) {
+        console.error('runAfterRandomDelay setup failed', err);
+    }
+}
+
+
+/**
+ * Execute a function after delay using PocketBase cron.
+ * Falls back to 1 second window if invalid maxSeconds provided.
+ * @param {Function} fn callback to execute
+ * @param {number} delayInSeconds upper bound of random delay window (seconds)
+ */
+function runAfterDelay(fn, delayInSeconds = 4) {
+    try {
+        const delayMs = delayInSeconds * 1000;
         if (typeof setTimeout === 'function') {
             setTimeout(() => {
-                try { fn(); } catch (err) { console.error('runAfterRandomDelay execution error', err); }
+                try { fn(); } catch (err) { console.error('runAfterDelay execution error', err); }
             }, delayMs);
         } else {
             // Fallback: execute immediately if timers unsupported.
-            try { fn(); } catch (err) { console.error('runAfterRandomDelay immediate fallback error', err); }
+            try { fn(); } catch (err) { console.error('runAfterDelay immediate fallback error', err); }
         }
     } catch (err) {
-        console.error('runAfterRandomDelay setup failed', err);
+        console.error('runAfterDelay setup failed', err);
     }
 }
 
@@ -228,6 +244,7 @@ function findRecentTicketByTicketNumber(data, timeInSeconds = 10) {
     let record = new Record();
     $app.recordQuery(POCKET_COLLECTION_ZENDESK_TICKETS)
         .andWhere($dbx.hashExp({ "ticketId": ticketId }))
+        .andWhere($dbx.rangeExp("created", Date.now() - timeInSeconds * 1000, Date.now()))
         .orderBy("created DESC")
         .limit(1)
         .one(record)
@@ -260,31 +277,26 @@ function findRecentTicketsByTicketNumber(data, timeInSeconds = 10) {
     }
 
     if (!ticketId) {
-        return null;
+        return [];
     }
 
-    const records = arrayOf(new Record());
-    $app.recordQuery(POCKET_COLLECTION_ZENDESK_TICKETS)
-        .andWhere($dbx.hashExp({ "ticketId": ticketId }))
-        .orderBy("created DESC")
-        .limit(20)
-        .all(records);
+    const dateStart = Date.now() - timeInSeconds * 1000;
+    const dateEnd = Date.now();
 
-    // filter records created within the last `timeInSeconds` seconds
-    if (records && records.length > 0) {
-        const currentTime = Date.now();
-        const recentRecords = [];
-        for (let i = 0; i < records.length; i++) {
-            const record = records[i];
-            const createdTime = new Date(record.get("created")).getTime();
-            const timeDiff = (currentTime - createdTime);
-            if (timeDiff <= timeInSeconds * 1000) {
-                recentRecords.push(record);
-            }
+    const records = $app.findRecordsByFilter(
+        POCKET_COLLECTION_ZENDESK_TICKETS,
+        "ticketId = {:ticketId} && created >= {:dateStart} && created <= {:dateEnd}",
+        "-created",
+        20,
+        0,
+        {
+            "ticketId": ticketId,
+            "dateStart": dateStart,
+            "dateEnd": dateEnd
         }
-        return recentRecords.length > 0 ? recentRecords : null;
-    }
-    return null;
+    );
+
+    return records || [];
 }
 
 
@@ -538,6 +550,7 @@ module.exports = {
     getTicketType,
     getAssigneeId,
     runAfterRandomDelay,
+    runAfterDelay,
     privateGetBody,
     saveZendeskRecord,
     findRecentTicketByTicketNumber,

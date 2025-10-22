@@ -5,10 +5,11 @@ routerAdd("POST", "/clippy/zendesk", (e) => {
     const {
         getAssigneeId,
         isSlaBreaching,
-        runAfterRandomDelay,
+        runAfterDelay,
         sendDiscordMessage,
         saveZendeskRecord,
         findRecentTicketByTicketNumber,
+        findRecentTicketsByTicketNumber,
         getDiscordIdByAssigneeId,
         getAdminSetting,
         generateNormalTicketMessage,
@@ -28,16 +29,27 @@ routerAdd("POST", "/clippy/zendesk", (e) => {
         return e.json(400, { message: "Invalid request" });
     }
 
+    try {
+        saveZendeskRecord(data);
+    } catch (err) {
+        console.error("Error saving Zendesk record", err);
+    }
+
     const MAX_RANDOM_DELAY_IN_SECONDS = parseInt(getAdminSetting(POCKET_ADMIN_MAX_RANDOM_DELAY_IN_SECONDS) ?? "3");
 
     // Return immediately; do async work after random short delay to reduce duplicate race conditions.
-    runAfterRandomDelay(() => {
+    runAfterDelay(() => {
         processTicketUpdate();
     }, MAX_RANDOM_DELAY_IN_SECONDS);
 
-    return e.json(202, { status: "accepted" });
 
     function processTicketUpdate() {
+        const recentTickets = findRecentTicketsByTicketNumber(data, 10);
+        sendDiscordMessage("test3");
+        if (recentTickets?.length > 1) {
+            return e.json(200, { message: "recent tickets were found. No action taken" });
+        }
+
         let discordId = null;
         try {
             const assigneeId = getAssigneeId(data);
@@ -60,12 +72,6 @@ routerAdd("POST", "/clippy/zendesk", (e) => {
             }
         }
 
-        try {
-            saveZendeskRecord(data);
-        } catch (err) {
-            console.error("Error saving Zendesk record", err);
-        }
-
         if (isSlaBreaching(data)) {
             try {
                 const myMessage = generateSlaBreachingSoonMessage(data);
@@ -76,6 +82,8 @@ routerAdd("POST", "/clippy/zendesk", (e) => {
             }
         }
     }
+    return e.json(202, { status: "accepted" });
+
 });
 
 routerAdd("GET", "/clippy/zendesk", (e) => {
