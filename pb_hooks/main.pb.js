@@ -45,7 +45,6 @@ routerAdd("POST", "/clippy/zendesk", (e) => {
 
     function processTicketUpdate() {
         const recentTickets = findRecentTicketsByTicketNumber(data, 10);
-        sendDiscordMessage("test3");
         if (recentTickets?.length > 1) {
             return e.json(200, { message: "recent tickets were found. No action taken" });
         }
