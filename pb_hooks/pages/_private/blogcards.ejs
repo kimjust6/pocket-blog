@@ -127,16 +127,17 @@
                     class="card bg-base-100 shadow-xl transition-shadow duration-300 blog-card-transition"
                     style="--blog-card-id: blog-card-<%= blog.id %>"
                 >
-                    <figure class="h-48 overflow-hidden m-0 rounded-t-2xl">
-                        <img
-                            src="<%= myImageUrl%>"
-                            alt="<%= blog.title %> Image"
-                            class="w-full h-48 object-cover blog-image-transition rounded-t-2xl"
-                            style="--blog-image-id: blog-image-<%= blog.id %>"
-                            loading="lazy"
-                        />
+                    <% if (myImageUrl !== null && myImageUrl !== "") { %>
+                        <figure class="h-48 overflow-hidden m-0 rounded-t-2xl">
+                            <img
+                                src="<%= myImageUrl%>"
+                                alt="<%= blog.title %> Image"
+                                class="w-full h-48 object-cover blog-image-transition rounded-t-2xl"
+                                style="--blog-image-id: blog-image-<%= blog.id %>"
+                                loading="lazy"
+                            />
                     </figure>
-
+                    <% } %>
                     <div class="card-body gap-0">
                         <div class="flex">
                             <% if (blog.tags && blog.tags?.length > 0) {
