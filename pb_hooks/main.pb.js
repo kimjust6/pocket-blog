@@ -86,13 +86,41 @@ routerAdd("GET", "/clippy/zendesk", (e) => {
 
 // Hook for when a new zendesk_tickets record is created
 onRecordAfterCreateSuccess((e) => {
-    const { sendDiscordMessage } = require(`${__hooks}/pages/utils/common.js`);
-    const message = `New Zendesk Ticket Created!`;
+    const {
+        getAssigneeId,
+        sendDiscordMessage,
+        findRecentTicketsByTicketNumber,
+        getDiscordIdByAssigneeId,
+        getAdminSetting,
+        generateNormalTicketMessage,
+    } = require(`${__hooks}/pages/utils/common.js`);
 
-    // Send Discord message
-    try {
-        sendDiscordMessage(message);
-    } catch (error) {
-        console.error("❌ Error in Discord notification:", error);
+    // Get the data field and convert to string
+    const data = JSON.parse(e.record.get("data"));
+    
+    if (data) {
+        try {
+            const assigneeId = getAssigneeId(data);
+            sendDiscordMessage("test");
+            discordId = assigneeId ? getDiscordIdByAssigneeId(assigneeId) : null;
+        } catch (error) {
+            console.error("Error getting Discord ID from PocketBase:", error);
+        }
+
+        if (discordId) {
+            try {
+                // const settingRaw = getAdminSetting(POCKET_ADMIN_IGNORE_DUPLICATE_ZENDESK_CALLBACK_IN_SECONDS) ?? "10";
+                const settingRaw = getAdminSetting("IGNORE_DUPLICATE_ZENDESK_CALLBACK_IN_SECONDS") ?? "10";
+                const appsettingsDelaySeconds = parseInt(settingRaw, 10);
+                const recentTickets = findRecentTicketsByTicketNumber(data, isNaN(appsettingsDelaySeconds) ? 10 : appsettingsDelaySeconds);
+                if (recentTickets?.length < 1) {
+                    const myMessage = generateNormalTicketMessage(data);
+                    sendDiscordMessage(myMessage, discordId);
+                }
+            } catch (error) {
+                console.error("Error sending ticket update message:", error);
+            }
+        }
     }
+
 }, "zendesk_tickets")
