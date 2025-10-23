@@ -381,14 +381,9 @@ function sendDiscordMessage2(message, userId = DISCORD_ID_JUSTIN) {
             body: JSON.stringify(payload),
         });
 
-        const status = res?.status ?? res?.statusCode ?? 0;
-        if (status !== 200) {
-            console.log("❌ Discord webhook failed:", status);
-        } else {
-            console.log("✅ Discord message sent!");
-        }
+        // const status = res?.status ?? res?.statusCode ?? 0;
     } catch (error) {
-        console.error("❌ Error sending Discord message:", error);
+        console.error("Error sending Discord message:", error);
     }
 }
 
