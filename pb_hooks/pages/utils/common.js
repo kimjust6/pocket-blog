@@ -18,7 +18,27 @@ const {
  * @returns {Object|null}
  */
 function privateGetBody(data) {
-    return data?.body?.body ?? data?.body ?? null;
+    // Handle both webhook format and stored record format
+    // Webhook format: data.body.body or data.body
+    // Stored format: data (already at the body level)
+
+    // If data has body.body structure (webhook format)
+    if (data?.body?.body) {
+        return data.body.body;
+    }
+
+    // If data has body structure (webhook format)
+    if (data?.body) {
+        return data.body;
+    }
+
+    // If data has detail directly (stored format after JSON.parse)
+    if (data?.detail) {
+        return data;
+    }
+
+    // Otherwise return data as-is (might be the body itself)
+    return data ?? null;
 }
 
 /**
@@ -28,10 +48,20 @@ function privateGetBody(data) {
  */
 function getTicketId(data) {
     const body = privateGetBody(data);
-    let ticketId = body?.subject ?? body?.detail?.id ?? "0";
-    //delimit and get last part"
-    ticketId = ticketId.split(":").pop();
-    return parseInt(ticketId);
+    // Try multiple paths to find ticket ID
+    let ticketId = body?.detail?.id ?? body?.id ?? body?.subject ?? "0";
+
+    // If it's already a number, return it
+    if (typeof ticketId === 'number') {
+        return ticketId;
+    }
+
+    // If it's a string with format like "Ticket: 12345", extract the number
+    if (typeof ticketId === 'string') {
+        ticketId = ticketId.split(":").pop().trim();
+    }
+
+    return parseInt(ticketId) || 0;
 }
 
 /**
@@ -41,7 +71,7 @@ function getTicketId(data) {
  */
 function getTicketTitle(data) {
     const body = privateGetBody(data);
-    return body?.detail?.subject;
+    return body?.detail?.subject ?? body?.subject ?? null;
 }
 
 
@@ -116,7 +146,7 @@ function isJustinsTicket(data, assignee_id = ZENDESK_ASSIGNEE_ID_JUSTIN) {
  */
 function getAssigneeId(data) {
     const body = privateGetBody(data);
-    return body?.detail?.assignee_id ?? null;
+    return body?.detail?.assignee_id ?? body?.assignee_id ?? null;
 }
 
 /**
@@ -126,7 +156,8 @@ function getAssigneeId(data) {
  */
 function isSlaBreaching(ticket) {
     const body = privateGetBody(ticket);
-    return body?.event?.tags_added?.includes(POCKET_SLA_BREACHING_SOON);
+    const tagsAdded = body?.event?.tags_added ?? body?.tags_added ?? [];
+    return Array.isArray(tagsAdded) && tagsAdded.includes(POCKET_SLA_BREACHING_SOON);
 }
 
 /**
@@ -307,22 +338,32 @@ function findRecentTicketsByTicketNumber(data, timeInSeconds = 10) {
  */
 function getDiscordIdByAssigneeId(assignee_id) {
     if (!assignee_id) {
+        console.log("No assignee_id provided");
         return null;
     }
 
-    let record = new Record();
     try {
+        const records = $app.findRecordsByFilter(
+            POCKET_ZENDESKUSER_DISCORDUSER,
+            "zendesk_id = {:assigneeId}",
+            "-created",
+            1,
+            0,
+            { "assigneeId": String(assignee_id) }
+        );
 
-        $app.recordQuery(POCKET_ZENDESKUSER_DISCORDUSER)
-            .andWhere($dbx.hashExp({ "zendesk_id": assignee_id }))
-            .limit(1)
-            .one(record)
+        console.log("Found records:", records?.length ?? 0);
+
+        if (records && records.length > 0) {
+            const discordId = records[0].get("discord_id");
+            console.log("Discord ID found:", discordId);
+            return discordId ?? null;
+        }
+        return null;
     } catch (error) {
         console.error("Error getting Discord ID from PocketBase:", error);
         return null;
     }
-
-    return record.get("discord_id") ?? null;
 }
 
 /**
@@ -536,7 +577,7 @@ function generateSlaBreachingSoonMessage(data) {
  */
 function getOrganizationName(data) {
     const body = privateGetBody(data);
-    const id = body?.detail.organization_id ?? null;
+    const id = body?.detail?.organization_id ?? body?.organization_id ?? null;
     return getOrganizationById(id);
 }
 

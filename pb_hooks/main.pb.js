@@ -97,12 +97,21 @@ onRecordAfterCreateSuccess((e) => {
 
     // Get the data field and convert to string
     const data = JSON.parse(e.record.get("data"));
-    
+    console.log("Parsed data:", data ? "exists" : "null");
+
+    let discordId = null;
     if (data) {
         try {
             const assigneeId = getAssigneeId(data);
-            sendDiscordMessage("test");
-            discordId = assigneeId ? getDiscordIdByAssigneeId(assigneeId) : null;
+            console.log("Assignee ID:", assigneeId);
+
+            if (assigneeId) {
+                console.log("Getting Discord ID for assignee:", assigneeId);
+                discordId = getDiscordIdByAssigneeId(assigneeId);
+                console.log("Discord ID result:", discordId);
+            } else {
+                console.log("No assignee ID found, skipping Discord ID lookup");
+            }
         } catch (error) {
             console.error("Error getting Discord ID from PocketBase:", error);
         }
