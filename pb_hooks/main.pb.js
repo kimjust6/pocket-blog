@@ -86,12 +86,12 @@ routerAdd("GET", "/clippy/zendesk", (e) => {
 
 // Hook for when a new zendesk_tickets record is created
 onRecordAfterCreateSuccess((e) => {
-    const { sendDiscordMessage2 } = require(`${__hooks}/pages/utils/common.js`);
+    const { sendDiscordMessage } = require(`${__hooks}/pages/utils/common.js`);
     const message = `New Zendesk Ticket Created!`;
 
     // Send Discord message
     try {
-        sendDiscordMessage2(message);
+        sendDiscordMessage(message);
     } catch (error) {
         console.error("❌ Error in Discord notification:", error);
     }
