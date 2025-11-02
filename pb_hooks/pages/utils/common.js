@@ -291,6 +291,43 @@ function findRecentTicketByTicketNumber(data, timeInSeconds = 10) {
     return null;
 }
 
+/**
+ * 
+ * @param {number} data 
+ * @param {number} timeInSeconds 
+ * @returns {Array|null}
+ */
+function findRecentTicketsByTicketNumber(data, timeInSeconds = 10) {
+    let ticketId
+    if (typeof data !== "number") {
+        ticketId = getTicketId(data);
+    }
+    else {
+        ticketId = data;
+    }
+
+    if (!ticketId) {
+        return [];
+    }
+    const now = Date.now();
+    const dateStart = now - timeInSeconds * 1000;
+    const dateEnd = now;
+
+    const records = $app.findRecordsByFilter(
+        POCKET_COLLECTION_ZENDESK_TICKETS,
+        "ticketId = {:ticketId} && created >= {:dateStart} && created <= {:dateEnd}",
+        "-created",
+        20,
+        0,
+        {
+            "ticketId": ticketId,
+            "dateStart": dateStart,
+            "dateEnd": dateEnd
+        }
+    );
+
+    return records || [];
+}
 
 /**
  * 
@@ -330,6 +367,35 @@ function findRecentTicketsByTicketNumber(data, timeInSeconds = 10) {
     return records || [];
 }
 
+/**
+ * Find recent tickets by Zendesk ticketId.
+ * @param {number|string|object} data 
+ * @param {number} timeInSeconds 
+ * @returns {Array}
+ */
+function findRecentTicketsByTicketNumber2(data, timeInSeconds = 10) {
+    let ticketId = typeof data === "number" ? data : getTicketId(data);
+    if (ticketId == null) return [];
+
+    // PocketBase expects UTC datetime like "2025-11-02 15:45:22.123Z"
+    const now = new Date();
+    const dateStart = new Date(now.getTime() - timeInSeconds * 1000)
+        .toISOString()
+        .replace("T", " ")
+        .replace("Z", "Z"); // ensures space separator instead of 'T'
+
+    const filter = `ticketId = ${ticketId} && created >= "${dateStart}"`;
+
+    const records = $app.findRecordsByFilter(
+        POCKET_COLLECTION_ZENDESK_TICKETS,
+        filter,
+        "-created",
+        20,
+        0
+    );
+
+    return records || [];
+}
 
 /**
  * 
@@ -596,6 +662,7 @@ module.exports = {
     saveZendeskRecord,
     findRecentTicketByTicketNumber,
     findRecentTicketsByTicketNumber,
+    findRecentTicketsByTicketNumber2,
     getDiscordIdByAssigneeId,
     getAdminSetting,
     getDiscordBotToken,

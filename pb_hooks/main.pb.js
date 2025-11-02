@@ -8,10 +8,10 @@ routerAdd("POST", "/clippy/zendesk", (e) => {
         runAfterDelay,
         sendDiscordMessage,
         saveZendeskRecord,
-        findRecentTicketsByTicketNumber,
+        // findRecentTicketsByTicketNumber,
         getDiscordIdByAssigneeId,
         getAdminSetting,
-        generateNormalTicketMessage,
+        // generateNormalTicketMessage,
         generateSlaBreachingSoonMessage,
     } = require(`${__hooks}/pages/utils/common.js`);
 
@@ -51,19 +51,19 @@ routerAdd("POST", "/clippy/zendesk", (e) => {
             console.error("Error getting Discord ID from PocketBase:", error);
         }
 
-        if (discordId) {
-            try {
-                const settingRaw = getAdminSetting(POCKET_ADMIN_IGNORE_DUPLICATE_ZENDESK_CALLBACK_IN_SECONDS) ?? "10";
-                const appsettingsDelaySeconds = parseInt(settingRaw, 10);
-                const recentTickets = findRecentTicketsByTicketNumber(data, isNaN(appsettingsDelaySeconds) ? 10 : appsettingsDelaySeconds);
-                if (recentTickets?.length < 1) {
-                    const myMessage = generateNormalTicketMessage(data);
-                    // sendDiscordMessage(myMessage, discordId);
-                }
-            } catch (error) {
-                console.error("Error sending ticket update message:", error);
-            }
-        }
+        // if (discordId) {
+        //     try {
+        //         const settingRaw = getAdminSetting(POCKET_ADMIN_IGNORE_DUPLICATE_ZENDESK_CALLBACK_IN_SECONDS) ?? "10";
+        //         const appsettingsDelaySeconds = parseInt(settingRaw, 10);
+        //         const recentTickets = findRecentTicketsByTicketNumber(data, isNaN(appsettingsDelaySeconds) ? 10 : appsettingsDelaySeconds);
+        //         if (recentTickets?.length < 1) {
+        //             const myMessage = generateNormalTicketMessage(data);
+        //             sendDiscordMessage(myMessage, discordId);
+        //         }
+        //     } catch (error) {
+        //         console.error("Error sending ticket update message:", error);
+        //     }
+        // }
 
         if (isSlaBreaching(data)) {
             try {
@@ -89,28 +89,24 @@ onRecordAfterCreateSuccess((e) => {
     const {
         getAssigneeId,
         sendDiscordMessage,
-        findRecentTicketsByTicketNumber,
+        findRecentTicketsByTicketNumber2,
         getDiscordIdByAssigneeId,
         getAdminSetting,
         generateNormalTicketMessage,
     } = require(`${__hooks}/pages/utils/common.js`);
+    const {
+        POCKET_ADMIN_IGNORE_DUPLICATE_ZENDESK_CALLBACK_IN_SECONDS
+    } = require(`${__hooks}/pages/utils/constants.js`);
 
     // Get the data field and convert to string
     const data = JSON.parse(e.record.get("data"));
-    console.log("Parsed data:", data ? "exists" : "null");
 
     let discordId = null;
     if (data) {
         try {
             const assigneeId = getAssigneeId(data);
-            console.log("Assignee ID:", assigneeId);
-
             if (assigneeId) {
-                console.log("Getting Discord ID for assignee:", assigneeId);
                 discordId = getDiscordIdByAssigneeId(assigneeId);
-                console.log("Discord ID result:", discordId);
-            } else {
-                console.log("No assignee ID found, skipping Discord ID lookup");
             }
         } catch (error) {
             console.error("Error getting Discord ID from PocketBase:", error);
@@ -118,11 +114,13 @@ onRecordAfterCreateSuccess((e) => {
 
         if (discordId) {
             try {
-                // const settingRaw = getAdminSetting(POCKET_ADMIN_IGNORE_DUPLICATE_ZENDESK_CALLBACK_IN_SECONDS) ?? "10";
-                const settingRaw = getAdminSetting("IGNORE_DUPLICATE_ZENDESK_CALLBACK_IN_SECONDS") ?? "10";
+                const settingRaw = getAdminSetting(POCKET_ADMIN_IGNORE_DUPLICATE_ZENDESK_CALLBACK_IN_SECONDS) ?? "10";
                 const appsettingsDelaySeconds = parseInt(settingRaw, 10);
-                const recentTickets = findRecentTicketsByTicketNumber(data, isNaN(appsettingsDelaySeconds) ? 10 : appsettingsDelaySeconds);
-                if (recentTickets?.length < 1) {
+                const timeInSeconds = isNaN(appsettingsDelaySeconds) ? 10 : appsettingsDelaySeconds;
+                const recentTickets = findRecentTicketsByTicketNumber2(data, timeInSeconds);
+
+                // Check if there are no recent tickets
+                if (recentTickets?.length <= 1) {
                     const myMessage = generateNormalTicketMessage(data);
                     sendDiscordMessage(myMessage, discordId);
                 }
