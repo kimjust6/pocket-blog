@@ -8,15 +8,12 @@ routerAdd("POST", "/clippy/zendesk", (e) => {
         runAfterDelay,
         sendDiscordMessage,
         saveZendeskRecord,
-        // findRecentTicketsByTicketNumber,
         getDiscordIdByAssigneeId,
         getAdminSetting,
-        // generateNormalTicketMessage,
         generateSlaBreachingSoonMessage,
     } = require(`${__hooks}/pages/utils/common.js`);
 
     const {
-        POCKET_ADMIN_IGNORE_DUPLICATE_ZENDESK_CALLBACK_IN_SECONDS,
         POCKET_ADMIN_MAX_RANDOM_DELAY_IN_SECONDS,
     } = require(`${__hooks}/pages/utils/constants.js`);
 
@@ -51,19 +48,6 @@ routerAdd("POST", "/clippy/zendesk", (e) => {
             console.error("Error getting Discord ID from PocketBase:", error);
         }
 
-        // if (discordId) {
-        //     try {
-        //         const settingRaw = getAdminSetting(POCKET_ADMIN_IGNORE_DUPLICATE_ZENDESK_CALLBACK_IN_SECONDS) ?? "10";
-        //         const appsettingsDelaySeconds = parseInt(settingRaw, 10);
-        //         const recentTickets = findRecentTicketsByTicketNumber(data, isNaN(appsettingsDelaySeconds) ? 10 : appsettingsDelaySeconds);
-        //         if (recentTickets?.length < 1) {
-        //             const myMessage = generateNormalTicketMessage(data);
-        //             sendDiscordMessage(myMessage, discordId);
-        //         }
-        //     } catch (error) {
-        //         console.error("Error sending ticket update message:", error);
-        //     }
-        // }
 
         if (isSlaBreaching(data)) {
             try {
