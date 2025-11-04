@@ -1,7 +1,7 @@
 {
     "description": "DO NOT DELETE THIS FILE. This file is used to keep track of which files have been synced in the most recent deployment. If you delete this file a resync will need to be done (which can take a while) - read more: https://github.com/SamKirkland/FTP-Deploy-Action",
     "version": "1.0.0",
-    "generatedTime": 1762114468481,
+    "generatedTime": 1762229174430,
     "data": [
         {
             "type": "file",
@@ -12,6 +12,10 @@
         {
             "type": "folder",
             "name": "pb_public"
+        },
+        {
+            "type": "folder",
+            "name": "pb_migrations"
         },
         {
             "type": "folder",
@@ -41,6 +45,12 @@
         },
         {
             "type": "file",
+            "name": "pb_migrations/1762212795_updated_zendesk_tickets.js",
+            "size": 529,
+            "hash": "b562f78339f47615991c078d08999cd3c9e496b3f58c99015942b422e806a604"
+        },
+        {
+            "type": "file",
             "name": "pb_hooks/pocketpages.pb.js",
             "size": 23,
             "hash": "83f80163c8424e9245990124ea42a8b74425828cf66395cb680498225d26f275"
@@ -52,8 +62,8 @@
         {
             "type": "file",
             "name": "pb_hooks/main.pb.js",
-            "size": 4640,
-            "hash": "586268509d08f1bf21e1b1f7695199c7e5468ac1e14d6fe1786a18fd7b7d9a37"
+            "size": 3841,
+            "hash": "5944a6676446d883c4baedbd61737e0ab37ecbbe18b9a5c9d2b78fac95ab5059"
         },
         {
             "type": "folder",
@@ -134,8 +144,8 @@
         {
             "type": "file",
             "name": "pb_hooks/pages/utils/common.js",
-            "size": 18427,
-            "hash": "dd328ff214353e0fa668e8c07a47a1c28e250107d1eed3ba161b58101e165ce2"
+            "size": 18827,
+            "hash": "60f633b288ee9a3eac3a1ebf7a5c23916bdbf6cf3983ba962de3b3fc4cdfdff0"
         },
         {
             "type": "file",
@@ -210,8 +220,8 @@
         {
             "type": "file",
             "name": "pb_hooks/pages/(navbarLayout)/index.ejs",
-            "size": 1057,
-            "hash": "20665b48eef8aeb62bd56307a9d32ebf075ee636bbd4854f33b94aa9cbcbc378"
+            "size": 1059,
+            "hash": "4f08725bcef33a63216ff4c6fa8e331336f97e73baa502a221f413f4d8ac60d9"
         },
         {
             "type": "file",
