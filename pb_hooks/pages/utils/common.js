@@ -151,6 +151,16 @@ function getAssigneeId(data) {
 
 /**
  * 
+ * @param {Object} data 
+ * @returns {string|null}
+ */
+function getActorId(data) {
+    const body = privateGetBody(data);
+    return body?.detail?.actor_id ?? body?.actor_id ?? null;
+}
+
+/**
+ * 
  * @param {Object} ticket 
  * @returns {boolean}
  */
@@ -239,12 +249,14 @@ function saveZendeskRecord(data) {
     }
 
     const assigneeId = parseInt(getAssigneeId(data) ?? "0")
+    const actorId = parseInt(getActorId(data) ?? "0")
 
     let record = new Record(collection)
     record.set("data", JSON.stringify(data))
     record.set("ticketId", getTicketId(data))
     record.set("ticketType", getTicketType(data))
     record.set("zendeskUserId", assigneeId)
+    record.set("zendeskActorId", actorId)
     record.set("created", Date.now())
     record.set("updated", Date.now())
 
@@ -373,7 +385,7 @@ function findRecentTicketsByTicketNumber(data, timeInSeconds = 10) {
  * @param {number} timeInSeconds 
  * @returns {Array}
  */
-function findRecentTicketsByTicketNumber2(data, timeInSeconds = 10) {
+function findRecentTicketsByTicketNumber2(data, timeInSeconds = 10, actorId = null) {
     let ticketId = typeof data === "number" ? data : getTicketId(data);
     if (ticketId == null) return [];
 
@@ -384,7 +396,10 @@ function findRecentTicketsByTicketNumber2(data, timeInSeconds = 10) {
         .replace("T", " ")
         .replace("Z", "Z"); // ensures space separator instead of 'T'
 
-    const filter = `ticketId = ${ticketId} && created >= "${dateStart}"`;
+    let filter = `ticketId = ${ticketId} && created >= "${dateStart}"`;
+    if (actorId) {
+        filter += ` && zendeskActorId = "${actorId}"`;
+    }
 
     const records = $app.findRecordsByFilter(
         POCKET_COLLECTION_ZENDESK_TICKETS,
@@ -656,6 +671,7 @@ module.exports = {
     getTicketId,
     getTicketType,
     getAssigneeId,
+    getActorId,
     runAfterRandomDelay,
     runAfterDelay,
     privateGetBody,

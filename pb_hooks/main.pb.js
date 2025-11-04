@@ -72,6 +72,7 @@ routerAdd("GET", "/clippy/zendesk", (e) => {
 onRecordAfterCreateSuccess((e) => {
     const {
         getAssigneeId,
+        getActorId,
         sendDiscordMessage,
         findRecentTicketsByTicketNumber2,
         getDiscordIdByAssigneeId,
@@ -86,9 +87,10 @@ onRecordAfterCreateSuccess((e) => {
     const data = JSON.parse(e.record.get("data"));
 
     let discordId = null;
+
     if (data) {
+        const assigneeId = getAssigneeId(data);
         try {
-            const assigneeId = getAssigneeId(data);
             if (assigneeId) {
                 discordId = getDiscordIdByAssigneeId(assigneeId);
             }
@@ -101,10 +103,10 @@ onRecordAfterCreateSuccess((e) => {
                 const settingRaw = getAdminSetting(POCKET_ADMIN_IGNORE_DUPLICATE_ZENDESK_CALLBACK_IN_SECONDS) ?? "10";
                 const appsettingsDelaySeconds = parseInt(settingRaw, 10);
                 const timeInSeconds = isNaN(appsettingsDelaySeconds) ? 10 : appsettingsDelaySeconds;
-                const recentTickets = findRecentTicketsByTicketNumber2(data, timeInSeconds);
-
+                const actorId = getActorId(data);
+                const recentTickets = findRecentTicketsByTicketNumber2(data, timeInSeconds, actorId);
                 // Check if there are no recent tickets
-                if (recentTickets?.length <= 1) {
+                if (recentTickets?.length <= 1 && actorId !== assigneeId) {
                     const myMessage = generateNormalTicketMessage(data);
                     sendDiscordMessage(myMessage, discordId);
                 }
