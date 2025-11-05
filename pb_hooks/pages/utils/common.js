@@ -8,7 +8,9 @@ const {
     POCKET_ADMIN_DISCORD_BOT_TOKEN,
     DISCORD_API_ENDPOINT,
     DISCORD_ID_JUSTIN,
-    POCKET_COLLECTION_ZENDESK_ORGANIZATIONS
+    POCKET_COLLECTION_ZENDESK_ORGANIZATIONS,
+    ZENDESK_STATUS_CHANGED_TYPE,
+    ZENDESK_CLOSED_STATUS
 } = require(`${__hooks}/pages/utils/constants.js`);
 
 
@@ -44,6 +46,22 @@ function privateGetBody(data) {
 /**
  *
  * @param {Object} data
+ * @returns {boolean}
+ */
+function privateIsStatusChangedEvent(data) {
+    const body = privateGetBody(data);
+    return body?.type === ZENDESK_STATUS_CHANGED_TYPE;
+}
+
+function isTicketClosed(data) {
+    const body = privateGetBody(data);
+    return privateIsStatusChangedEvent(data)
+        && body?.detail?.status === ZENDESK_CLOSED_STATUS;
+}
+
+/**
+ *
+ * @param {Object} data
  * @returns {number}
  */
 function getTicketId(data) {
@@ -73,8 +91,6 @@ function getTicketTitle(data) {
     const body = privateGetBody(data);
     return body?.detail?.subject ?? body?.subject ?? null;
 }
-
-
 
 /**
  *
@@ -675,6 +691,7 @@ module.exports = {
     runAfterRandomDelay,
     runAfterDelay,
     privateGetBody,
+    privateIsStatusChangedEvent,
     saveZendeskRecord,
     findRecentTicketByTicketNumber,
     findRecentTicketsByTicketNumber,
@@ -686,5 +703,6 @@ module.exports = {
     getOrganizationById,
     sendDiscordMessage2,
     generateNormalTicketMessage,
-    generateSlaBreachingSoonMessage
+    generateSlaBreachingSoonMessage,
+    isTicketClosed
 }

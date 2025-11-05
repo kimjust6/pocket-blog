@@ -78,6 +78,7 @@ onRecordAfterCreateSuccess((e) => {
         getDiscordIdByAssigneeId,
         getAdminSetting,
         generateNormalTicketMessage,
+        isTicketClosed
     } = require(`${__hooks}/pages/utils/common.js`);
     const {
         POCKET_ADMIN_IGNORE_DUPLICATE_ZENDESK_CALLBACK_IN_SECONDS
@@ -88,32 +89,40 @@ onRecordAfterCreateSuccess((e) => {
 
     let discordId = null;
 
-    if (data) {
-        const assigneeId = getAssigneeId(data);
-        try {
-            if (assigneeId) {
-                discordId = getDiscordIdByAssigneeId(assigneeId);
-            }
-        } catch (error) {
-            console.error("Error getting Discord ID from PocketBase:", error);
-        }
+    if (!data) {
+        return;
+    }
 
-        if (discordId) {
-            try {
-                const settingRaw = getAdminSetting(POCKET_ADMIN_IGNORE_DUPLICATE_ZENDESK_CALLBACK_IN_SECONDS) ?? "10";
-                const appsettingsDelaySeconds = parseInt(settingRaw, 10);
-                const timeInSeconds = isNaN(appsettingsDelaySeconds) ? 10 : appsettingsDelaySeconds;
-                const actorId = getActorId(data);
-                const recentTickets = findRecentTicketsByTicketNumber2(data, timeInSeconds, actorId);
-                // Check if there are no recent tickets
-                if (recentTickets?.length <= 1 && actorId !== assigneeId) {
-                    const myMessage = generateNormalTicketMessage(data);
-                    sendDiscordMessage(myMessage, discordId);
-                }
-            } catch (error) {
-                console.error("Error sending ticket update message:", error);
-            }
+    const assigneeId = getAssigneeId(data);
+    if (!assigneeId) {
+        return;
+    }
+
+    try {
+        discordId = getDiscordIdByAssigneeId(assigneeId);
+    } catch (error) {
+        console.error("Error getting Discord ID from PocketBase:", error);
+    }
+
+    if (!discordId) {
+        return;
+    }
+    try {
+        // const settingRaw = getAdminSetting(POCKET_ADMIN_IGNORE_DUPLICATE_ZENDESK_CALLBACK_IN_SECONDS) ?? "10";
+        // const appsettingsDelaySeconds = parseInt(settingRaw, 10);
+        // const timeInSeconds = isNaN(appsettingsDelaySeconds) ? 10 : appsettingsDelaySeconds;
+
+        const actorId = getActorId(data);
+        // const recentTickets = findRecentTicketsByTicketNumber2(data, timeInSeconds, actorId);
+        // Check if there are no recent tickets
+
+        if (actorId === assigneeId || isTicketClosed(data)) {
+            return;
         }
+        const myMessage = generateNormalTicketMessage(data);
+        sendDiscordMessage(myMessage, discordId);
+    } catch (error) {
+        console.error("Error sending ticket update message:", error);
     }
 
 }, "zendesk_tickets")
