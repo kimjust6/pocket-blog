@@ -74,15 +74,15 @@ onRecordAfterCreateSuccess((e) => {
         getAssigneeId,
         getActorId,
         sendDiscordMessage,
-        findRecentTicketsByTicketNumber2,
+        // findRecentTicketsByTicketNumber2,
         getDiscordIdByAssigneeId,
-        getAdminSetting,
+        // getAdminSetting,
         generateNormalTicketMessage,
         isTicketClosed
     } = require(`${__hooks}/pages/utils/common.js`);
-    const {
-        POCKET_ADMIN_IGNORE_DUPLICATE_ZENDESK_CALLBACK_IN_SECONDS
-    } = require(`${__hooks}/pages/utils/constants.js`);
+    // const {
+    //     POCKET_ADMIN_IGNORE_DUPLICATE_ZENDESK_CALLBACK_IN_SECONDS
+    // } = require(`${__hooks}/pages/utils/constants.js`);
 
     // Get the data field and convert to string
     const data = JSON.parse(e.record.get("data"));
@@ -119,6 +119,7 @@ onRecordAfterCreateSuccess((e) => {
         if (actorId === assigneeId || isTicketClosed(data)) {
             return;
         }
+
         const myMessage = generateNormalTicketMessage(data);
         sendDiscordMessage(myMessage, discordId);
     } catch (error) {
