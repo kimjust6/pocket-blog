@@ -208,7 +208,7 @@ function getZendeskUrl(data) {
 function runAfterRandomDelay(fn, maxSeconds = 1) {
     try {
         if (typeof fn !== 'function') {
-            console.error('runAfterRandomDelay: fn must be a function');
+            $app.logger().error('runAfterRandomDelay: fn must be a function');
             return;
         }
         let windowSec = parseFloat(maxSeconds);
@@ -218,7 +218,7 @@ function runAfterRandomDelay(fn, maxSeconds = 1) {
         const delayInSeconds = Math.random() * windowSec; // 0..maxSeconds (ms)
         runAfterDelay(fn, delayInSeconds);
     } catch (err) {
-        console.error('runAfterRandomDelay setup failed', err);
+        $app.logger().error('runAfterRandomDelay setup failed', 'error', err);
     }
 }
 
@@ -234,14 +234,14 @@ function runAfterDelay(fn, delayInSeconds = 4) {
         const delayMs = delayInSeconds * 1000;
         if (typeof setTimeout === 'function') {
             setTimeout(() => {
-                try { fn(); } catch (err) { console.error('runAfterDelay execution error', err); }
+                try { fn(); } catch (err) { $app.logger().error('runAfterDelay execution error', 'error', err); }
             }, delayMs);
         } else {
             // Fallback: execute immediately if timers unsupported.
-            try { fn(); } catch (err) { console.error('runAfterDelay immediate fallback error', err); }
+            try { fn(); } catch (err) { $app.logger().error('runAfterDelay immediate fallback error', 'error', err); }
         }
     } catch (err) {
-        console.error('runAfterDelay setup failed', err);
+        $app.logger().error('runAfterDelay setup failed', 'error', err);
     }
 }
 
@@ -435,7 +435,7 @@ function findRecentTicketsByTicketNumber2(data, timeInSeconds = 10, actorId = nu
  */
 function getDiscordIdByAssigneeId(assignee_id) {
     if (!assignee_id) {
-        console.log("No assignee_id provided");
+        $app.logger().info("No assignee_id provided");
         return null;
     }
 
@@ -449,16 +449,16 @@ function getDiscordIdByAssigneeId(assignee_id) {
             { "assigneeId": String(assignee_id) }
         );
 
-        console.log("Found records:", records?.length ?? 0);
+        $app.logger().info("Found records:", "count", records?.length ?? 0);
 
         if (records && records.length > 0) {
             const discordId = records[0].get("discord_id");
-            console.log("Discord ID found:", discordId);
+            $app.logger().info("Discord ID found:", "discordId", discordId);
             return discordId ?? null;
         }
         return null;
     } catch (error) {
-        console.error("Error getting Discord ID from PocketBase:", error);
+        $app.logger().error("Error getting Discord ID from PocketBase:", "error", error);
         return null;
     }
 }
@@ -482,7 +482,7 @@ function getAdminSetting(key) {
             .one(record)
     }
     catch (err) {
-        console.error("Error querying admin settings:", err);
+        $app.logger().error("Error querying admin settings:", "error", err);
         return null;
     }
 
@@ -521,7 +521,7 @@ function sendDiscordMessage2(message, userId = DISCORD_ID_JUSTIN) {
 
         // const status = res?.status ?? res?.statusCode ?? 0;
     } catch (error) {
-        console.error("Error sending Discord message:", error);
+        $app.logger().error("Error sending Discord message:", "error", error);
     }
 }
 
@@ -636,7 +636,7 @@ function getOrganizationById(id) {
 
         return record.get("shortHand") ?? null;
     } catch (err) {
-        console.error("Error getting organization:", err);
+        $app.logger().error("Error getting organization:", "error", err);
         return null;
     }
 }
@@ -678,6 +678,26 @@ function getOrganizationName(data) {
     return getOrganizationById(id);
 }
 
+function getDiscordIdfromData(data) {
+    const assigneeId = getAssigneeId(data);
+    if (!assigneeId) {
+        $app.logger().error(`Error getting assigneeId from Data in PocketBase:`, "error");
+        return null;
+    }
+
+    try {
+        discordId = getDiscordIdByAssigneeId(assigneeId);
+    } catch (error) {
+        $app.logger().error(`2: Error getting Discord ID for assignee: ${assigneeId} from PocketBase:`, "error", error);
+    }
+
+    if (!discordId) {
+        return null;
+    }
+
+    return discordId;
+}
+
 module.exports = {
     formatDateTime,
     getImageUrl,
@@ -704,5 +724,6 @@ module.exports = {
     sendDiscordMessage2,
     generateNormalTicketMessage,
     generateSlaBreachingSoonMessage,
-    isTicketClosed
+    isTicketClosed,
+    getDiscordIdfromData
 }
