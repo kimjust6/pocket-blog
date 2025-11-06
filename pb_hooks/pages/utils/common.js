@@ -10,7 +10,8 @@ const {
     DISCORD_ID_JUSTIN,
     POCKET_COLLECTION_ZENDESK_ORGANIZATIONS,
     ZENDESK_STATUS_CHANGED_TYPE,
-    ZENDESK_CLOSED_STATUS
+    ZENDESK_CLOSED_STATUS,
+    ZENDESK_TICKET_CREATED
 } = require(`${__hooks}/pages/utils/constants.js`);
 
 
@@ -698,6 +699,11 @@ function getDiscordIdfromData(data) {
     return discordId;
 }
 
+function isTicketCreated(data) {
+    const body = privateGetBody(data);
+    return body?.type === ZENDESK_TICKET_CREATED;
+}
+
 module.exports = {
     formatDateTime,
     getImageUrl,
@@ -725,5 +731,6 @@ module.exports = {
     generateNormalTicketMessage,
     generateSlaBreachingSoonMessage,
     isTicketClosed,
-    getDiscordIdfromData
+    getDiscordIdfromData,
+    isTicketCreated
 }

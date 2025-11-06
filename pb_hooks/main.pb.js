@@ -6,7 +6,6 @@ routerAdd("POST", "/clippy/zendesk", (e) => {
         saveZendeskRecord,
     } = require(`${__hooks}/pages/utils/common.js`);
 
-
     let data;
     try {
         data = e.requestInfo();
@@ -42,13 +41,19 @@ onRecordAfterCreateSuccess((e) => {
         isTicketClosed,
         isSlaBreaching,
         getDiscordIdfromData,
-        generateSlaBreachingSoonMessage
+        generateSlaBreachingSoonMessage,
+        isTicketCreated
     } = require(`${__hooks}/pages/utils/common.js`);
 
     const {
         // POCKET_ADMIN_IGNORE_DUPLICATE_ZENDESK_CALLBACK_IN_SECONDS,
         DISCORD_ID_JUSTIN
     } = require(`${__hooks}/pages/utils/constants.js`);
+
+    function handleTicketCreated(data) {
+        const myMessage = generateNormalTicketMessage(data);
+        sendDiscordMessage(`New Ticket: ${myMessage}`);
+    }
 
     function handleSendMessage(data) {
         const discordId = getDiscordIdfromData(data);
@@ -96,14 +101,14 @@ onRecordAfterCreateSuccess((e) => {
         return;
     }
 
-    if (isSlaBreaching(data)) {
+    if (isTicketCreated(data)) {
+        handleTicketCreated(data);
+    }
+    else if (isSlaBreaching(data)) {
         handleSLABreaching(data);
     }
     else {
         handleSendMessage(data);
     }
-
-
-
 
 }, "zendesk_tickets")
