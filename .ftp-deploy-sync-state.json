@@ -1,7 +1,7 @@
 {
     "description": "DO NOT DELETE THIS FILE. This file is used to keep track of which files have been synced in the most recent deployment. If you delete this file a resync will need to be done (which can take a while) - read more: https://github.com/SamKirkland/FTP-Deploy-Action",
     "version": "1.0.0",
-    "generatedTime": 1762392488222,
+    "generatedTime": 1762403169126,
     "data": [
         {
             "type": "file",
@@ -62,8 +62,8 @@
         {
             "type": "file",
             "name": "pb_hooks/main.pb.js",
-            "size": 3123,
-            "hash": "2b9076ad5ea162c67a8d6d386a5769618807fe91bc7435201a49a56c76679ae0"
+            "size": 3388,
+            "hash": "ea2b6d1ee82dcb012afebbc9566935f6a0ce04f2cad090cfa57e54d7f735d4c4"
         },
         {
             "type": "folder",
@@ -138,14 +138,14 @@
         {
             "type": "file",
             "name": "pb_hooks/pages/utils/constants.js",
-            "size": 1592,
-            "hash": "2ec9fac2d25d7e48f21c8e19a8ec70859fcfa20c706ebbce7a8a52fb7e6d9452"
+            "size": 1684,
+            "hash": "ba753954fb61151a6cfe457b979e14ff4d20e35fb9852c43ee74e73acdfec7cb"
         },
         {
             "type": "file",
             "name": "pb_hooks/pages/utils/common.js",
-            "size": 20027,
-            "hash": "a26e9bb144dacadd123314c14b4a973f2a36a4e5aa801ed828a5aa471b28e1a5"
+            "size": 20201,
+            "hash": "0936779bde7167e56f2e1c190f222d795e789029a243889190a5650d45359d5c"
         },
         {
             "type": "file",

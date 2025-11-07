@@ -28,25 +28,24 @@ routerAdd("GET", "/clippy/zendesk", (e) => {
     return e.json(405, { "message": "Method not allowed." })
 })
 
-
 // Hook for when a new zendesk_tickets record is created
 onRecordAfterCreateSuccess((e) => {
     const {
         getAssigneeId,
         getActorId,
         sendDiscordMessage,
-        // findRecentTicketsByTicketNumber2,
-        // getAdminSetting,
+        findRecentTicketsByTicketNumber2,
+        getAdminSetting,
         generateNormalTicketMessage,
         isTicketClosed,
         isSlaBreaching,
         getDiscordIdfromData,
         generateSlaBreachingSoonMessage,
-        isTicketCreated
+        isTicketCreated,
     } = require(`${__hooks}/pages/utils/common.js`);
 
     const {
-        // POCKET_ADMIN_IGNORE_DUPLICATE_ZENDESK_CALLBACK_IN_SECONDS,
+        POCKET_ADMIN_IGNORE_DUPLICATE_ZENDESK_CALLBACK_IN_SECONDS,
         DISCORD_ID_JUSTIN
     } = require(`${__hooks}/pages/utils/constants.js`);
 
@@ -55,22 +54,27 @@ onRecordAfterCreateSuccess((e) => {
         sendDiscordMessage(`New Ticket: ${myMessage}`);
     }
 
-    function handleSendMessage(data) {
+    function handleSendMessage(data, createdDate = new Date()) {
         const discordId = getDiscordIdfromData(data);
         if (!discordId) {
             return;
         }
 
         try {
-            // const settingRaw = getAdminSetting(POCKET_ADMIN_IGNORE_DUPLICATE_ZENDESK_CALLBACK_IN_SECONDS) ?? "10";
-            // const appsettingsDelaySeconds = parseInt(settingRaw, 10);
-            // const timeInSeconds = isNaN(appsettingsDelaySeconds) ? 10 : appsettingsDelaySeconds;
+            const settingRaw = getAdminSetting(POCKET_ADMIN_IGNORE_DUPLICATE_ZENDESK_CALLBACK_IN_SECONDS) ?? "10";
+            const appsettingsDelaySeconds = parseInt(settingRaw, 10);
+            const timeInSeconds = isNaN(appsettingsDelaySeconds) ? 10 : appsettingsDelaySeconds;
 
             const actorId = getActorId(data);
             const assigneeId = getAssigneeId(data);
-            // const recentTickets = findRecentTicketsByTicketNumber2(data, timeInSeconds, actorId);
+            const recentTickets = findRecentTicketsByTicketNumber2(data, timeInSeconds, actorId);
+
             // Check if there are no recent tickets
             if (actorId === assigneeId || isTicketClosed(data)) {
+                return;
+            }
+
+            if (recentTickets.length > 1 && new Date(recentTickets[0]?.get("created")) < createdDate) {
                 return;
             }
 
@@ -93,7 +97,6 @@ onRecordAfterCreateSuccess((e) => {
         }
     }
 
-
     // Get the data field and convert to string
     const data = JSON.parse(e.record.get("data"));
     if (!data) {
@@ -108,7 +111,7 @@ onRecordAfterCreateSuccess((e) => {
         handleSLABreaching(data);
     }
     else {
-        handleSendMessage(data);
+        handleSendMessage(data, new Date(e.record.get("created")));
     }
 
 }, "zendesk_tickets")

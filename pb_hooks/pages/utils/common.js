@@ -345,7 +345,7 @@ function findRecentTicketsByTicketNumber(data, timeInSeconds = 10) {
     const records = $app.findRecordsByFilter(
         POCKET_COLLECTION_ZENDESK_TICKETS,
         "ticketId = {:ticketId} && created >= {:dateStart} && created <= {:dateEnd}",
-        "-created",
+        "created",
         20,
         0,
         {
@@ -383,7 +383,7 @@ function findRecentTicketsByTicketNumber(data, timeInSeconds = 10) {
     const records = $app.findRecordsByFilter(
         POCKET_COLLECTION_ZENDESK_TICKETS,
         "ticketId = {:ticketId} && created >= {:dateStart} && created <= {:dateEnd}",
-        "-created",
+        "created",
         20,
         0,
         {
@@ -421,7 +421,7 @@ function findRecentTicketsByTicketNumber2(data, timeInSeconds = 10, actorId = nu
     const records = $app.findRecordsByFilter(
         POCKET_COLLECTION_ZENDESK_TICKETS,
         filter,
-        "-created",
+        "created",
         20,
         0
     );
