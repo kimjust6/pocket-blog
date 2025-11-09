@@ -64,6 +64,7 @@
             <%= singleBlog?.title %>
         </h1>
         <!-- Blog Image -->
+        <% if (imageUrl) { %>
         <img
             src="<%= imageUrl %>"
             class="rounded-lg shadow-lg w-full h-auto max-h-96 object-cover m-0 blog-image-transition"
@@ -73,6 +74,7 @@
             "
             alt="<%= singleBlog?.title %> image"
         />
+        <% } %>
         <!-- Blog Content -->
         <div class="w-full self-start">
             <h1

@@ -7,7 +7,8 @@
         "start": "pocketbase serve --dir=pb_data --dev",
         "css": "tailwindcss -i ./pb_hooks/pages/app.tailwind.css -o ./pb_hooks/pages/app.css --watch\"",
         "push": "npx phio deploy mlt-blog",
-        "login": "npx phio login"
+        "login": "npx phio login",
+        "update": "pocketbase update"
     },
     "description": "Justin's personal blog using PocketPages and DaisyUI.",
     "author": {
