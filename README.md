@@ -1,3 +1,4 @@
 # DaisyUI PocketPages Blog
 
-Multipage application blog that uses **PocketPages** with **Tailwind CSS** and **DaisyUI**.
+Multipage application blog that uses **PocketPages** (Pocketbase) with **DaisyUI** and **Tailwind CSS**.
+
