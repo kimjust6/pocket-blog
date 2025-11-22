@@ -4,6 +4,8 @@
 
     let singleBlog = null
     let imageUrl = null
+    let readingTime = 3
+    let tagsList = []
     if (params?.postId) {
         const client = pb({ request })
         try {
@@ -47,85 +49,151 @@
             singleBlog?.coverImageAlt?.length == 0
                 ? getImageUrl(singleBlog)
                 : singleBlog?.coverImageAlt
+        const plainOne = singleBlog?.content1
+            ? singleBlog.content1.replace(/<[^>]*>/g, ' ')
+            : ''
+        const plainTwo = singleBlog?.content2
+            ? singleBlog.content2.replace(/<[^>]*>/g, ' ')
+            : ''
+        const totalWords =
+            (plainOne + ' ' + plainTwo)
+                .trim()
+                .split(/\s+/)
+                .filter(Boolean).length || 0
+        readingTime = Math.max(2, Math.ceil(totalWords / 220))
+        tagsList = singleBlog?.tags
+            ? singleBlog.tags.split(';').filter((tag) => tag.trim().length > 0)
+            : []
     }
 </script>
 <% if (singleBlog == null) { %>
 <%- include('pagenotfound.ejs') %>
 <% } else {  %>
 <div
-    class="hero bg-base-100 py-12 min-h-[calc(100vh-12.54rem)] flex flex-col items-center justify-start blog-card-transition"
+    class="grid gap-10 lg:grid-cols-[minmax(0,2.2fr)_minmax(0,1fr)] blog-card-transition"
     style="--blog-card-id: blog-card-<%= singleBlog?.id %>"
 >
-    <div class="hero-content max-w-4xl flex flex-col">
+    <article
+        class="glass-panel border border-white/10 p-6 sm:p-10 flex flex-col gap-6"
+    >
+        <div class="flex flex-wrap items-center justify-between gap-4 text-sm">
+            <a
+                href="/blog/posts"
+                class="btn btn-ghost btn-sm gap-2 border border-white/10"
+            >
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                >
+                    <path d="m12 19-7-7 7-7" />
+                    <path d="M19 12H5" />
+                </svg>
+                Back to posts
+            </a>
+            <span class="text-base-content/70"
+                >Updated
+                <strong
+                    ><%= formatDateTime(new Date(singleBlog?.updated)) %></strong
+                ></span
+            >
+        </div>
         <h1
-            class="md:mb-0 font-extrabold text-3xl leading-tight md:flex hidden blog-title-transition"
+            class="text-3xl sm:text-4xl font-semibold leading-tight blog-title-transition"
             style="--blog-title-id: blog-title-<%= singleBlog?.id %>"
         >
             <%= singleBlog?.title %>
         </h1>
-        <!-- Blog Image -->
-        <% if (imageUrl) { %>
-        <img
-            src="<%= imageUrl %>"
-            class="rounded-lg shadow-lg w-full h-auto max-h-96 object-cover m-0 blog-image-transition"
-            style="
-                --blog-image-id: blog-image-<%= singleBlog?.id %>;
-                aspect-ratio: 16/9;
-            "
-            alt="<%= singleBlog?.title %> image"
-        />
-        <% } %>
-        <!-- Blog Content -->
-        <div class="w-full self-start">
-            <h1
-                class="mb-0 font-extrabold sm:text-2xl leading-tight flex md:hidden blog-title-transition"
-                style="--blog-title-id: blog-title-<%= singleBlog?.id %>"
-            >
-                <%= singleBlog?.title %>
-            </h1>
-            <!-- Meta Info -->
-            <div class="items-center text-sm text-base-content/70">
-                <!-- Back to Posts Button -->
-                <div class="mt-6 border-base-300">
-                    <div class="flex justify-between w-full">
-                        <!-- <span>By: <strong>Justin K</strong></span> -->
-                        <span
-                            >Posted:
-                            <strong>
-                                <%= formatDateTime(new Date(singleBlog?.updated))
-                            %>
-                            </strong></span
-                        >
-                        <a
-                            href="/blog/posts"
-                            class="btn btn-outline btn-sm gap-2 transition-all duration-200"
-                        >
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                width="16"
-                                height="16"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                stroke="currentColor"
-                                stroke-width="2"
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                            >
-                                <path d="m12 19-7-7 7-7" />
-                                <path d="M19 12H5" />
-                            </svg>
-                            View all posts
-                        </a>
-                    </div>
-                </div>
-            </div>
-            <p class="text-base-content/80 min-w-80">
-                <%- singleBlog?.content1 %>
-            </p>
-            <p class="text-base-content/80 mb-6 min-w-80">
-                <%- singleBlog?.content2 %>
-            </p>
+        <div class="flex flex-wrap gap-2 text-[0.7rem] uppercase text-base-content/60">
+            <% if (tagsList?.length) { tagsList.forEach(tag => { %>
+            <span class="feature-pill"><%= tag %></span>
+            <% }) } else { %>
+            <span class="feature-pill">Field Notes</span>
+            <% } %>
         </div>
-    </div>
+        <% if (imageUrl) { %>
+        <div class="relative overflow-hidden rounded-[2rem]">
+            <img
+                src="<%= imageUrl %>"
+                class="h-auto w-full object-cover blog-image-transition"
+                style="
+                    --blog-image-id: blog-image-<%= singleBlog?.id %>;
+                    aspect-ratio: 16/9;
+                "
+                alt="<%= singleBlog?.title %> image"
+            />
+            <div class="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-base-100/90 to-transparent"></div>
+        </div>
+        <% } %>
+        <div class="prose-modern mt-4 space-y-6">
+            <div><%- singleBlog?.content1 %></div>
+            <div><%- singleBlog?.content2 %></div>
+        </div>
+        <div class="flex flex-wrap items-center justify-between gap-4 pt-4 text-sm">
+            <span class="text-base-content/70"
+                >Reading time · ~<%= readingTime %> min</span
+            >
+            <a href="/blog/posts" class="btn btn-primary btn-sm gap-2">
+                Browse more stories
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                >
+                    <path d="m9 18 6-6-6-6" />
+                </svg>
+            </a>
+        </div>
+    </article>
+    <aside class="flex flex-col gap-6">
+        <div class="glass-panel border border-white/10 p-6">
+            <p class="text-xs uppercase tracking-[0.4em] text-base-content/70">
+                Entry Overview
+            </p>
+            <dl class="mt-4 space-y-4 text-sm">
+                <div class="flex items-center justify-between">
+                    <dt class="text-base-content/70">Published</dt>
+                    <dd class="font-semibold">
+                        <%= formatDateTime(new Date(singleBlog?.created ||
+                        singleBlog?.updated)) %>
+                    </dd>
+                </div>
+                <div class="flex items-center justify-between">
+                    <dt class="text-base-content/70">Updated</dt>
+                    <dd class="font-semibold">
+                        <%= formatDateTime(new Date(singleBlog?.updated)) %>
+                    </dd>
+                </div>
+                <div class="flex items-center justify-between">
+                    <dt class="text-base-content/70">Reading time</dt>
+                    <dd class="font-semibold"><%= readingTime %> min</dd>
+                </div>
+            </dl>
+        </div>
+        <div class="glass-panel border border-white/10 p-6">
+            <p class="text-xs uppercase tracking-[0.4em] text-base-content/70">
+                Tags & themes
+            </p>
+            <div class="mt-4 flex flex-wrap gap-2">
+                <% if (tagsList?.length) { tagsList.forEach(tag => { %>
+                <span class="feature-pill"><%= tag %></span>
+                <% }) } else { %>
+                <span class="feature-pill">Writing</span>
+                <% } %>
+            </div>
+        </div>
+    </aside>
 </div>
 <% } %>

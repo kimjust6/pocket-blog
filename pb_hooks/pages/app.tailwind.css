@@ -1,6 +1,116 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+    :root {
+        --grid-color: rgba(148, 163, 184, 0.08);
+        --card-border: rgba(255, 255, 255, 0.08);
+    }
+
+    body {
+        @apply min-h-screen bg-base-100 text-base-content antialiased;
+        font-family: 'Inter', 'Inter var', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        background-image:
+            radial-gradient(circle at 20% 20%, rgba(96, 165, 250, 0.2), transparent 45%),
+            radial-gradient(circle at 80% 0%, rgba(34, 197, 94, 0.2), transparent 35%),
+            linear-gradient(180deg, rgba(15, 23, 42, 0.9), rgba(15, 23, 42, 0.6));
+        background-attachment: fixed;
+    }
+
+    h1,
+    h2,
+    h3,
+    h4 {
+        font-family: 'Space Grotesk', 'Space Grotesk var', 'Inter', system-ui, sans-serif;
+        letter-spacing: -0.02em;
+    }
+
+    ::selection {
+        @apply bg-primary text-primary-content;
+    }
+}
+
+@layer components {
+    .page-shell {
+        @apply relative min-h-screen flex flex-col;
+    }
+
+    .page-pattern {
+        @apply pointer-events-none absolute inset-0 opacity-60 blur-3xl;
+        background: radial-gradient(circle, rgba(59, 130, 246, 0.15) 0, transparent 55%);
+    }
+
+    .glass-panel {
+        @apply rounded-3xl border bg-base-100/80 backdrop-blur-xl shadow-lg shadow-base-300/30;
+        border-color: var(--card-border);
+    }
+
+    .glow-badge {
+        @apply inline-flex items-center gap-2 rounded-full border px-4 py-1 text-xs font-medium uppercase tracking-[0.2em];
+        border-color: rgba(255, 255, 255, 0.15);
+        background: rgba(15, 23, 42, 0.6);
+    }
+
+    .feature-pill {
+        @apply inline-flex items-center gap-2 rounded-full border px-3 py-1 text-xs font-semibold uppercase;
+        border-color: rgba(148, 163, 184, 0.2);
+    }
+
+    .blog-card-modern {
+        @apply glass-panel h-full transition-transform duration-300 ease-out hover:-translate-y-1 hover:shadow-2xl hover:shadow-primary/20;
+        background-image: linear-gradient(135deg, rgba(59, 130, 246, 0.08), rgba(236, 72, 153, 0.05));
+    }
+
+    .prose-modern {
+        @apply prose prose-lg max-w-none text-base-content/90 dark:prose-invert;
+    }
+}
+
+@layer utilities {
+    .text-gradient {
+        @apply bg-clip-text text-transparent;
+        background-image: linear-gradient(120deg, #60a5fa, #c084fc, #34d399);
+    }
+
+    .grid-overlay {
+        background-image:
+            linear-gradient(to right, var(--grid-color) 1px, transparent 1px),
+            linear-gradient(to bottom, var(--grid-color) 1px, transparent 1px);
+        background-size: 40px 40px;
+    }
+
+    .animated-border {
+        background: linear-gradient(120deg, rgba(59, 130, 246, 0.6), rgba(14, 165, 233, 0.6));
+        animation: pulse-border 6s ease-in-out infinite;
+    }
+}
+
+@keyframes pulse-border {
+    0% {
+        opacity: 0.4;
+    }
+    50% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0.4;
+    }
+}
+
+@keyframes float-card {
+    0% {
+        transform: translateY(0px);
+    }
+    50% {
+        transform: translateY(-6px);
+    }
+    100% {
+        transform: translateY(0px);
+    }
+}
 
 /* View Transitions API */
 @view-transition {
