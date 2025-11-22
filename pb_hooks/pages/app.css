@@ -3173,6 +3173,26 @@ h1,
   width: 100%;
 }
 
+.min-w-\[calc\]{
+  min-width: calc;
+}
+
+.min-w-\[calc\(min\)\]{
+  min-width: calc(min);
+}
+
+.min-w-\[calc\(min\(\)\)\]{
+  min-width: calc(min());
+}
+
+.min-w-\[calc\(min\(max-w-6xl\2c \)\)\]{
+  min-width: calc(min(max - w - 6xl,));
+}
+
+.min-w-\[calc\(min\(72rem\2c 100\%\)\)\]{
+  min-width: calc(min(72rem,100%));
+}
+
 .max-w-2xl{
   max-width: 42rem;
 }
@@ -3183,6 +3203,10 @@ h1,
 
 .max-w-6xl{
   max-width: 72rem;
+}
+
+.max-w-24{
+  max-width: 6rem;
 }
 
 .flex-1{

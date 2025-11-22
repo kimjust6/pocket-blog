@@ -46,10 +46,10 @@
 </script>
 
 <div
-    class="mt-16 flex flex-col gap-12 <%= !isHomepage ? 'min-h-[calc(100vh-14rem)]' : '' %>"
+    class="mt-16 flex flex-col gap-12 <%= !isHomepage ? 'min-h-[calc(100vh-14rem)]' : 'items-center' %>"
     v-scope="SearchApp"
 >
-    <section class="glass-panel border border-white/10 px-6 py-10 text-center">
+    <section class="glass-panel border border-white/10 px-6 py-10 text-center <%= !isHomepage ? '' : 'min-w-[calc(min(72rem,100%))]' %>">
         <div class="space-y-4">
             <a href="/blog/posts" class="no-underline">
                 <!-- <p class="text-xs uppercase tracking-[0.5em] text-base-content/70">
@@ -129,7 +129,7 @@
             class="no-underline group h-full"
         >
             <article
-                class="blog-card-modern blog-card-transition flex h-full flex-col gap-5 overflow-hidden border border-white/10 p-4"
+                class="glass-panel blog-card-transition flex h-full flex-col gap-5 overflow-hidden border border-white/10 p-4"
                 style="--blog-card-id: blog-card-<%= blog.id %>"
             >
                 <div class="relative h-52 w-full overflow-hidden rounded-3xl">
@@ -177,7 +177,7 @@
                     <div
                         class="flex items-center justify-between text-sm font-semibold text-primary"
                     >
-                        <span>Read story</span>
+                        <span>Read</span>
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
                             width="18"
