@@ -42,24 +42,6 @@
                 <h3
                     class="text-sm uppercase tracking-[0.4em] text-base-content/70"
                 >
-                    Resources
-                </h3>
-                <ul class="mt-4 space-y-2 text-base-content/80">
-                    <% resources.forEach(resource => { %>
-                    <li>
-                        <a
-                            href="<%= resource.url %>"
-                            class="transition hover:text-primary"
-                            ><%= resource.name %></a
-                        >
-                    </li>
-                    <% }) %>
-                </ul>
-            </div>
-            <div>
-                <h3
-                    class="text-sm uppercase tracking-[0.4em] text-base-content/70"
-                >
                     Social links
                 </h3>
                 <ul class="mt-4 space-y-2 text-base-content/80">
@@ -73,6 +55,24 @@
                             <i class="<%= social.icon %> text-base"></i>
                             <%= social.name %>
                         </a>
+                    </li>
+                    <% }) %>
+                </ul>
+            </div>
+            <div>
+                <h3
+                    class="text-sm uppercase tracking-[0.4em] text-base-content/70"
+                >
+                    Resources
+                </h3>
+                <ul class="mt-4 space-y-2 text-base-content/80">
+                    <% resources.forEach(resource => { %>
+                    <li>
+                        <a
+                            href="<%= resource.url %>"
+                            class="transition hover:text-primary"
+                            ><%= resource.name %></a
+                        >
                     </li>
                     <% }) %>
                 </ul>

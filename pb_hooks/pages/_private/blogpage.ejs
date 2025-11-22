@@ -56,10 +56,8 @@
             ? singleBlog.content2.replace(/<[^>]*>/g, ' ')
             : ''
         const totalWords =
-            (plainOne + ' ' + plainTwo)
-                .trim()
-                .split(/\s+/)
-                .filter(Boolean).length || 0
+            (plainOne + ' ' + plainTwo).trim().split(/\s+/).filter(Boolean)
+                .length || 0
         readingTime = Math.max(2, Math.ceil(totalWords / 220))
         tagsList = singleBlog?.tags
             ? singleBlog.tags.split(';').filter((tag) => tag.trim().length > 0)
@@ -110,7 +108,9 @@
         >
             <%= singleBlog?.title %>
         </h1>
-        <div class="flex flex-wrap gap-2 text-[0.7rem] uppercase text-base-content/60">
+        <div
+            class="flex flex-wrap gap-2 text-[0.7rem] uppercase text-base-content/60"
+        >
             <% if (tagsList?.length) { tagsList.forEach(tag => { %>
             <span class="feature-pill"><%= tag %></span>
             <% }) } else { %>
@@ -118,7 +118,7 @@
             <% } %>
         </div>
         <% if (imageUrl) { %>
-        <div class="relative overflow-hidden rounded-[2rem]">
+        <div class="relative overflow-hidden">
             <img
                 src="<%= imageUrl %>"
                 class="h-auto w-full object-cover blog-image-transition"
@@ -128,16 +128,21 @@
                 "
                 alt="<%= singleBlog?.title %> image"
             />
-            <div class="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-base-100/90 to-transparent"></div>
+            <div
+                class="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-base-100/90 to-transparent"
+            ></div>
         </div>
         <% } %>
         <div class="prose-modern mt-4 space-y-6">
             <div><%- singleBlog?.content1 %></div>
             <div><%- singleBlog?.content2 %></div>
         </div>
-        <div class="flex flex-wrap items-center justify-between gap-4 pt-4 text-sm">
+        <div
+            class="flex flex-wrap items-center justify-between gap-4 pt-4 text-sm"
+        >
             <span class="text-base-content/70"
-                >Reading time · ~<%= readingTime %> min</span
+                >Reading time · ~<%= readingTime %>
+                min</span
             >
             <a href="/blog/posts" class="btn btn-primary btn-sm gap-2">
                 Browse more stories

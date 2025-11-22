@@ -46,15 +46,12 @@
 </script>
 
 <div
-    class="mt-16 flex flex-col gap-12 <%= !isHomepage ? 'min-h-[calc(100vh-14rem)]' : 'items-center' %>"
+    class="mt-16 flex flex-col gap-12 items-center <%= !isHomepage ? 'min-h-[calc(100vh-14rem)] ' : '' %>"
     v-scope="SearchApp"
 >
-    <section class="glass-panel border border-white/10 px-6 py-10 text-center <%= !isHomepage ? '' : 'min-w-[calc(min(72rem,100%))]' %>">
+    <section class="glass-panel border border-white/10 px-6 py-10 text-center <%= !isHomepage ? 'min-w-[calc(min(72rem,100%))]' : 'min-w-[calc(min(72rem,100%))]' %>">
         <div class="space-y-4">
             <a href="/blog/posts" class="no-underline">
-                <!-- <p class="text-xs uppercase tracking-[0.5em] text-base-content/70">
-                    Digital garden
-                </p> -->
                 <h1 class="text-4xl font-semibold">Latest posts</h1>
             </a>
             <p class="text-base text-base-content/70 max-w-3xl mx-auto">
@@ -129,7 +126,7 @@
             class="no-underline group h-full"
         >
             <article
-                class="glass-panel blog-card-transition flex h-full flex-col gap-5 overflow-hidden border border-white/10 p-4"
+                class="glass-panel blog-card-transition flex h-full flex-col gap-5 overflow-hidden border border-white/10 "
                 style="--blog-card-id: blog-card-<%= blog.id %>"
             >
                 <div class="relative h-52 w-full overflow-hidden rounded-3xl">
@@ -137,7 +134,7 @@
                     <img
                         src="<%= myImageUrl%>"
                         alt="<%= blog.title %> Image"
-                        class="h-full w-full object-cover blog-image-transition transition duration-500 group-hover:scale-105"
+                        class="h-full w-full object-cover blog-image-transition transition duration-500 "
                         style="--blog-image-id: blog-image-<%= blog.id %>"
                         loading="lazy"
                     />
@@ -155,7 +152,7 @@
                         <%= formatDateTime(new Date(blog.updated)) %>
                     </div>
                 </div>
-                <div class="flex flex-1 flex-col gap-4 px-2 pb-4">
+                <div class="flex flex-1 flex-col gap-4 p-6 pt-2">
                     <div class="flex flex-wrap gap-2 text-[0.65rem] uppercase text-base-content/60">
                         <% if (blog.tags && blog.tags?.length > 0) {
                             blog.tags?.split(';').forEach(tag => { %>
