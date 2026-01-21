@@ -8,7 +8,8 @@
         "css": "tailwindcss -i ./pb_hooks/pages/app.tailwind.css -o ./pb_hooks/pages/app.css --watch\"",
         "push": "npx phio deploy mlt-blog",
         "login": "npx phio login",
-        "update": "pocketbase update"
+        "update": "pocketbase update",
+        "typegen": "node scripts/typegen.mjs"
     },
     "description": "Justin's personal blog using PocketPages and DaisyUI.",
     "author": {
@@ -29,6 +30,7 @@
         "@tailwindcss/typography": "^0.5.16",
         "concurrently": "^9.2.1",
         "daisyui": "^4.12.23",
+        "dotenv": "^17.2.3",
         "prettier": "^3.6.2",
         "prettier-plugin-ejs": "^1.0.3",
         "prettier-plugin-tailwindcss": "^0.6.14",
