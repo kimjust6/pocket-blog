@@ -27,10 +27,11 @@
                     (m) => m.name === 'og:image' || m.name === 'twitter:image'
                 )
                 .forEach((m) => (m.content = getImageUrl(singleBlog)))
-            // update the description metadata with the first paragraph of the blog content
-
-            const description =
-                singleBlog.content1.match(/<p>(.*?)<\/p>/)[1] ?? ''
+            // update the description metadata
+            const description = singleBlog.content1
+                .replace(/<[^>]*>/g, '')
+                .slice(0, 160)
+                .trim()
             data.metadata
                 .filter(
                     (m) =>
@@ -39,6 +40,32 @@
                         m.name === 'twitter:description'
                 )
                 .forEach((m) => (m.content = description))
+
+            // add tags to metadata
+            if (singleBlog.tags && singleBlog.tags.length > 0) {
+                const tags = singleBlog.tags.split(';')
+                tags.forEach((tag) => {
+                    data.metadata.push({
+                        name: 'article:tag',
+                        content: tag.trim(),
+                    })
+                })
+                data.metadata.push({
+                    name: 'keywords',
+                    content: tags.join(', '),
+                })
+            }
+
+            // set og:type to article
+            const ogType = data.metadata.find((m) => m.name === 'og:type')
+            if (ogType) {
+                ogType.content = 'article'
+            } else {
+                data.metadata.push({
+                    name: 'og:type',
+                    content: 'article',
+                })
+            }
         } catch (error) {
             console.error('Error fetching single blog post: ', error)
         }
