@@ -37,6 +37,7 @@
         "tailwindcss": "^3.4.17"
     },
     "dependencies": {
+        "pocketbase": "^0.26.6",
         "pocketpages": ">=0.22.3",
         "pocketpages-plugin-js-sdk": "^0.2.0"
     },
