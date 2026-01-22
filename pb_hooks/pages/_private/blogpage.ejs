@@ -27,10 +27,11 @@
                     (m) => m.name === 'og:image' || m.name === 'twitter:image'
                 )
                 .forEach((m) => (m.content = getImageUrl(singleBlog)))
-            // update the description metadata with the first paragraph of the blog content
-
-            const description =
-                singleBlog.content1.match(/<p>(.*?)<\/p>/)[1] ?? ''
+            // update the description metadata
+            const description = singleBlog.content1
+                .replace(/<[^>]*>/g, '')
+                .slice(0, 160)
+                .trim()
             data.metadata
                 .filter(
                     (m) =>
@@ -39,6 +40,50 @@
                         m.name === 'twitter:description'
                 )
                 .forEach((m) => (m.content = description))
+
+            // add tags to metadata
+            if (singleBlog.tags && singleBlog.tags.length > 0) {
+                const tags = singleBlog.tags.split(';')
+                tags.forEach((tag) => {
+                    data.metadata.push({
+                        name: 'article:tag',
+                        content: tag.trim(),
+                    })
+                })
+                data.metadata.push({
+                    name: 'keywords',
+                    content: tags.join(', '),
+                })
+            }
+
+
+
+            // add published and modified times
+            const publishedDate = singleBlog.manualPublishDate || singleBlog.created
+            console.log({ publishedDate })
+            if (publishedDate) {
+                data.metadata.push({
+                    name: 'article:published_time',
+                    content: new Date(publishedDate).toISOString(),
+                })
+            }
+            if (singleBlog.updated) {
+                data.metadata.push({
+                    name: 'article:modified_time',
+                    content: new Date(singleBlog.updated).toISOString(),
+                })
+            }
+
+            // set og:type to article
+            const ogType = data.metadata.find((m) => m.name === 'og:type')
+            if (ogType) {
+                ogType.content = 'article'
+            } else {
+                data.metadata.push({
+                    name: 'og:type',
+                    content: 'article',
+                })
+            }
         } catch (error) {
             console.error('Error fetching single blog post: ', error)
         }
@@ -49,83 +94,66 @@
                 : singleBlog?.coverImageAlt
     }
 </script>
-<% if (singleBlog == null) { %>
-<%- include('pagenotfound.ejs') %>
-<% } else {  %>
-<div
-    class="hero bg-base-100 py-12 min-h-[calc(100vh-12.54rem)] flex flex-col items-center justify-start blog-card-transition"
-    style="--blog-card-id: blog-card-<%= singleBlog?.id %>"
->
-    <div class="hero-content max-w-4xl flex flex-col">
-        <h1
-            class="md:mb-0 font-extrabold text-3xl leading-tight md:flex hidden blog-title-transition"
-            style="--blog-title-id: blog-title-<%= singleBlog?.id %>"
-        >
-            <%= singleBlog?.title %>
-        </h1>
-        <!-- Blog Image -->
-        <% if (imageUrl) { %>
-        <img
-            src="<%= imageUrl %>"
-            class="rounded-lg shadow-lg w-full h-auto max-h-96 object-cover m-0 blog-image-transition"
-            style="
+<% if (singleBlog==null) { %>
+    <%- include('pagenotfound.ejs') %>
+        <% } else { %>
+            <div class="hero bg-base-100 py-12 min-h-[calc(100vh-12.54rem)] flex flex-col items-center justify-start blog-card-transition"
+                style="--blog-card-id: blog-card-<%= singleBlog?.id %>">
+                <div class="hero-content max-w-4xl flex flex-col">
+                    <h1 class="md:mb-0 font-extrabold text-3xl leading-tight md:flex hidden blog-title-transition"
+                        style="--blog-title-id: blog-title-<%= singleBlog?.id %>">
+                        <%= singleBlog?.title %>
+                    </h1>
+                    <!-- Blog Image -->
+                    <% if (imageUrl) { %>
+                        <img src="<%= imageUrl %>"
+                            class="rounded-lg shadow-lg w-full h-auto max-h-96 object-cover m-0 blog-image-transition"
+                            style="
                 --blog-image-id: blog-image-<%= singleBlog?.id %>;
                 aspect-ratio: 16/9;
-            "
-            alt="<%= singleBlog?.title %> image"
-        />
-        <% } %>
-        <!-- Blog Content -->
-        <div class="w-full self-start">
-            <h1
-                class="mb-0 font-extrabold sm:text-2xl leading-tight flex md:hidden blog-title-transition"
-                style="--blog-title-id: blog-title-<%= singleBlog?.id %>"
-            >
-                <%= singleBlog?.title %>
-            </h1>
-            <!-- Meta Info -->
-            <div class="items-center text-sm text-base-content/70">
-                <!-- Back to Posts Button -->
-                <div class="mt-6 border-base-300">
-                    <div class="flex justify-between w-full">
-                        <!-- <span>By: <strong>Justin K</strong></span> -->
-                        <span
-                            >Posted:
-                            <strong>
-                                <%= formatDateTime(new Date(singleBlog?.updated))
-                            %>
-                            </strong></span
-                        >
-                        <a
-                            href="/blog/posts"
-                            class="btn btn-outline btn-sm gap-2 transition-all duration-200"
-                        >
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                width="16"
-                                height="16"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                stroke="currentColor"
-                                stroke-width="2"
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                            >
-                                <path d="m12 19-7-7 7-7" />
-                                <path d="M19 12H5" />
-                            </svg>
-                            View all posts
-                        </a>
-                    </div>
-                </div>
-            </div>
-            <p class="text-base-content/80 min-w-80">
-                <%- singleBlog?.content1 %>
-            </p>
-            <p class="text-base-content/80 mb-6 min-w-80">
-                <%- singleBlog?.content2 %>
-            </p>
-        </div>
-    </div>
-</div>
-<% } %>
+            " alt="<%= singleBlog?.title %> image" />
+                        <% } %>
+                            <!-- Blog Content -->
+                            <div class="w-full self-start">
+                                <h1 class="mb-0 font-extrabold sm:text-2xl leading-tight flex md:hidden blog-title-transition"
+                                    style="--blog-title-id: blog-title-<%= singleBlog?.id %>">
+                                    <%= singleBlog?.title %>
+                                </h1>
+                                <!-- Meta Info -->
+                                <div class="items-center text-sm text-base-content/70">
+                                    <!-- Back to Posts Button -->
+                                    <div class="mt-6 border-base-300">
+                                        <div class="flex justify-between w-full">
+                                            <!-- <span>By: <strong>Justin K</strong></span> -->
+                                            <div>Posted:
+                                                <strong>
+                                                    <%= formatDateTime(new Date(singleBlog?.manualPublishDate ||
+                                                        singleBlog.created)) %>
+                                                </strong></span>
+                                                <div>Updated:
+                                                    <strong>
+                                                        <%= formatDateTime(new Date(singleBlog?.updated)) %>
+                                                    </strong></span>
+                                                </div>
+                                            </div>
+                                            <a href="/blog/posts"
+                                                class="btn btn-outline btn-sm gap-2 transition-all duration-200">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                                    viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                    <path d="m12 19-7-7 7-7" />
+                                                    <path d="M19 12H5" />
+                                                </svg>
+                                                View all posts
+                                            </a>
+                                        </div>
+                                        <p class="text-base-content/80 min-w-80">
+                                            <%- singleBlog?.content1 %>
+                                        </p>
+                                        <p class="text-base-content/80 mb-6 min-w-80">
+                                            <%- singleBlog?.content2 %>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            <% } %>

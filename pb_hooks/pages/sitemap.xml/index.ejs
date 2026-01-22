@@ -19,16 +19,15 @@
                 `
         <url>
             <loc>https://blog.jkim.win/blog/posts/${post?.id}</loc>
-            <lastmod>${new Date(post?.updated).toISOString()}</lastmod>
+            <lastmod>${new Date(post?.updated).toISOString().split('.')[0] + 'Z'}</lastmod>
             <changefreq>weekly</changefreq>
             <priority>0.80</priority>
         </url>
     `
         )
         .join('')
-    const xmlSnippet = `
-
-    <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+    const xmlSnippet = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
         ${rootpage}
         ${xmlBlogposts}
     </urlset>
