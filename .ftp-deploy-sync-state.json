@@ -1,7 +1,7 @@
 {
     "description": "DO NOT DELETE THIS FILE. This file is used to keep track of which files have been synced in the most recent deployment. If you delete this file a resync will need to be done (which can take a while) - read more: https://github.com/SamKirkland/FTP-Deploy-Action",
     "version": "1.0.0",
-    "generatedTime": 1769040425275,
+    "generatedTime": 1769146508248,
     "data": [
         {
             "type": "file",
@@ -154,8 +154,8 @@
         {
             "type": "file",
             "name": "pb_hooks/pages/sitemap.xml/index.ejs",
-            "size": 1037,
-            "hash": "e5838d265e4e9823c88c9a3614774b7466bddc9e9c3c35d7773b0c6c9932f469"
+            "size": 944,
+            "hash": "6e9c0bb2c1e803372c85004389c7c5d5cdaeb9f230f86c268bc5f5608e53f2af"
         },
         {
             "type": "file",
@@ -197,7 +197,7 @@
             "type": "file",
             "name": "pb_hooks/pages/_private/blogpage.ejs",
             "size": 7674,
-            "hash": "2f9841b5053d0e1c661760f5ea2a9730f84bcfda241a4563dc1e73c77dc7c12f"
+            "hash": "c8f066525c59a071cc48222fcde818953006384592f4bd3b241408eab190e1ed"
         },
         {
             "type": "file",
