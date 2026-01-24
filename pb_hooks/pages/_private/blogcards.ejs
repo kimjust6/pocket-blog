@@ -19,7 +19,7 @@
     }
     const currentPage = params?.page ?? 1
     const perPage = params?.perPage ?? 6
-    
+
     blogposts = fetchBlogPosts(currentPage, perPage, params.query) ?? []
     const totalPages = blogposts?.totalPages || 1
 </script>
@@ -46,8 +46,7 @@
 </script>
 
 <div
-    class="bg-gradient-to-br from-base-100 to-base-200 pt-16 flex flex-col justify-between <%= !isHomepage ? 'min-h-[calc(100vh-12.54rem)]' : 'pb-12' %>"
->
+    class="bg-gradient-to-br from-base-100 to-base-200 pt-16 flex flex-col justify-between <%= !isHomepage ? 'min-h-[calc(100vh-12.54rem)]' : 'pb-12' %>">
     <div class="max-w-6xl mx-auto px-4" v-scope="SearchApp">
         <div class="text-center">
             <a href="/blog/posts" class="no-underline">
@@ -59,32 +58,16 @@
                 </p>
                 <div class="flex justify-center">
                     <div class="relative w-full max-w-xl">
-                        <input
-                            autofocus
-                            v-model="searchQuery"
-                            ref="searchInput"
-                            class="input w-full border border-gray-600 pr-10" 
-                            placeholder="Search blogs..." 
+                        <input autofocus v-model="searchQuery" ref="searchInput"
+                            class="input w-full border border-gray-600 pr-10" placeholder="Search blogs..."
                             @keydown.enter="handleSearch" />
-                        <button
-                            v-show="searchQuery"
-                            @click="clearSearch"
+                        <button v-show="searchQuery" @click="clearSearch"
                             class="absolute right-3 top-1/2 !-translate-y-1/2 btn btn-ghost btn-sm btn-circle active:!-translate-y-1/2"
-                            type="button"
-                        >
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                class="h-5 w-5"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                stroke="currentColor"
-                            >
-                                <path
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
-                                    stroke-width="2"
-                                    d="M6 18L18 6M6 6l12 12"
-                                />
+                            type="button">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                                stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M6 18L18 6M6 6l12 12" />
                             </svg>
                         </button>
                     </div>
@@ -92,21 +75,10 @@
                 <!-- Back to Posts Button -->
                 <div class="my-8 border-base-300 w-full">
                     <div class="flex justify-end w-full">
-                        <a
-                            href="/"
-                            class="btn btn-outline btn-sm gap-2 transition-all duration-200"
-                        >
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                width="16"
-                                height="16"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                stroke="currentColor"
-                                stroke-width="2"
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                            >
+                        <a href="/" class="btn btn-outline btn-sm gap-2 transition-all duration-200">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
                                 <path d="m12 19-7-7 7-7" />
                                 <path d="M19 12H5" />
                             </svg>
@@ -114,84 +86,72 @@
                         </a>
                     </div>
                 </div>
-            <% } %>
+                <% } %>
         </div>
         <div class="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-            <% blogposts?.items?.forEach(blog => { 
-                const text = blog.content1.replace(/<[^>]*>/g, ''); 
-                const myImageUrl = getImageUrl(blog) ? `${getImageUrl(blog)}?thumb=350x0` 
-                : blog.coverImageAlt %>
+            <% blogposts?.items?.forEach(blog=> {
+                const text = blog.content1.replace(/<[^>]*>/g, '');
+                    const myImageUrl = getImageUrl(blog) ? `${getImageUrl(blog)}?thumb=350x0`
+                    : blog.coverImageAlt %>
 
-            <a href="/blog/posts/<%= blog.id %>" class="no-underline group">
-                <div
-                    class="card bg-base-100 shadow-xl transition-shadow duration-300 blog-card-transition"
-                    style="--blog-card-id: blog-card-<%= blog.id %>"
-                >
-                    <% if (myImageUrl !== null && myImageUrl !== "") { %>
-                        <figure class="h-48 overflow-hidden m-0 rounded-t-2xl">
-                            <img
-                                src="<%= myImageUrl%>"
-                                alt="<%= blog.title %> Image"
-                                class="w-full h-48 object-cover blog-image-transition rounded-t-2xl"
-                                style="--blog-image-id: blog-image-<%= blog.id %>"
-                                loading="lazy"
-                            />
-                    </figure>
-                    <% } %>
-                    <div class="card-body gap-0">
-                        <div class="flex">
-                            <% if (blog.tags && blog.tags?.length > 0) {
-                            blog.tags?.split(';').forEach(tag => { %>
-                            <div class="pb-4 text-wrap">
-                                <span
-                                    class="badge badge-outline badge-sm mr-2 text-nowrap"
-                                    ><%= tag %>
-                                </span>
-                            </div>
-                            <% }) %>
-                            <% } %>
+                    <a href="/blog/posts/<%= blog.id %>" class="no-underline group">
+                        <div class="card bg-base-100 shadow-xl transition-shadow duration-300 blog-card-transition"
+                            style="--blog-card-id: blog-card-<%= blog.id %>">
+                            <% if (myImageUrl !==null && myImageUrl !=="" ) { %>
+                                <figure class="h-48 overflow-hidden m-0 rounded-t-2xl">
+                                    <img src="<%= myImageUrl%>" alt="<%= blog.title %> Image"
+                                        class="w-full h-48 object-cover blog-image-transition rounded-t-2xl"
+                                        style="--blog-image-id: blog-image-<%= blog.id %>" loading="lazy" />
+                                </figure>
+                                <% } %>
+                                    <div class="card-body gap-0">
+                                        <div class="flex">
+                                            <% if (blog.tags && blog.tags?.length> 0) {
+                                                blog.tags?.split(';').forEach(tag => { %>
+                                                <div class="pb-4 text-wrap">
+                                                    <span class="badge badge-outline badge-sm mr-2 text-nowrap">
+                                                        <%= tag %>
+                                                    </span>
+                                                </div>
+                                                <% }) %>
+                                                    <% } %>
+                                        </div>
+                                        <h2 class="card-title group-hover:text-primary transition-colors duration-200 mt-0 blog-title-transition"
+                                            style="--blog-title-id: blog-title-<%= blog.id %>">
+                                            <%= blog.title %>
+                                        </h2>
+                                        <p class="text-sm text-base-content/70">
+                                            <%= text.slice(0, 80) %>...
+                                        </p>
+                                        <span class="text-xs text-base-content/50 mt-2">
+                                            <%= formatDateTime(new Date(blog.updated)) %>
+                                        </span>
+                                    </div>
                         </div>
-                        <h2
-                            class="card-title group-hover:text-primary transition-colors duration-200 mt-0 blog-title-transition"
-                            style="--blog-title-id: blog-title-<%= blog.id %>"
-                        >
-                            <%= blog.title %>
-                        </h2>
-                        <p class="text-sm text-base-content/70">
-                            <%= text.slice(0, 80) %>...
-                        </p>
-                        <span class="text-xs text-base-content/50 mt-2">
-                            <%= formatDateTime(new Date(blog.updated)) %>
-                        </span>
-                    </div>
-                </div>
-            </a>
-            <% }) %>
+                    </a>
+                    <% }) %>
         </div>
     </div>
     <% if (!isHomepage) { %>
         <!-- Pagination -->
         <div class="flex justify-center my-12">
             <div class="join">
-                <a href="?page=<%= currentPage - 1 %>" 
-                class="join-item btn btn-sm"
-                <% if (currentPage <= 1) { %> disabled <% } %>>
-                «
+                <a href="?page=<%= currentPage - 1 %>" class="join-item btn btn-sm" <% if (currentPage <=1) { %>
+                    disabled <% } %>>
+                        «
                 </a>
 
-                <% for (let i = 1; i <= totalPages; i++) { %>
-                <a href="?page=<%= i %>" 
-                    class="join-item btn btn-sm <%= currentPage === i ? 'btn-active' : '' %>">
-                    <%= i %>
-                </a>
-                <% } %>
+                <% for (let i=1; i <=totalPages; i++) { %>
+                    <a href="?page=<%= i %>" class="join-item btn btn-sm <%= currentPage === i ? 'btn-active' : '' %>">
+                        <%= i %>
+                    </a>
+                    <% } %>
 
-                <a href="?page=<%= currentPage + 1 %>" 
-                class="join-item btn btn-sm"
-                <% if (currentPage >= totalPages) { %> disabled <% } %>>
-                »
-                </a>
+                        <a href="?page=<%= currentPage + 1 %>" class="join-item btn btn-sm" <% if (currentPage>=
+                            totalPages) { %> disabled <% } %>>
+                                »
+                        </a>
             </div>
         </div>
-    <% } %>
+        <% } %>
 </div>
