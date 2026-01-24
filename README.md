@@ -1,22 +1,19 @@
-# DaisyUI PocketPages Blog
+# Justin's Blog
 
-A robust, multipage blog application built with **PocketPages** (PocketBase), styled with **DaisyUI** and **Tailwind CSS**.
+A personal blog application built with **PocketPages** (PocketBase), styled with **DaisyUI** and **Tailwind CSS**.
 
 ## Features
 
-*   **PocketPages Backend**: Leverages the power and simplicity of PocketBase for data management and authentication.
-*   **Modern Styling**: Beautiful, responsive UI components provided by [DaisyUI](https://daisyui.com/) and [Tailwind CSS](https://tailwindcss.com/).
-*   **Server-Side Rendering**: Uses EJS templates for dynamic content rendering.
-*   **SEO Optimized**: Includes Open Graph metadata for rich social sharing (Twitter cards, Facebook, etc.).
-*   **Search Functionality**: Built-in blog post search.
-*   **Responsive Design**: Mobile-friendly layout that looks great on all devices.
+*   **PocketPages Backend**: fast and simple backend with PocketBase.
+*   **Modern UI**: Clean, responsive design using [DaisyUI](https://daisyui.com/) and [Tailwind CSS](https://tailwindcss.com/).
+*   **Server-Side Rendering**: Fast pages using EJS templates.
+*   **Zen Mode**: A dedicated minimalist page.
+*   **Custom Integrations**: Includes Zendesk and Discord webhook integrations.
 
 ## Prerequisites
 
-Before you begin, ensure you have the following installed:
-
-*   [Node.js](https://nodejs.org/) (Latest LTS recommended)
-*   [PocketBase](https://pocketbase.io/) (or use the included `npx phio` commands)
+*   [Node.js](https://nodejs.org/) (Latest LTS)
+*   [PocketBase](https://pocketbase.io/)
 
 ## Installation
 
@@ -35,56 +32,27 @@ Before you begin, ensure you have the following installed:
 
 ### Development
 
-To start the development server with concurrent Tailwind CSS watching:
+Run PocketBase and Tailwind watcher concurrently:
 
 ```bash
 npm run dev
 ```
 
-This command runs `pocketbase serve` and `tailwindcss` in watch mode.
-
-### starting PocketBase Only
-
-To just start the PocketBase server:
-
-```bash
-npm start
-```
-
-### CSS Watch
-
-To run the Tailwind CSS watcher standalone:
-
-```bash
-npm run css
-```
-
 ### Deployment
 
-Deploy to Pockethost using `phio`:
+Deploy to Pockethost:
 
 ```bash
 npm run push
 ```
 
-You may need to login first:
-
-```bash
-npm run login
-```
-
 ## Project Structure
 
-*   `pb_hooks/`: PocketBase hooks and server-side logic.
-    *   `pages/`: Route handlers and EJS templates.
-        *   `(navbarLayout)/`: Routes that include the main navigation bar.
-        *   `_private/`: Reusable partials and components.
-        *   `utils/`: Helper functions and constants.
-*   `pb_data/`: PocketBase data directory (database files).
-*   `tailwind.config.js`: Tailwind CSS configuration.
-*   `package.json`: Project dependencies and scripts.
-
-
+*   `pb_hooks/`: Server-side logic and pages.
+    *   `pages/`: Route handlers (EJS).
+        *   `(navbarLayout)/`: Main pages with navigation.
+        *   `_private/`: Partials and internal logic.
+*   `pb_data/`: Database files.
 
 ## Author
 
