@@ -1,7 +1,7 @@
 {
     "description": "DO NOT DELETE THIS FILE. This file is used to keep track of which files have been synced in the most recent deployment. If you delete this file a resync will need to be done (which can take a while) - read more: https://github.com/SamKirkland/FTP-Deploy-Action",
     "version": "1.0.0",
-    "generatedTime": 1769190557078,
+    "generatedTime": 1769405964522,
     "data": [
         {
             "type": "file",
@@ -83,6 +83,10 @@
         },
         {
             "type": "folder",
+            "name": "pb_hooks/pages/rss.xml"
+        },
+        {
+            "type": "folder",
             "name": "pb_hooks/pages/robots.txt"
         },
         {
@@ -154,14 +158,20 @@
         {
             "type": "file",
             "name": "pb_hooks/pages/sitemap.xml/index.ejs",
-            "size": 942,
-            "hash": "0a8d57dc7ff875b473ba928478fe08628459ba0472e044c114fee223e3d39582"
+            "size": 1018,
+            "hash": "08fcf77deff8f6c360762a16fe8df9be29805710c27175162b7c783f1fb2b88e"
         },
         {
             "type": "file",
             "name": "pb_hooks/pages/sitemap/index.ejs",
             "size": 31,
             "hash": "081d70e4bb137769eaccda2c227604e9ed538bd84dd20995aae573ca814042d7"
+        },
+        {
+            "type": "file",
+            "name": "pb_hooks/pages/rss.xml/index.ejs",
+            "size": 1733,
+            "hash": "d4ff09547947a9b51e5d243a93351e4400139e382811ed2a3b3837e52f4136c4"
         },
         {
             "type": "file",
