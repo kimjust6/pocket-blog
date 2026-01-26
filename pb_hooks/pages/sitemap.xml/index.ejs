@@ -1,35 +1,40 @@
 <script server>
-    const client = pb({ request })
-    const blogposts = client.collection('blogposts').getFullList({
-        sort: '-updated',
-        filter: 'isDeleted = false',
-    })
+  const client = pb({ request })
+  const blogposts = client.collection('blogposts').getFullList({
+    sort: '-updated',
+    filter: 'isDeleted = false',
+  })
 
-    response.header('Content-Type', 'application/xml')
+  response.header('Content-Type', 'application/xml')
 
-    const rootpage = `<url>
+  const rootpage = `<url>
     <loc>https://www.jkim.win/</loc>
     <priority>1.00</priority>
     <changefreq>weekly</changefreq>
+  </url>
+  <url>
+    <loc>https://www.jkim.win/rss.xml</loc>
+    <priority>0.80</priority>
+    <changefreq>daily</changefreq>
   </url>`
 
-    const xmlBlogposts = blogposts
-        ?.map(
-            (post) =>
-                `<url>
+  const xmlBlogposts = blogposts
+    ?.map(
+      (post) =>
+        `<url>
     <loc>https://www.jkim.win/blog/posts/${post?.id}</loc>
     <lastmod>${new Date(post?.updated).toISOString().split('.')[0] + 'Z'}</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.80</priority>
   </url>`
-        )
-        .join('\n  ')
+    )
+    .join('\n  ')
 
-    const xmlSnippet = `<?xml version="1.0" encoding="UTF-8"?>
+  const xmlSnippet = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   ${rootpage}
   ${xmlBlogposts}
 </urlset>`
 
-    response.write(xmlSnippet)
+  response.write(xmlSnippet)
 </script>

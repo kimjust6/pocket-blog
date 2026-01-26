@@ -1,0 +1,47 @@
+<script server>
+    const client = pb({ request })
+    const blogposts = client.collection('blogposts').getFullList({
+        sort: '-created',
+        filter: 'isDeleted = false',
+    })
+
+    const buildDate = new Date().toUTCString()
+    const description = "The Justin Blog - Thoughts on tech, life, and everything in between."
+
+    const items = blogposts.map(post => {
+        const pubDate = new Date(post.manualPublishDate || post.created).toUTCString()
+        const postLink = `https://www.jkim.win/blog/posts/${post.id}`
+        const postDesc = (post.content1 || '')
+            .replace(/<[^>]*>/g, '') // Strip HTML
+            .substring(0, 300) // Truncate
+            + (post.content1?.length > 300 ? '...' : '')
+
+        const fullContent = (post.content1 || '') + (post.content2 || '')
+
+        return `
+    <item>
+      <title><![CDATA[${post.title}]]></title>
+      <link>${postLink}</link>
+      <guid>${postLink}</guid>
+      <pubDate>${pubDate}</pubDate>
+      <description><![CDATA[${postDesc}]]></description>
+      <content:encoded><![CDATA[${fullContent}]]></content:encoded>
+    </item>`
+    }).join('')
+
+    const rss = `<?xml version="1.0" encoding="UTF-8" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>The Justin Blog</title>
+    <link>https://www.jkim.win</link>
+    <description>${description}</description>
+    <language>en-us</language>
+    <lastBuildDate>${buildDate}</lastBuildDate>
+    <atom:link href="https://www.jkim.win/rss.xml" rel="self" type="application/rss+xml" />
+    ${items}
+  </channel>
+</rss>`
+
+    response.header('Content-Type', 'application/xml')
+    response.write(rss)
+</script>
