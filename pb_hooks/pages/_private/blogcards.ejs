@@ -46,7 +46,7 @@
 </script>
 
 <div
-    class="bg-gradient-to-br from-base-100 to-base-200 pt-16 flex flex-col justify-between <%= !isHomepage ? 'min-h-[calc(100vh-12.54rem)]' : 'pb-12' %>">
+    class="bg-base-100 pt-16 flex flex-col justify-between <%= !isHomepage ? 'min-h-[calc(100vh-12.54rem)]' : 'pb-12' %>">
     <div class="max-w-6xl mx-auto px-4" v-scope="SearchApp">
         <div class="text-center">
 
@@ -99,7 +99,7 @@
                 <!-- Hero Post -->
                 <div class="mb-12">
                     <a href="/blog/posts/<%= heroPost.id %>" class="no-underline group">
-                        <div class="card lg:card-side bg-base-100 shadow-xl transition-shadow duration-300 blog-card-transition overflow-hidden"
+                        <div class="card lg:card-side bg-base-200 shadow-xl transition-shadow duration-300 blog-card-transition overflow-hidden"
                             style="--blog-card-id: blog-card-<%= heroPost.id %>">
                             <% if (heroImageUrl && heroImageUrl !=="" ) { %>
                                 <figure class="lg:w-1/2 h-64 lg:h-auto m-0 !rounded-none">
@@ -149,7 +149,7 @@
                                 : blog.coverImageAlt %>
 
                                 <a href="/blog/posts/<%= blog.id %>" class="no-underline group">
-                                    <div class="card bg-base-100 shadow-xl transition-shadow duration-300 blog-card-transition"
+                                    <div class="card bg-base-200 shadow-xl transition-shadow duration-300 blog-card-transition"
                                         style="--blog-card-id: blog-card-<%= blog.id %>">
                                         <% if (myImageUrl !==null && myImageUrl !=="" ) { %>
                                             <figure class="h-48 overflow-hidden m-0 rounded-t-2xl">
