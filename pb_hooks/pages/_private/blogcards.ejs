@@ -124,8 +124,8 @@
                                             style="--blog-title-id: blog-title-<%= heroPost.id %>">
                                             <%= heroPost.title %>
                                         </h2>
-                                        <p class="text-lg text-base-content/80 mt-4">
-                                            <%= heroText.slice(0, 200) %>...
+                                        <p class="text-lg text-base-content/80 mt-4 line-clamp-4">
+                                            <%= heroText %>
                                         </p>
                                         <span class="text-sm text-base-content/50 mt-4 block">
                                             <%= formatDateTime(new Date(heroPost.updated)) %>
@@ -175,8 +175,8 @@
                                                         style="--blog-title-id: blog-title-<%= blog.id %>">
                                                         <%= blog.title %>
                                                     </h2>
-                                                    <p class="text-sm text-base-content/70">
-                                                        <%= text.slice(0, 80) %>...
+                                                    <p class="text-sm text-base-content/70 line-clamp-3">
+                                                        <%= text %>
                                                     </p>
                                                     <span class="text-xs text-base-content/50 mt-2">
                                                         <%= formatDateTime(new Date(blog.updated)) %>
