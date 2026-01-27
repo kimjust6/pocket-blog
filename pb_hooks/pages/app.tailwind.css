@@ -68,6 +68,14 @@
     opacity: 0.9;
 }
 
+.blog-body-transition {
+    transition: opacity 0.3s ease;
+}
+
+.group:hover .blog-body-transition {
+    opacity: 0.9;
+}
+
 /* Ensure smooth font rendering during transitions */
 .blog-title-transition {
     -webkit-font-smoothing: antialiased;

@@ -108,7 +108,7 @@
                                         style="--blog-image-id: blog-image-<%= heroPost.id %>" loading="lazy" />
                                 </figure>
                                 <% } %>
-                                    <div class="card-body lg:w-1/2 justify-center">
+                                    <div class="card-body lg:w-1/2 justify-center blog-body-transition">
                                         <div class="flex">
                                             <% if (heroPost.tags && heroPost.tags?.length> 0) {
                                                 heroPost.tags?.split(';').forEach(tag => { %>
@@ -158,7 +158,7 @@
                                                     style="--blog-image-id: blog-image-<%= blog.id %>" loading="lazy" />
                                             </figure>
                                             <% } %>
-                                                <div class="card-body gap-0">
+                                                <div class="card-body gap-0 blog-body-transition">
                                                     <div class="flex">
                                                         <% if (blog.tags && blog.tags?.length> 0) {
                                                             blog.tags?.split(';').forEach(tag => { %>

@@ -3425,6 +3425,10 @@ html:has(.drawer-toggle:checked) {
   stroke: #fef08a;
 }
 
+.stroke-blue-500 {
+  stroke: #3b82f6;
+}
+
 .object-cover {
   -o-object-fit: cover;
      object-fit: cover;
@@ -3700,6 +3704,14 @@ html:has(.drawer-toggle:checked) {
 }
 
 .group:hover .blog-image-transition {
+  opacity: 0.9;
+}
+
+.blog-body-transition {
+  transition: opacity 0.3s ease;
+}
+
+.group:hover .blog-body-transition {
   opacity: 0.9;
 }
 
