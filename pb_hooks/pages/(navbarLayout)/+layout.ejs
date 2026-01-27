@@ -1,59 +1,29 @@
 <script type="module">
-    import { createApp } from '/js/petite-vue.es.js'
+
     // import pocketbase from 'https://cdn.jsdelivr.net/npm/pocketbase@0.26.2/+esm'
     // const myPB = new pocketbase('http://127.0.0.1:8090');
 
-    const Constants = {
-        sitename: "Justin's Blog",
-        navigation: [{ title: 'Posts', url: '/blog/posts' }],
-    }
 
-    function Pocket() {
-        return {
-            // getBlogPosts() {
-            //     if (!myPB) {
-            //         myPB = new pocketbase('http://127.0.0.1:8090');
-            //     }
-            //     myPB.collection('blogposts').getList(1, 50).then((result) => {
-            //         console.log(result);
-            //         return result;
-            //     }).catch((error) => {
-            //         console.log(error);
-            //     })
-            // }
+
+    function toggleTheme() {
+        const html = document.documentElement;
+        const currentTheme = html.getAttribute('data-theme');
+        const newTheme = currentTheme === 'dark' ? 'nord' : 'dark';
+
+        html.setAttribute('data-theme', newTheme);
+        document.cookie = `theme=${newTheme}; path=/; max-age=31536000`;
+
+        if (newTheme === 'dark') {
+            html.classList.add('dark');
+        } else {
+            html.classList.remove('dark');
         }
-    }
 
-    function ThemeToggle() {
-        return {
-            theme: localStorage.getItem('theme') || 'dark',
-            mounted() {
-                document.documentElement.setAttribute('data-theme', this.theme)
-                // Add or remove 'dark' class for Tailwind dark mode
-                if (this.theme === 'dark') {
-                    document.documentElement.classList.add('dark')
-                } else {
-                    document.documentElement.classList.remove('dark')
-                }
-            },
-            toggleTheme() {
-                this.theme = this.theme === 'dark' ? 'nord' : 'dark'
-                document.documentElement.setAttribute('data-theme', this.theme)
-                localStorage.setItem('theme', this.theme)
-                // Toggle 'dark' class for Tailwind dark mode
-                if (this.theme === 'dark') {
-                    document.documentElement.classList.add('dark')
-                } else {
-                    document.documentElement.classList.remove('dark')
-                }
-            },
-        }
+        // Toggle icon visibility
+        document.getElementById('theme-icon-sun').style.display = newTheme === 'nord' ? 'inline-block' : 'none';
+        document.getElementById('theme-icon-moon').style.display = newTheme === 'dark' ? 'inline-block' : 'none';
     }
-
-    createApp({
-        Constants,
-        ThemeToggle,
-    }).mount()
+    window.toggleTheme = toggleTheme;
 
     // Enable View Transitions API for blog navigation
     if ('startViewTransition' in document) {
@@ -80,25 +50,13 @@
 </script>
 
 <!doctype html>
-<html lang="en" data-theme="nord" v-scope="Constants">
+<html lang="en" data-theme="<%= data.theme %>" class="<%= data.theme === 'dark' ? 'dark' : '' %>">
 
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <script>
-        // Set theme before page renders to prevent flash
-        ; (function () {
-            const theme = localStorage.getItem('theme') || 'dark'
-            document.documentElement.setAttribute('data-theme', theme)
-            // Add 'dark' class for Tailwind dark mode
-            if (theme === 'dark') {
-                document.documentElement.classList.add('dark')
-            } else {
-                document.documentElement.classList.remove('dark')
-            }
-        })()
-    </script>
+
 
     <% data.metadata.forEach(function(ogTag) { %>
         <meta name="<%= ogTag.name %>" content="<%= ogTag.content %>" />
@@ -133,21 +91,30 @@
                 </div>
                 <div class="hidden flex-none lg:block">
                     <ul class="menu menu-horizontal">
-                        <li v-for="(item, index) in Constants.navigation" :key="index">
-                            <a :href="item.url">{{ item.title }}</a>
-                        </li>
+                        <% data.navigation.forEach(function(item) { %>
+                            <li>
+                                <a href="<%= item.url %>">
+                                    <%= item.title %>
+                                </a>
+                            </li>
+                            <% }); %>
                     </ul>
                 </div>
-                <div class="flex-none" v-scope="ThemeToggle()" @vue:mounted="mounted">
-                    <button @click="toggleTheme" class="btn btn-ghost btn-circle group">
-                        <svg v-if="theme === 'nord'" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                            class="inline-block h-5 w-5 stroke-blue-500 group-hover:stroke-blue-500">
+                <div class="flex-none">
+                    <button onclick="toggleTheme()" class="btn btn-ghost btn-circle group">
+                        <!-- Sun Icon (Variables for display style injected by EJS) -->
+                        <svg id="theme-icon-sun" style="display: <%= data.theme === 'nord' ? 'inline-block' : 'none' %>"
+                            xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                            class="h-5 w-5 stroke-blue-500 group-hover:stroke-blue-500">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z">
                             </path>
                         </svg>
-                        <svg v-else xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                            class="inline-block h-5 w-5 stroke-yellow-200">
+                        <!-- Moon Icon -->
+                        <svg id="theme-icon-moon"
+                            style="display: <%= data.theme === 'dark' ? 'inline-block' : 'none' %>"
+                            xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                            class="h-5 w-5 stroke-yellow-200">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z">
                             </path>
@@ -161,9 +128,13 @@
             <label for="my-drawer-3" aria-label="close sidebar" class="drawer-overlay"></label>
             <ul class="menu bg-base-200 min-h-full w-80 p-4">
                 <!-- Sidebar content here -->
-                <li v-for="(item, index) in Constants.navigation" :key="index">
-                    <a :href="item.url">{{ item.title }}</a>
-                </li>
+                <% data.navigation.forEach(function(item) { %>
+                    <li>
+                        <a href="<%= item.url %>">
+                            <%= item.title %>
+                        </a>
+                    </li>
+                    <% }); %>
             </ul>
         </div>
     </div>
