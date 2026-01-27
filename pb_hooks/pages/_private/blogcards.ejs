@@ -18,7 +18,7 @@
         })
     }
     const currentPage = params?.page ?? 1
-    const perPage = params?.perPage ?? 6
+    const perPage = params?.perPage ?? (isHomepage ? 7 : 6)
 
     blogposts = fetchBlogPosts(currentPage, perPage, params.query) ?? []
     const totalPages = blogposts?.totalPages || 1
@@ -46,12 +46,10 @@
 </script>
 
 <div
-    class="bg-gradient-to-br from-base-100 to-base-200 pt-16 flex flex-col justify-between <%= !isHomepage ? 'min-h-[calc(100vh-12.54rem)]' : 'pb-12' %>">
+    class="bg-base-100 pt-16 flex flex-col justify-between <%= !isHomepage ? 'min-h-[calc(100vh-12.54rem)]' : 'pb-12' %>">
     <div class="max-w-6xl mx-auto px-4" v-scope="SearchApp">
         <div class="text-center">
-            <a href="/blog/posts" class="no-underline">
-                <h1 class="text-5xl font-bold">Latest Posts</h1>
-            </a>
+
             <% if (!isHomepage) { %>
                 <p class="mt-4 text-lg text-base-content/80">
                     Explore recent insights, retrospectives, and stories.
@@ -88,49 +86,106 @@
                 </div>
                 <% } %>
         </div>
-        <div class="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-            <% blogposts?.items?.forEach(blog=> {
-                const text = blog.content1.replace(/<[^>]*>/g, '');
-                    const myImageUrl = getImageUrl(blog) ? `${getImageUrl(blog)}?thumb=350x0`
-                    : blog.coverImageAlt %>
 
-                    <a href="/blog/posts/<%= blog.id %>" class="no-underline group">
-                        <div class="card bg-base-100 shadow-xl transition-shadow duration-300 blog-card-transition"
-                            style="--blog-card-id: blog-card-<%= blog.id %>">
-                            <% if (myImageUrl !==null && myImageUrl !=="" ) { %>
-                                <figure class="h-48 overflow-hidden m-0 rounded-t-2xl">
-                                    <img src="<%= myImageUrl%>" alt="<%= blog.title %> Image"
-                                        class="w-full h-48 object-cover blog-image-transition rounded-t-2xl"
-                                        style="--blog-image-id: blog-image-<%= blog.id %>" loading="lazy" />
+        <% let heroPost=null; let gridPosts=blogposts?.items || []; if (isHomepage && gridPosts.length> 0) {
+            heroPost = gridPosts[0];
+            gridPosts = gridPosts.slice(1);
+            }
+            %>
+
+            <% if (heroPost) { const heroText=heroPost.content1.replace(/<[^>]*>/g, '');
+                const heroImageUrl = getImageUrl(heroPost) ? `${getImageUrl(heroPost)}` : heroPost.coverImageAlt;
+                %>
+                <!-- Hero Post -->
+                <div class="mb-12">
+                    <a href="/blog/posts/<%= heroPost.id %>" class="no-underline group">
+                        <div class="card lg:card-side bg-base-200 shadow-xl transition-shadow duration-300 blog-card-transition overflow-hidden"
+                            style="--blog-card-id: blog-card-<%= heroPost.id %>">
+                            <% if (heroImageUrl && heroImageUrl !=="" ) { %>
+                                <figure class="lg:w-1/2 h-64 lg:h-auto m-0 !rounded-none">
+                                    <img src="<%= heroImageUrl %>" alt="<%= heroPost.title %> Image"
+                                        class="w-full h-full object-cover blog-image-transition"
+                                        style="--blog-image-id: blog-image-<%= heroPost.id %>" loading="lazy" />
                                 </figure>
                                 <% } %>
-                                    <div class="card-body gap-0">
+                                    <div class="card-body lg:w-1/2 justify-center blog-body-transition">
                                         <div class="flex">
-                                            <% if (blog.tags && blog.tags?.length> 0) {
-                                                blog.tags?.split(';').forEach(tag => { %>
+                                            <% if (heroPost.tags && heroPost.tags?.length> 0) {
+                                                heroPost.tags?.split(';').forEach(tag => { %>
                                                 <div class="pb-4 text-wrap">
-                                                    <span class="badge badge-outline badge-sm mr-2 text-nowrap">
+                                                    <span class="badge badge-outline badge-lg mr-2 text-nowrap">
                                                         <%= tag %>
                                                     </span>
                                                 </div>
                                                 <% }) %>
                                                     <% } %>
                                         </div>
-                                        <h2 class="card-title group-hover:text-primary transition-colors duration-200 mt-0 blog-title-transition"
-                                            style="--blog-title-id: blog-title-<%= blog.id %>">
-                                            <%= blog.title %>
+                                        <h2 class="card-title text-4xl font-bold group-hover:text-primary transition-colors duration-200 mt-0 blog-title-transition"
+                                            style="--blog-title-id: blog-title-<%= heroPost.id %>">
+                                            <%= heroPost.title %>
                                         </h2>
-                                        <p class="text-sm text-base-content/70">
-                                            <%= text.slice(0, 80) %>...
+                                        <p class="text-lg text-base-content/80 mt-4 line-clamp-4">
+                                            <%= heroText %>
                                         </p>
-                                        <span class="text-xs text-base-content/50 mt-2">
-                                            <%= formatDateTime(new Date(blog.updated)) %>
+                                        <span class="text-sm text-base-content/50 mt-4 block">
+                                            <%= formatDateTime(new Date(heroPost.updated)) %>
                                         </span>
                                     </div>
                         </div>
                     </a>
-                    <% }) %>
-        </div>
+                </div>
+                <% } %>
+
+                    <a href="/blog/posts" class="no-underline">
+                        <div class="mb-8 text-center">
+                            <h1 class="text-5xl font-bold">Latest Posts</h1>
+                        </div>
+                    </a>
+
+                    <div class="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+                        <% gridPosts.forEach(blog=> {
+                            const text = blog.content1.replace(/<[^>]*>/g, '');
+                                const myImageUrl = getImageUrl(blog) ? `${getImageUrl(blog)}?thumb=350x0`
+                                : blog.coverImageAlt %>
+
+                                <a href="/blog/posts/<%= blog.id %>" class="no-underline group">
+                                    <div class="card bg-base-200 shadow-xl transition-shadow duration-300 blog-card-transition"
+                                        style="--blog-card-id: blog-card-<%= blog.id %>">
+                                        <% if (myImageUrl !==null && myImageUrl !=="" ) { %>
+                                            <figure class="h-48 overflow-hidden m-0 rounded-t-2xl">
+                                                <img src="<%= myImageUrl%>" alt="<%= blog.title %> Image"
+                                                    class="w-full h-48 object-cover blog-image-transition rounded-t-2xl"
+                                                    style="--blog-image-id: blog-image-<%= blog.id %>" loading="lazy" />
+                                            </figure>
+                                            <% } %>
+                                                <div class="card-body gap-0 blog-body-transition">
+                                                    <div class="flex">
+                                                        <% if (blog.tags && blog.tags?.length> 0) {
+                                                            blog.tags?.split(';').forEach(tag => { %>
+                                                            <div class="pb-4 text-wrap">
+                                                                <span
+                                                                    class="badge badge-outline badge-sm mr-2 text-nowrap">
+                                                                    <%= tag %>
+                                                                </span>
+                                                            </div>
+                                                            <% }) %>
+                                                                <% } %>
+                                                    </div>
+                                                    <h2 class="card-title group-hover:text-primary transition-colors duration-200 mt-0 blog-title-transition"
+                                                        style="--blog-title-id: blog-title-<%= blog.id %>">
+                                                        <%= blog.title %>
+                                                    </h2>
+                                                    <p class="text-sm text-base-content/70 line-clamp-3">
+                                                        <%= text %>
+                                                    </p>
+                                                    <span class="text-xs text-base-content/50 mt-2">
+                                                        <%= formatDateTime(new Date(blog.updated)) %>
+                                                    </span>
+                                                </div>
+                                    </div>
+                                </a>
+                                <% }) %>
+                    </div>
     </div>
     <% if (!isHomepage) { %>
         <!-- Pagination -->

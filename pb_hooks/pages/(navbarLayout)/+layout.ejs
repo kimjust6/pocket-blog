@@ -81,136 +81,94 @@
 
 <!doctype html>
 <html lang="en" data-theme="nord" v-scope="Constants">
-    <head>
-        <meta charset="utf-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-        <script>
-            // Set theme before page renders to prevent flash
-            ;(function () {
-                const theme = localStorage.getItem('theme') || 'dark'
-                document.documentElement.setAttribute('data-theme', theme)
-                // Add 'dark' class for Tailwind dark mode
-                if (theme === 'dark') {
-                    document.documentElement.classList.add('dark')
-                } else {
-                    document.documentElement.classList.remove('dark')
-                }
-            })()
-        </script>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-        <% data.metadata.forEach(function(ogTag) { %>
+    <script>
+        // Set theme before page renders to prevent flash
+        ; (function () {
+            const theme = localStorage.getItem('theme') || 'dark'
+            document.documentElement.setAttribute('data-theme', theme)
+            // Add 'dark' class for Tailwind dark mode
+            if (theme === 'dark') {
+                document.documentElement.classList.add('dark')
+            } else {
+                document.documentElement.classList.remove('dark')
+            }
+        })()
+    </script>
+
+    <% data.metadata.forEach(function(ogTag) { %>
         <meta name="<%= ogTag.name %>" content="<%= ogTag.content %>" />
         <% }); %>
 
-        <title>
-            <%= data.metadata.find(x => x.name === 'title')?.content %>
-        </title>
-        <link href="<%=asset('/app.css')%>" rel="stylesheet" />
-        <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
-    </head>
-    <body>
-        <div class="drawer">
-            <input id="my-drawer-3" type="checkbox" class="drawer-toggle" />
-            <div class="drawer-content flex flex-col">
-                <!-- Navbar -->
-                <nav class="navbar bg-base-300 w-full fixed z-40">
-                    <div class="flex-none lg:hidden">
-                        <!-- hamburger icon -->
-                        <label
-                            for="my-drawer-3"
-                            aria-label="open sidebar"
-                            class="btn btn-square btn-ghost"
-                        >
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                class="inline-block h-6 w-6 stroke-current"
-                            >
-                                <path
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
-                                    stroke-width="2"
-                                    d="M4 6h16M4 12h16M4 18h16"
-                                ></path>
-                            </svg>
-                        </label>
-                    </div>
+            <title>
+                <%= data.metadata.find(x=> x.name === 'title')?.content %>
+            </title>
+            <link href="<%=asset('/app.css')%>" rel="stylesheet" />
+            <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+</head>
 
-                    <div class="menu menu-horizontal mx-2 flex-1 px-2">
-                        <a href="/">Home </a>
-                    </div>
-                    <div class="hidden flex-none lg:block">
-                        <ul class="menu menu-horizontal">
-                            <li
-                                v-for="(item, index) in Constants.navigation"
-                                :key="index"
-                            >
-                                <a :href="item.url">{{ item.title }}</a>
-                            </li>
-                        </ul>
-                    </div>
-                    <div
-                        class="flex-none"
-                        v-scope="ThemeToggle()"
-                        @vue:mounted="mounted"
-                    >
-                        <button
-                            @click="toggleTheme"
-                            class="btn btn-ghost btn-circle group"
-                        >
-                            <svg
-                                v-if="theme === 'nord'"
-                                xmlns="http://www.w3.org/2000/svg"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                class="inline-block h-5 w-5 stroke-blue-300 group-hover:stroke-blue-500"
-                            >
-                                <path
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
-                                    stroke-width="2"
-                                    d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"
-                                ></path>
-                            </svg>
-                            <svg
-                                v-else
-                                xmlns="http://www.w3.org/2000/svg"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                class="inline-block h-5 w-5 stroke-yellow-200"
-                            >
-                                <path
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
-                                    stroke-width="2"
-                                    d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"
-                                ></path>
-                            </svg>
-                        </button>
-                    </div>
-                </nav>
-                <article class="prose max-w-none pt-16"><%- slot %></article>
-            </div>
-            <div class="drawer-side z-50">
-                <label
-                    for="my-drawer-3"
-                    aria-label="close sidebar"
-                    class="drawer-overlay"
-                ></label>
-                <ul class="menu bg-base-200 min-h-full w-80 p-4">
-                    <!-- Sidebar content here -->
-                    <li
-                        v-for="(item, index) in Constants.navigation"
-                        :key="index"
-                    >
-                        <a :href="item.url">{{ item.title }}</a>
-                    </li>
-                </ul>
-            </div>
+<body>
+    <div class="drawer">
+        <input id="my-drawer-3" type="checkbox" class="drawer-toggle" />
+        <div class="drawer-content flex flex-col">
+            <!-- Navbar -->
+            <nav class="navbar bg-base-300 w-full fixed z-40">
+                <div class="flex-none lg:hidden">
+                    <!-- hamburger icon -->
+                    <label for="my-drawer-3" aria-label="open sidebar" class="btn btn-square btn-ghost">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                            class="inline-block h-6 w-6 stroke-current">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M4 6h16M4 12h16M4 18h16"></path>
+                        </svg>
+                    </label>
+                </div>
+
+                <div class="menu menu-horizontal mx-2 flex-1 px-2">
+                    <a href="/">Home </a>
+                </div>
+                <div class="hidden flex-none lg:block">
+                    <ul class="menu menu-horizontal">
+                        <li v-for="(item, index) in Constants.navigation" :key="index">
+                            <a :href="item.url">{{ item.title }}</a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="flex-none" v-scope="ThemeToggle()" @vue:mounted="mounted">
+                    <button @click="toggleTheme" class="btn btn-ghost btn-circle group">
+                        <svg v-if="theme === 'nord'" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                            class="inline-block h-5 w-5 stroke-blue-500 group-hover:stroke-blue-500">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z">
+                            </path>
+                        </svg>
+                        <svg v-else xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                            class="inline-block h-5 w-5 stroke-yellow-200">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z">
+                            </path>
+                        </svg>
+                    </button>
+                </div>
+            </nav>
+            <article class="prose max-w-none pt-16"><%- slot %></article>
         </div>
+        <div class="drawer-side z-50">
+            <label for="my-drawer-3" aria-label="close sidebar" class="drawer-overlay"></label>
+            <ul class="menu bg-base-200 min-h-full w-80 p-4">
+                <!-- Sidebar content here -->
+                <li v-for="(item, index) in Constants.navigation" :key="index">
+                    <a :href="item.url">{{ item.title }}</a>
+                </li>
+            </ul>
+        </div>
+    </div>
 
-        <%- include('footer.ejs') %>
-    </body>
+    <%- include('footer.ejs') %>
+</body>
+
 </html>
