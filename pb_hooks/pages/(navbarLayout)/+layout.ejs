@@ -1,51 +1,29 @@
 <script type="module">
-    import { createApp } from '/js/petite-vue.es.js'
+
     // import pocketbase from 'https://cdn.jsdelivr.net/npm/pocketbase@0.26.2/+esm'
     // const myPB = new pocketbase('http://127.0.0.1:8090');
 
 
 
-    function Pocket() {
-        return {
-            // getBlogPosts() {
-            //     if (!myPB) {
-            //         myPB = new pocketbase('http://127.0.0.1:8090');
-            //     }
-            //     myPB.collection('blogposts').getList(1, 50).then((result) => {
-            //         console.log(result);
-            //         return result;
-            //     }).catch((error) => {
-            //         console.log(error);
-            //     })
-            // }
+    function toggleTheme() {
+        const html = document.documentElement;
+        const currentTheme = html.getAttribute('data-theme');
+        const newTheme = currentTheme === 'dark' ? 'nord' : 'dark';
+
+        html.setAttribute('data-theme', newTheme);
+        document.cookie = `theme=${newTheme}; path=/; max-age=31536000`;
+
+        if (newTheme === 'dark') {
+            html.classList.add('dark');
+        } else {
+            html.classList.remove('dark');
         }
+
+        // Toggle icon visibility
+        document.getElementById('theme-icon-sun').style.display = newTheme === 'nord' ? 'inline-block' : 'none';
+        document.getElementById('theme-icon-moon').style.display = newTheme === 'dark' ? 'inline-block' : 'none';
     }
-
-    function ThemeToggle() {
-        return {
-            // Initialize from the server-rendered attribute
-            theme: document.documentElement.getAttribute('data-theme') || 'dark',
-            toggleTheme() {
-                // Toggle between 'dark' and 'nord'
-                const newTheme = this.theme === 'dark' ? 'nord' : 'dark';
-                this.theme = newTheme;
-
-                document.documentElement.setAttribute('data-theme', newTheme);
-                // Set cookie for server-side persistence (expires in 1 year)
-                document.cookie = `theme=${newTheme}; path=/; max-age=31536000`;
-
-                if (newTheme === 'dark') {
-                    document.documentElement.classList.add('dark');
-                } else {
-                    document.documentElement.classList.remove('dark');
-                }
-            },
-        }
-    }
-
-    createApp({
-        ThemeToggle,
-    }).mount()
+    window.toggleTheme = toggleTheme;
 
     // Enable View Transitions API for blog navigation
     if ('startViewTransition' in document) {
@@ -122,16 +100,21 @@
                             <% }); %>
                     </ul>
                 </div>
-                <div class="flex-none" v-scope="ThemeToggle()">
-                    <button @click="toggleTheme" class="btn btn-ghost btn-circle group">
-                        <svg v-if="theme === 'nord'" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                            class="inline-block h-5 w-5 stroke-blue-500 group-hover:stroke-blue-500">
+                <div class="flex-none">
+                    <button onclick="toggleTheme()" class="btn btn-ghost btn-circle group">
+                        <!-- Sun Icon (Variables for display style injected by EJS) -->
+                        <svg id="theme-icon-sun" style="display: <%= data.theme === 'nord' ? 'inline-block' : 'none' %>"
+                            xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                            class="h-5 w-5 stroke-blue-500 group-hover:stroke-blue-500">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z">
                             </path>
                         </svg>
-                        <svg v-else xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                            class="inline-block h-5 w-5 stroke-yellow-200">
+                        <!-- Moon Icon -->
+                        <svg id="theme-icon-moon"
+                            style="display: <%= data.theme === 'dark' ? 'inline-block' : 'none' %>"
+                            xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                            class="h-5 w-5 stroke-yellow-200">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z">
                             </path>
