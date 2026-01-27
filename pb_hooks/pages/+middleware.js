@@ -1,5 +1,20 @@
 /** @type {import('pocketpages').MiddlewareLoaderFunc} */
 module.exports = function (api) {
+    let cookieValue = 'dark';
+    try {
+        // api.request.cookies is a function in the JS bridge
+        const cookiesMap = api.request.cookies();
+
+        // Check if theme cookie exists
+        // cookiesMap might be an object where keys are cookie names
+        if (cookiesMap && cookiesMap.theme) {
+            // value might be the string directly or an object with .value
+            cookieValue = cookiesMap.theme.value || cookiesMap.theme;
+        }
+    } catch (e) {
+        console.log("Error reading cookies:", e);
+    }
+
     return {
         metadata: [
             // Basic metadata
@@ -65,5 +80,7 @@ module.exports = function (api) {
                 content: 'https://www.jkim.win/og-image.png',
             },
         ],
+        theme: cookieValue,
+        navigation: [{ title: 'Posts', url: '/blog/posts' }]
     }
 }

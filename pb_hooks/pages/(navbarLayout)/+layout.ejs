@@ -3,10 +3,7 @@
     // import pocketbase from 'https://cdn.jsdelivr.net/npm/pocketbase@0.26.2/+esm'
     // const myPB = new pocketbase('http://127.0.0.1:8090');
 
-    const Constants = {
-        sitename: "Justin's Blog",
-        navigation: [{ title: 'Posts', url: '/blog/posts' }],
-    }
+
 
     function Pocket() {
         return {
@@ -26,32 +23,27 @@
 
     function ThemeToggle() {
         return {
-            theme: localStorage.getItem('theme') || 'dark',
-            mounted() {
-                document.documentElement.setAttribute('data-theme', this.theme)
-                // Add or remove 'dark' class for Tailwind dark mode
-                if (this.theme === 'dark') {
-                    document.documentElement.classList.add('dark')
-                } else {
-                    document.documentElement.classList.remove('dark')
-                }
-            },
+            // Initialize from the server-rendered attribute
+            theme: document.documentElement.getAttribute('data-theme') || 'dark',
             toggleTheme() {
-                this.theme = this.theme === 'dark' ? 'nord' : 'dark'
-                document.documentElement.setAttribute('data-theme', this.theme)
-                localStorage.setItem('theme', this.theme)
-                // Toggle 'dark' class for Tailwind dark mode
-                if (this.theme === 'dark') {
-                    document.documentElement.classList.add('dark')
+                // Toggle between 'dark' and 'nord'
+                const newTheme = this.theme === 'dark' ? 'nord' : 'dark';
+                this.theme = newTheme;
+
+                document.documentElement.setAttribute('data-theme', newTheme);
+                // Set cookie for server-side persistence (expires in 1 year)
+                document.cookie = `theme=${newTheme}; path=/; max-age=31536000`;
+
+                if (newTheme === 'dark') {
+                    document.documentElement.classList.add('dark');
                 } else {
-                    document.documentElement.classList.remove('dark')
+                    document.documentElement.classList.remove('dark');
                 }
             },
         }
     }
 
     createApp({
-        Constants,
         ThemeToggle,
     }).mount()
 
@@ -80,25 +72,13 @@
 </script>
 
 <!doctype html>
-<html lang="en" data-theme="nord" v-scope="Constants">
+<html lang="en" data-theme="<%= data.theme %>" class="<%= data.theme === 'dark' ? 'dark' : '' %>">
 
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <script>
-        // Set theme before page renders to prevent flash
-        ; (function () {
-            const theme = localStorage.getItem('theme') || 'dark'
-            document.documentElement.setAttribute('data-theme', theme)
-            // Add 'dark' class for Tailwind dark mode
-            if (theme === 'dark') {
-                document.documentElement.classList.add('dark')
-            } else {
-                document.documentElement.classList.remove('dark')
-            }
-        })()
-    </script>
+
 
     <% data.metadata.forEach(function(ogTag) { %>
         <meta name="<%= ogTag.name %>" content="<%= ogTag.content %>" />
@@ -133,12 +113,16 @@
                 </div>
                 <div class="hidden flex-none lg:block">
                     <ul class="menu menu-horizontal">
-                        <li v-for="(item, index) in Constants.navigation" :key="index">
-                            <a :href="item.url">{{ item.title }}</a>
-                        </li>
+                        <% data.navigation.forEach(function(item) { %>
+                            <li>
+                                <a href="<%= item.url %>">
+                                    <%= item.title %>
+                                </a>
+                            </li>
+                            <% }); %>
                     </ul>
                 </div>
-                <div class="flex-none" v-scope="ThemeToggle()" @vue:mounted="mounted">
+                <div class="flex-none" v-scope="ThemeToggle()">
                     <button @click="toggleTheme" class="btn btn-ghost btn-circle group">
                         <svg v-if="theme === 'nord'" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                             class="inline-block h-5 w-5 stroke-blue-500 group-hover:stroke-blue-500">
@@ -161,9 +145,13 @@
             <label for="my-drawer-3" aria-label="close sidebar" class="drawer-overlay"></label>
             <ul class="menu bg-base-200 min-h-full w-80 p-4">
                 <!-- Sidebar content here -->
-                <li v-for="(item, index) in Constants.navigation" :key="index">
-                    <a :href="item.url">{{ item.title }}</a>
-                </li>
+                <% data.navigation.forEach(function(item) { %>
+                    <li>
+                        <a href="<%= item.url %>">
+                            <%= item.title %>
+                        </a>
+                    </li>
+                    <% }); %>
             </ul>
         </div>
     </div>

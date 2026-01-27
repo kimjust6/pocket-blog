@@ -3413,8 +3413,8 @@ html:has(.drawer-toggle:checked) {
   background-color: rgb(226 232 240 / var(--tw-bg-opacity, 1));
 }
 
-.stroke-blue-300 {
-  stroke: #93c5fd;
+.stroke-blue-500 {
+  stroke: #3b82f6;
 }
 
 .stroke-current {
@@ -3423,10 +3423,6 @@ html:has(.drawer-toggle:checked) {
 
 .stroke-yellow-200 {
   stroke: #fef08a;
-}
-
-.stroke-blue-500 {
-  stroke: #3b82f6;
 }
 
 .object-cover {
