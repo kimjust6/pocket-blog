@@ -3262,24 +3262,16 @@ html:has(.drawer-toggle:checked) {
   max-width: 72rem;
 }
 
-.max-w-md {
-  max-width: 28rem;
-}
-
 .max-w-none {
   max-width: none;
 }
 
-.max-w-xl {
-  max-width: 36rem;
-}
-
-.max-w-lg {
-  max-width: 32rem;
-}
-
 .max-w-sm {
   max-width: 24rem;
+}
+
+.max-w-xl {
+  max-width: 36rem;
 }
 
 .flex-1 {
@@ -3373,10 +3365,6 @@ html:has(.drawer-toggle:checked) {
 
 .text-nowrap {
   text-wrap: nowrap;
-}
-
-.\!rounded-none {
-  border-radius: 0px !important;
 }
 
 .rounded-lg {
@@ -3833,14 +3821,6 @@ html:has(.drawer-toggle:checked) {
     display: none;
   }
 
-  .md\:max-w-lg {
-    max-width: 32rem;
-  }
-
-  .md\:max-w-2xl {
-    max-width: 42rem;
-  }
-
   .md\:max-w-3xl {
     max-width: 48rem;
   }
@@ -3885,5 +3865,15 @@ html:has(.drawer-toggle:checked) {
 
   .lg\:grid-cols-3 {
     grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .lg\:rounded-l-2xl {
+    border-top-left-radius: 1rem;
+    border-bottom-left-radius: 1rem;
+  }
+
+  .lg\:rounded-t-none {
+    border-top-left-radius: 0px;
+    border-top-right-radius: 0px;
   }
 }
