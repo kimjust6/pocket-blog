@@ -3262,12 +3262,24 @@ html:has(.drawer-toggle:checked) {
   max-width: 72rem;
 }
 
+.max-w-md {
+  max-width: 28rem;
+}
+
 .max-w-none {
   max-width: none;
 }
 
 .max-w-xl {
   max-width: 36rem;
+}
+
+.max-w-lg {
+  max-width: 32rem;
+}
+
+.max-w-sm {
+  max-width: 24rem;
 }
 
 .flex-1 {
@@ -3819,6 +3831,18 @@ html:has(.drawer-toggle:checked) {
 
   .md\:hidden {
     display: none;
+  }
+
+  .md\:max-w-lg {
+    max-width: 32rem;
+  }
+
+  .md\:max-w-2xl {
+    max-width: 42rem;
+  }
+
+  .md\:max-w-3xl {
+    max-width: 48rem;
   }
 
   .md\:grid-cols-2 {
