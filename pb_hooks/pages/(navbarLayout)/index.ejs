@@ -1,8 +1,30 @@
 <script server>
     const isHomepage = true
+    const socials = [
+        {
+            name: 'Portfolio',
+            icon: 'fa-solid fa-laptop-code',
+            url: 'https://www.justink.dev',
+        },
+        {
+            name: 'GitHub',
+            icon: 'fa-brands fa-github',
+            url: 'https://github.com/kimjust6',
+        },
+        {
+            name: 'Instagram',
+            icon: 'fa-brands fa-instagram',
+            url: 'https://instagram.com/milklatteteas',
+        },
+        {
+            name: 'Bluesky',
+            icon: 'fa-brands fa-bluesky',
+            url: 'https://bsky.app/profile/milklattetea.bsky.social',
+        },
+    ]
 </script>
 
-<div class="hero bg-base-100 pt-40">
+<div class="hero bg-base-100 pt-40 not-prose">
     <div class="hero-content text-center">
         <div class="max-w-sm md:max-w-3xl">
             <a href="/" class="no-underline">
@@ -11,13 +33,35 @@
                         "og:site_name")).content %>
                 </h1>
             </a>
+            <nav class="py-12">
+                <ul class="flex flex-row flex-wrap justify-center gap-4">
+                    <% socials.forEach(social=> { %>
+                        <li>
+                            <a href="<%= social.url %>" target="_blank"
+                                class="w-12 h-12 flex items-center justify-center rounded-full border border-base-content/30 hover:border-primary hover:text-primary transition-all duration-300 group"
+                                title="<%= social.name %>">
+                                <i class="<%= social.icon %> text-xl group-hover:scale-110 transition-transform"></i>
+                                <span class="sr-only">
+                                    <%= social.name %>
+                                </span>
+                            </a>
+                        </li>
+                        <% }) %>
+                </ul>
+            </nav>
             <a href="/blog/posts" class="no-underline">
                 <div class="mockup-code text-left group transition-all bg-slate-200 dark:bg-base-200">
-                    <pre class="h-full group-hover:text-primary transition-all bg-slate-200 dark:bg-base-200 text-wrap dark:text-base-content text-info-content"
-                        data-prefix="$">
-read about the lessons I have learned (from the mistakes I have made). </pre>
+                    <div
+                        class="flex px-5 py-4 text-base h-full group-hover:text-primary transition-all dark:text-base-content text-info-content font-mono">
+                        <span class="mr-4 select-none opacity-50">$</span>
+                        <span class="text-wrap break-words">read about the lessons I have learned (from the mistakes I
+                            have made).</span>
+                    </div>
                 </div>
             </a>
+
+
+
         </div>
     </div>
 </div>

@@ -32,8 +32,7 @@
 <!-- Footer -->
 <footer class="bg-base-300 border-t border-base-100">
     <div
-        class="max-w-9xl mx-auto px-20 md:grid grid-cols-1 md:grid-cols-3 gap-16 md:gap-8 justify-center flex flex-col items-center text-center md:text-left md:items-start"
-    >
+        class="max-w-9xl mx-auto px-20 md:grid grid-cols-1 md:grid-cols-3 gap-16 md:gap-8 justify-center flex flex-col items-center text-center md:text-left md:items-start">
         <!-- 
         Newsletter
         <div>
@@ -53,24 +52,16 @@
 
     <!-- Bottom Bar -->
     <div
-        class="py-10 border-base-300 text-center text-sm text-base-content/70 flex flex-col items-center justify-center px-14 gap-4"
-    >
+        class="py-10 border-base-300 text-center text-sm text-base-content/70 flex flex-col items-center justify-center px-14 gap-4">
         <!-- Social Media -->
-        <ul
-            class="text-base-content/80 text-sm flex gap-4 flex-row flex-wrap justify-center"
-        >
-            <% socials.forEach(social => { %>
-            <li>
-                <a
-                    href="<%= social.url %>"
-                    target="_blank"
-                    class="hover:text-primary"
-                >
-                    <i class="<%= social.icon %> text-lg"></i>
-                    <%= social.name %>
-                </a>
-            </li>
-            <% }) %>
+        <ul class="text-base-content/80 text-sm flex gap-4 flex-row flex-wrap justify-center">
+            <% socials.forEach(social=> { %>
+                <li>
+                    <a href="<%= social.url %>" target="_blank" class="hover:text-primary">
+                        <%= social.name %>
+                    </a>
+                </li>
+                <% }) %>
         </ul>
         <p>© <%= new Date().getFullYear() %> Justin K. All rights reserved.</p>
     </div>
