@@ -1,0 +1,68 @@
+<script server>
+    const socials = [
+        {
+            name: 'Portfolio',
+            icon: 'fa-solid fa-laptop-code',
+            url: 'https://www.justink.dev',
+        },
+        {
+            name: 'GitHub',
+            icon: 'fa-brands fa-github',
+            url: 'https://github.com/kimjust6',
+        },
+        {
+            name: 'Instagram',
+            icon: 'fa-brands fa-instagram',
+            url: 'https://instagram.com/milklatteteas',
+        },
+        {
+            name: 'Bluesky',
+            icon: 'fa-brands fa-bluesky',
+            url: 'https://bsky.app/profile/milklattetea.bsky.social',
+        },
+    ]
+</script>
+
+<div class="hero bg-base-100 not-prose bg-cover bg-center" style="background-image: url('/background.jpg');">
+    <div class="hero-overlay bg-base-300/60"></div>
+    <div class="hero-content py-20 text-center text-base-content">
+        <div class="max-w-3xl bg-base-100/60 backdrop-blur-md p-8 rounded-3xl">
+            <a href="/" class="no-underline">
+                <h1 class="text-5xl font-bold">
+                    <%= (data.metadata.find(meta=> meta.name ===
+                        "og:site_name")).content %>
+                </h1>
+            </a>
+            <nav class="py-12">
+                <ul class="flex flex-row flex-wrap justify-center gap-4">
+                    <% socials.forEach(social=> { %>
+                        <li>
+                            <a href="<%= social.url %>" target="_blank"
+                                class="w-12 h-12 flex items-center justify-center rounded-full border border-base-content/30 hover:border-primary hover:text-primary transition-all duration-300 group"
+                                title="<%= social.name %>">
+                                <i class="<%= social.icon %> text-xl group-hover:scale-110 transition-transform"></i>
+                                <span class="sr-only">
+                                    <%= social.name %>
+                                </span>
+                            </a>
+                        </li>
+                        <% }) %>
+                </ul>
+            </nav>
+            <a href="/blog/posts" class="no-underline">
+                <div
+                    class="mockup-code text-left group transition-all bg-slate-200 dark:bg-base-200 px-12 py-8 max-w-xl text-primary">
+                    <div
+                        class="flex py-4 text-base h-full group-hover:text-primary transition-all dark:text-base-content text-info-content font-mono">
+                        <span class="mr-4 select-none opacity-50">$</span>
+                        <span class="text-wrap break-words">read about the lessons I have learned (from the mistakes I
+                            have made).</span>
+                    </div>
+                </div>
+            </a>
+
+
+
+        </div>
+    </div>
+</div>
