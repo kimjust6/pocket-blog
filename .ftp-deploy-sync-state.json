@@ -1,7 +1,7 @@
 {
     "description": "DO NOT DELETE THIS FILE. This file is used to keep track of which files have been synced in the most recent deployment. If you delete this file a resync will need to be done (which can take a while) - read more: https://github.com/SamKirkland/FTP-Deploy-Action",
     "version": "1.0.0",
-    "generatedTime": 1769621939322,
+    "generatedTime": 1769651199581,
     "data": [
         {
             "type": "file",
@@ -36,6 +36,12 @@
             "name": "pb_public/favicon.ico",
             "size": 131070,
             "hash": "eade4d177060fc5f49cee53a4a1cc1d3e757de60ba8178c568465cd2b4436ebe"
+        },
+        {
+            "type": "file",
+            "name": "pb_public/background.jpg",
+            "size": 793396,
+            "hash": "f58e77bdc72c6e8de8e1697310410d0b3ecc7c6018d20f2e08c1952c056071ff"
         },
         {
             "type": "file",
@@ -108,8 +114,8 @@
         {
             "type": "file",
             "name": "pb_hooks/pages/app.css",
-            "size": 91088,
-            "hash": "94bdb17cd9440d74a0b151b0bcd30a7ea6657df11394f5192606adf456d22437"
+            "size": 95182,
+            "hash": "47729349fbe87c820cc5d4f0856968fc9771e9a5bb569d9810bef0d656be5f73"
         },
         {
             "type": "folder",
@@ -187,9 +193,21 @@
         },
         {
             "type": "file",
+            "name": "pb_hooks/pages/_private/sidebar.ejs",
+            "size": 461,
+            "hash": "c564ba1282b11382f4eb07011905dba1e6562f6387edebc27b2db7e5ea5bacd1"
+        },
+        {
+            "type": "file",
             "name": "pb_hooks/pages/_private/pagenotfound.ejs",
             "size": 1144,
             "hash": "af8d0a5b69f90f6ce244fc25b17d4b3d457cd39a21c73cfa9953960dbadc46cf"
+        },
+        {
+            "type": "file",
+            "name": "pb_hooks/pages/_private/navbar.ejs",
+            "size": 2307,
+            "hash": "35d280ad616ee4c9990498b23516c8a80ff7875fe9588c85d41962af6e2e442f"
         },
         {
             "type": "file",
@@ -199,21 +217,27 @@
         },
         {
             "type": "file",
+            "name": "pb_hooks/pages/_private/hero.ejs",
+            "size": 2863,
+            "hash": "6d030a893d77b1e08b48384be93a756a9ad4bfca9c4aafef7764fe455e3423c3"
+        },
+        {
+            "type": "file",
             "name": "pb_hooks/pages/_private/footer.ejs",
-            "size": 2408,
-            "hash": "c0e386e8dc06798b094a8139915f5e0942172f1e55207972d0251cc32825bf45"
+            "size": 2279,
+            "hash": "7a771d643676bb78e43d9e46c61f48e23cfb66a9bbb994ed88606ca236e29ad5"
         },
         {
             "type": "file",
             "name": "pb_hooks/pages/_private/blogpage.ejs",
-            "size": 9331,
-            "hash": "bb6359c6d22aa0198bb028f49ad7da446b6ac493032a21a1d47d051bc792f94f"
+            "size": 9521,
+            "hash": "2b8ffa6945754322b93a84b8165fb6cc444aad5049b2e8e1a6e00e7ac7b7160b"
         },
         {
             "type": "file",
             "name": "pb_hooks/pages/_private/blogcards.ejs",
-            "size": 11901,
-            "hash": "25d7f00cfd53457e690ac4ad18367abe42a456ba8ba1a7f3c45d0d44e046ba99"
+            "size": 11977,
+            "hash": "cfa8e5731e8fda6523fb34f91e847098a44068b32f2f2451077ad28e80677591"
         },
         {
             "type": "folder",
@@ -234,8 +258,8 @@
         {
             "type": "file",
             "name": "pb_hooks/pages/(navbarLayout)/index.ejs",
-            "size": 988,
-            "hash": "0a0c29e70e71dfed5e1c8f93a6d9d919a2246418837197ef04ac11fdd7ac9d7a"
+            "size": 134,
+            "hash": "bc805b17b68b492bdfee1a04a4308afe0eb60e8fd1f79c0d2635372755799672"
         },
         {
             "type": "file",
@@ -250,8 +274,8 @@
         {
             "type": "file",
             "name": "pb_hooks/pages/(navbarLayout)/+layout.ejs",
-            "size": 6231,
-            "hash": "39f39ec93c62db9cbda9dfd4499d73550c6f192f7d93317dd3abed5597c7eb3c"
+            "size": 3193,
+            "hash": "68e3e9280e44cbd855c408b6b228337c06f4650e320cac836527b5c951b51a2c"
         },
         {
             "type": "file",
