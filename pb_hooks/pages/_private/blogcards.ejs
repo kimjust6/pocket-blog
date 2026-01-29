@@ -97,15 +97,15 @@
                 const heroImageUrl = getImageUrl(heroPost) ? `${getImageUrl(heroPost)}` : heroPost.coverImageAlt;
                 %>
                 <!-- Hero Post -->
-                <div class="mb-12">
+                <div class="mb-24">
                     <a href="/blog/posts/<%= heroPost.id %>" class="no-underline group">
-                        <div class="card w-full lg:card-side bg-base-200/50 backdrop-blur-md shadow-2xl lg:shadow-xl  transition-shadow duration-300 blog-card-transition overflow-hidden rounded-3xl "
+                        <div class="card w-full lg:card-side bg-base-200/50 backdrop-blur-md shadow-2xl lg:shadow-xl  transition-shadow duration-300 blog-card-transition overflow-hidden rounded-lg "
                             style="--blog-card-id: blog-card-<%= heroPost.id %>">
                             <% if (heroImageUrl && heroImageUrl !=="" ) { %>
                                 <figure
-                                    class="lg:w-1/2 h-64 lg:h-auto m-0 rounded-t-2xl lg:rounded-t-none lg:rounded-l-2xl">
+                                    class="lg:w-1/2 h-64 lg:h-auto m-0 rounded-t-lg lg:rounded-t-none lg:rounded-l-lg">
                                     <img src="<%= heroImageUrl %>" alt="<%= heroPost.title %> Image"
-                                        class="w-full h-full object-cover blog-image-transition rounded-t-2xl lg:rounded-t-none lg:rounded-l-2xl"
+                                        class="w-full h-full object-cover blog-image-transition rounded-t-lg lg:rounded-t-none lg:rounded-l-lg"
                                         style="--blog-image-id: blog-image-<%= heroPost.id %>" loading="lazy" />
                                 </figure>
                                 <% } %>
@@ -138,7 +138,7 @@
                 <% } %>
 
                     <a href="/blog/posts" class="no-underline">
-                        <div class="mb-8 text-center">
+                        <div class="mb-12 text-center">
                             <h1 class="text-5xl font-bold">Latest Posts</h1>
                         </div>
                     </a>
@@ -153,9 +153,9 @@
                                     <div class="card bg-base-200/50 backdrop-blur-md shadow-xl transition-shadow duration-300 blog-card-transition"
                                         style="--blog-card-id: blog-card-<%= blog.id %>">
                                         <% if (myImageUrl !==null && myImageUrl !=="" ) { %>
-                                            <figure class="h-48 overflow-hidden m-0 rounded-t-2xl">
+                                            <figure class="h-48 overflow-hidden m-0 rounded-t-lg">
                                                 <img src="<%= myImageUrl%>" alt="<%= blog.title %> Image"
-                                                    class="w-full h-48 object-cover blog-image-transition rounded-t-2xl"
+                                                    class="w-full h-48 object-cover blog-image-transition rounded-t-lg"
                                                     style="--blog-image-id: blog-image-<%= blog.id %>" loading="lazy" />
                                             </figure>
                                             <% } %>
