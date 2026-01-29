@@ -99,7 +99,7 @@
                 <!-- Hero Post -->
                 <div class="mb-12">
                     <a href="/blog/posts/<%= heroPost.id %>" class="no-underline group">
-                        <div class="card w-full lg:card-side bg-base-200 shadow-xl transition-shadow duration-300 blog-card-transition overflow-hidden"
+                        <div class="card w-full lg:card-side bg-base-200 shadow-2xl lg:shadow-xl  transition-shadow duration-300 blog-card-transition overflow-hidden rounded-3xl "
                             style="--blog-card-id: blog-card-<%= heroPost.id %>">
                             <% if (heroImageUrl && heroImageUrl !=="" ) { %>
                                 <figure
@@ -109,7 +109,11 @@
                                         style="--blog-image-id: blog-image-<%= heroPost.id %>" loading="lazy" />
                                 </figure>
                                 <% } %>
-                                    <div class="card-body lg:w-1/2 justify-center blog-body-transition">
+                                    <div class="card-body lg:w-1/2 justify-center blog-body-transition p-16">
+                                        <h2 class="card-title text-4xl font-bold group-hover:text-primary transition-colors duration-200 mt-0 blog-title-transition"
+                                            style="--blog-title-id: blog-title-<%= heroPost.id %>">
+                                            <%= heroPost.title %>
+                                        </h2>
                                         <div class="flex flex-wrap">
                                             <% if (heroPost.tags && heroPost.tags?.length> 0) {
                                                 heroPost.tags?.split(';').forEach(tag => { %>
@@ -121,10 +125,6 @@
                                                 <% }) %>
                                                     <% } %>
                                         </div>
-                                        <h2 class="card-title text-4xl font-bold group-hover:text-primary transition-colors duration-200 mt-0 blog-title-transition"
-                                            style="--blog-title-id: blog-title-<%= heroPost.id %>">
-                                            <%= heroPost.title %>
-                                        </h2>
                                         <p class="text-lg text-base-content/80 mt-4 line-clamp-4">
                                             <%= heroText %>
                                         </p>
