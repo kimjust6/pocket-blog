@@ -100,10 +100,12 @@
             <div class="hero bg-base-100 py-12 min-h-[calc(100vh-12.54rem)] flex flex-col items-center justify-start blog-card-transition"
                 style="--blog-card-id: blog-card-<%= singleBlog?.id %>">
                 <div class="hero-content max-w-4xl flex flex-col">
-                    <h1 class="md:mb-0 font-extrabold text-3xl leading-tight md:flex hidden blog-title-transition"
-                        style="--blog-title-id: blog-title-<%= singleBlog?.id %>">
-                        <%= singleBlog?.title %>
-                    </h1>
+                    <div class="w-full bg-base-200/50 backdrop-blur-md p-6 rounded-3xl mb-8">
+                        <h1 class="md:mb-0 font-extrabold text-3xl leading-tight md:flex hidden blog-title-transition"
+                            style="--blog-title-id: blog-title-<%= singleBlog?.id %>">
+                            <%= singleBlog?.title %>
+                        </h1>
+                    </div>
                     <!-- Blog Image -->
                     <% if (imageUrl) { %>
                         <img src="<%= imageUrl %>"
@@ -114,7 +116,7 @@
             " alt="<%= singleBlog?.title %> image" />
                         <% } %>
                             <!-- Blog Content -->
-                            <div class="w-full self-start">
+                            <div class="w-full self-start bg-base-200/50 backdrop-blur-md p-8 rounded-3xl mt-8">
                                 <h1 class="mb-0 font-extrabold sm:text-2xl leading-tight flex md:hidden blog-title-transition"
                                     style="--blog-title-id: blog-title-<%= singleBlog?.id %>">
                                     <%= singleBlog?.title %>

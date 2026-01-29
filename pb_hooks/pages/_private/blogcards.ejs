@@ -99,7 +99,7 @@
                 <!-- Hero Post -->
                 <div class="mb-12">
                     <a href="/blog/posts/<%= heroPost.id %>" class="no-underline group">
-                        <div class="card w-full lg:card-side bg-base-200 shadow-2xl lg:shadow-xl  transition-shadow duration-300 blog-card-transition overflow-hidden rounded-3xl "
+                        <div class="card w-full lg:card-side bg-base-200/50 backdrop-blur-md shadow-2xl lg:shadow-xl  transition-shadow duration-300 blog-card-transition overflow-hidden rounded-3xl "
                             style="--blog-card-id: blog-card-<%= heroPost.id %>">
                             <% if (heroImageUrl && heroImageUrl !=="" ) { %>
                                 <figure
@@ -150,7 +150,7 @@
                                 : blog.coverImageAlt %>
 
                                 <a href="/blog/posts/<%= blog.id %>" class="no-underline group">
-                                    <div class="card bg-base-200 shadow-xl transition-shadow duration-300 blog-card-transition"
+                                    <div class="card bg-base-200/50 backdrop-blur-md shadow-xl transition-shadow duration-300 blog-card-transition"
                                         style="--blog-card-id: blog-card-<%= blog.id %>">
                                         <% if (myImageUrl !==null && myImageUrl !=="" ) { %>
                                             <figure class="h-48 overflow-hidden m-0 rounded-t-2xl">
