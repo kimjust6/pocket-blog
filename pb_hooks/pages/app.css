@@ -1798,15 +1798,6 @@ html {
   grid-row-start: 1;
 }
 
-.hero-overlay {
-  grid-column-start: 1;
-  grid-row-start: 1;
-  height: 100%;
-  width: 100%;
-  background-color: var(--fallback-n,oklch(var(--n)/var(--tw-bg-opacity)));
-  --tw-bg-opacity: 0.5;
-}
-
 .hero-content {
   z-index: 0;
   display: flex;
@@ -3081,6 +3072,10 @@ html:has(.drawer-toggle:checked) {
   border-width: 0;
 }
 
+.pointer-events-none {
+  pointer-events: none;
+}
+
 .fixed {
   position: fixed;
 }
@@ -3093,6 +3088,10 @@ html:has(.drawer-toggle:checked) {
   position: relative;
 }
 
+.inset-0 {
+  inset: 0px;
+}
+
 .right-3 {
   right: 0.75rem;
 }
@@ -3101,12 +3100,24 @@ html:has(.drawer-toggle:checked) {
   top: 50%;
 }
 
+.-z-10 {
+  z-index: -10;
+}
+
+.z-0 {
+  z-index: 0;
+}
+
 .z-40 {
   z-index: 40;
 }
 
 .z-50 {
   z-index: 50;
+}
+
+.z-10 {
+  z-index: 10;
 }
 
 .m-0 {
@@ -3189,8 +3200,8 @@ html:has(.drawer-toggle:checked) {
   margin-top: 1.5rem;
 }
 
-.mt-8 {
-  margin-top: 2rem;
+.mt-16 {
+  margin-top: 4rem;
 }
 
 .line-clamp-3 {
@@ -3462,6 +3473,11 @@ html:has(.drawer-toggle:checked) {
   border-color: rgb(75 85 99 / var(--tw-border-opacity, 1));
 }
 
+.bg-\[\#020617\] {
+  --tw-bg-opacity: 1;
+  background-color: rgb(2 6 23 / var(--tw-bg-opacity, 1));
+}
+
 .bg-base-100 {
   --tw-bg-opacity: 1;
   background-color: var(--fallback-b1,oklch(var(--b1)/var(--tw-bg-opacity, 1)));
@@ -3474,10 +3490,6 @@ html:has(.drawer-toggle:checked) {
 .bg-base-200 {
   --tw-bg-opacity: 1;
   background-color: var(--fallback-b2,oklch(var(--b2)/var(--tw-bg-opacity, 1)));
-}
-
-.bg-base-200\/10 {
-  background-color: var(--fallback-b2,oklch(var(--b2)/0.1));
 }
 
 .bg-base-200\/50 {
@@ -3497,18 +3509,6 @@ html:has(.drawer-toggle:checked) {
   background-color: var(--fallback-b3,oklch(var(--b3)/0.5));
 }
 
-.bg-base-300\/80 {
-  background-color: var(--fallback-b3,oklch(var(--b3)/0.8));
-}
-
-.bg-base-300\/30 {
-  background-color: var(--fallback-b3,oklch(var(--b3)/0.3));
-}
-
-.bg-base-300\/40 {
-  background-color: var(--fallback-b3,oklch(var(--b3)/0.4));
-}
-
 .bg-base-300\/60 {
   background-color: var(--fallback-b3,oklch(var(--b3)/0.6));
 }
@@ -3521,8 +3521,8 @@ html:has(.drawer-toggle:checked) {
   background-position: center;
 }
 
-.stroke-blue-500 {
-  stroke: #3b82f6;
+.stroke-blue-900 {
+  stroke: #1e3a8a;
 }
 
 .stroke-current {
@@ -3531,14 +3531,6 @@ html:has(.drawer-toggle:checked) {
 
 .stroke-yellow-200 {
   stroke: #fef08a;
-}
-
-.stroke-blue-900 {
-  stroke: #1e3a8a;
-}
-
-.stroke-blue-700 {
-  stroke: #1d4ed8;
 }
 
 .object-cover {
@@ -3745,6 +3737,10 @@ html:has(.drawer-toggle:checked) {
   text-decoration-line: none;
 }
 
+.opacity-10 {
+  opacity: 0.1;
+}
+
 .opacity-50 {
   opacity: 0.5;
 }
@@ -3765,11 +3761,6 @@ html:has(.drawer-toggle:checked) {
   --tw-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
   --tw-shadow-colored: 0 20px 25px -5px var(--tw-shadow-color), 0 8px 10px -6px var(--tw-shadow-color);
   box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
-}
-
-.brightness-50 {
-  --tw-brightness: brightness(.5);
-  filter: var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow);
 }
 
 .filter {
@@ -3986,16 +3977,8 @@ html:has(.drawer-toggle:checked) {
   transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
 }
 
-.group:hover .group-hover\:stroke-blue-500 {
-  stroke: #3b82f6;
-}
-
 .group:hover .group-hover\:stroke-blue-600 {
   stroke: #2563eb;
-}
-
-.group:hover .group-hover\:stroke-blue-900 {
-  stroke: #1e3a8a;
 }
 
 .group:hover .group-hover\:text-primary {
@@ -4003,8 +3986,8 @@ html:has(.drawer-toggle:checked) {
   color: var(--fallback-p,oklch(var(--p)/var(--tw-text-opacity, 1)));
 }
 
-.dark\:bg-base-200\/30:is(.dark *) {
-  background-color: var(--fallback-b2,oklch(var(--b2)/0.3));
+.dark\:block:is(.dark *) {
+  display: block;
 }
 
 .dark\:bg-base-300\/70:is(.dark *) {

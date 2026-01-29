@@ -45,13 +45,12 @@
     }
 </script>
 
-<div
-    class="bg-base-100 pt-16 flex flex-col justify-between <%= !isHomepage ? 'min-h-[calc(100vh-12.54rem)]' : 'pb-12' %>">
+<div class="bg-base-100 flex flex-col justify-between <%= !isHomepage ? 'min-h-[calc(100vh-12.54rem)]' : 'pb-12' %>">
     <div class="max-w-6xl mx-auto px-4" v-scope="SearchApp">
         <div class="text-center">
 
             <% if (!isHomepage) { %>
-                <p class="mt-4 text-lg text-base-content/80">
+                <p class="mt-16 text-lg text-base-content/80">
                     Explore recent insights, retrospectives, and stories.
                 </p>
                 <div class="flex justify-center">
@@ -99,7 +98,7 @@
                 <!-- Hero Post -->
                 <div class="mb-24">
                     <a href="/blog/posts/<%= heroPost.id %>" class="no-underline group">
-                        <div class="card w-full lg:card-side bg-base-200/50 backdrop-blur-md shadow-2xl lg:shadow-xl  transition-shadow duration-300 blog-card-transition overflow-hidden rounded-lg "
+                        <div class="card w-full lg:card-side backdrop-blur-md shadow-2xl lg:shadow-xl  transition-shadow duration-300 blog-card-transition overflow-hidden rounded-lg "
                             style="--blog-card-id: blog-card-<%= heroPost.id %>">
                             <% if (heroImageUrl && heroImageUrl !=="" ) { %>
                                 <figure
@@ -150,7 +149,7 @@
                                 : blog.coverImageAlt %>
 
                                 <a href="/blog/posts/<%= blog.id %>" class="no-underline group">
-                                    <div class="card bg-base-200/50 backdrop-blur-md shadow-xl transition-shadow duration-300 blog-card-transition"
+                                    <div class="card bg-base-300/50 backdrop-blur-md shadow-xl transition-shadow duration-300 blog-card-transition"
                                         style="--blog-card-id: blog-card-<%= blog.id %>">
                                         <% if (myImageUrl !==null && myImageUrl !=="" ) { %>
                                             <figure class="h-48 overflow-hidden m-0 rounded-t-lg">
