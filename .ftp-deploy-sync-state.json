@@ -1,7 +1,7 @@
 {
     "description": "DO NOT DELETE THIS FILE. This file is used to keep track of which files have been synced in the most recent deployment. If you delete this file a resync will need to be done (which can take a while) - read more: https://github.com/SamKirkland/FTP-Deploy-Action",
     "version": "1.0.0",
-    "generatedTime": 1769651199581,
+    "generatedTime": 1769654434791,
     "data": [
         {
             "type": "file",
@@ -114,8 +114,8 @@
         {
             "type": "file",
             "name": "pb_hooks/pages/app.css",
-            "size": 95182,
-            "hash": "47729349fbe87c820cc5d4f0856968fc9771e9a5bb569d9810bef0d656be5f73"
+            "size": 96731,
+            "hash": "b8d9a1caf04d1e6df2af8beb35c6c17c23f52fb0b9e9c101763ccf753c7104e9"
         },
         {
             "type": "folder",
@@ -206,8 +206,8 @@
         {
             "type": "file",
             "name": "pb_hooks/pages/_private/navbar.ejs",
-            "size": 2307,
-            "hash": "35d280ad616ee4c9990498b23516c8a80ff7875fe9588c85d41962af6e2e442f"
+            "size": 2327,
+            "hash": "db17071a22b993cd29765fab7d8fb977bc209e2e8001b70486c27d3679a87f33"
         },
         {
             "type": "file",
@@ -218,8 +218,8 @@
         {
             "type": "file",
             "name": "pb_hooks/pages/_private/hero.ejs",
-            "size": 2863,
-            "hash": "6d030a893d77b1e08b48384be93a756a9ad4bfca9c4aafef7764fe455e3423c3"
+            "size": 2913,
+            "hash": "cbcde93faa60ce44926176ce372bfa4153cb9804527d9edec4938fbb9abba368"
         },
         {
             "type": "file",
@@ -230,14 +230,14 @@
         {
             "type": "file",
             "name": "pb_hooks/pages/_private/blogpage.ejs",
-            "size": 9521,
-            "hash": "2b8ffa6945754322b93a84b8165fb6cc444aad5049b2e8e1a6e00e7ac7b7160b"
+            "size": 9519,
+            "hash": "ca6a72806d2b12d6bcdfc2b2ccf5b673b980694d07880653e2cb6a39b78ecbc9"
         },
         {
             "type": "file",
             "name": "pb_hooks/pages/_private/blogcards.ejs",
-            "size": 11977,
-            "hash": "cfa8e5731e8fda6523fb34f91e847098a44068b32f2f2451077ad28e80677591"
+            "size": 11971,
+            "hash": "2914d92ee1d2931ad1172e02d79e9c7410ef63a118da8c56a6d492426bb3a3a6"
         },
         {
             "type": "folder",
