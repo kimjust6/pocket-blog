@@ -13,7 +13,7 @@
         }
 
         return client.collection(POCKET_BLOGPOSTS).getList(page, perPage, {
-            sort: '-created',
+            sort: '-manualPublishDate,-created',
             filter,
         })
     }
@@ -98,7 +98,7 @@
                 <!-- Hero Post -->
                 <div class="mb-24">
                     <a href="/blog/posts/<%= heroPost.id %>" class="no-underline group">
-                        <div class="card w-full lg:card-side backdrop-blur-md shadow-2xl lg:shadow-xl  transition-shadow duration-300 blog-card-transition overflow-hidden rounded-lg "
+                        <div class="card w-full lg:card-side backdrop-blur-md shadow-2xl lg:shadow-xl  transition-shadow duration-300 blog-card-transition overflow-hidden rounded-lg bg-base-300"
                             style="--blog-card-id: blog-card-<%= heroPost.id %>">
                             <% if (heroImageUrl && heroImageUrl !=="" ) { %>
                                 <figure
@@ -128,7 +128,8 @@
                                             <%= heroText %>
                                         </p>
                                         <span class="text-sm text-base-content/50 mt-4 block">
-                                            <%= formatDateTime(new Date(heroPost.updated)) %>
+                                            <%= formatDateTime(new Date(heroPost.manualPublishDate || heroPost.created))
+                                                %>
                                         </span>
                                     </div>
                         </div>
@@ -149,7 +150,7 @@
                                 : blog.coverImageAlt %>
 
                                 <a href="/blog/posts/<%= blog.id %>" class="no-underline group">
-                                    <div class="card bg-base-300/50 backdrop-blur-md shadow-xl transition-shadow duration-300 blog-card-transition"
+                                    <div class="card bg-base-300 backdrop-blur-md shadow-xl transition-shadow duration-300 blog-card-transition"
                                         style="--blog-card-id: blog-card-<%= blog.id %>">
                                         <% if (myImageUrl !==null && myImageUrl !=="" ) { %>
                                             <figure class="h-48 overflow-hidden m-0 rounded-t-lg">
@@ -179,7 +180,8 @@
                                                         <%= text %>
                                                     </p>
                                                     <span class="text-xs text-base-content/50 mt-2">
-                                                        <%= formatDateTime(new Date(blog.updated)) %>
+                                                        <%= formatDateTime(new Date(blog.manualPublishDate ||
+                                                            blog.created)) %>
                                                     </span>
                                                 </div>
                                     </div>
