@@ -3286,6 +3286,10 @@ html:has(.drawer-toggle:checked) {
   width: 100%;
 }
 
+.w-screen {
+  width: 100vw;
+}
+
 .min-w-80 {
   min-width: 20rem;
 }
@@ -3474,10 +3478,6 @@ html:has(.drawer-toggle:checked) {
 .bg-base-300 {
   --tw-bg-opacity: 1;
   background-color: var(--fallback-b3,oklch(var(--b3)/var(--tw-bg-opacity, 1)));
-}
-
-.bg-base-300\/50 {
-  background-color: var(--fallback-b3,oklch(var(--b3)/0.5));
 }
 
 .bg-base-300\/60 {
@@ -4002,8 +4002,26 @@ html:has(.drawer-toggle:checked) {
     gap: 2rem;
   }
 
+  .md\:p-8 {
+    padding: 2rem;
+  }
+
+  .md\:p-16 {
+    padding: 4rem;
+  }
+
+  .md\:px-12 {
+    padding-left: 3rem;
+    padding-right: 3rem;
+  }
+
   .md\:text-left {
     text-align: left;
+  }
+
+  .md\:text-4xl {
+    font-size: 2.25rem;
+    line-height: 2.5rem;
   }
 }
 
