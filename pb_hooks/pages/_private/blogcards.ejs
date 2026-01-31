@@ -118,14 +118,12 @@
                                             style="--blog-title-id: blog-title-<%= heroPost.id %>">
                                             <%= heroPost.title %>
                                         </h2>
-                                        <div class="flex flex-wrap">
+                                        <div class="flex flex-wrap pb-4 gap-2">
                                             <% if (heroPost.tags && heroPost.tags?.length> 0) {
                                                 heroPost.tags?.split(';').forEach(tag => { %>
-                                                <div class="pb-4 text-wrap">
-                                                    <span class="badge badge-outline lg:badge-lg mr-2 text-nowrap">
-                                                        <%= tag %>
-                                                    </span>
-                                                </div>
+                                                <span class="badge badge-outline lg:badge-lg text-nowrap">
+                                                    <%= tag %>
+                                                </span>
                                                 <% }) %>
                                                     <% } %>
                                         </div>
@@ -167,22 +165,20 @@
                                     <div class="card bg-base-300 backdrop-blur-md shadow-xl transition-shadow duration-300 blog-card-transition"
                                         style="--blog-card-id: blog-card-<%= blog.id %>">
                                         <% if (myImageUrl !==null && myImageUrl !=="" ) { %>
-                                            <figure class="h-48 overflow-hidden m-0 rounded-t-lg">
+                                            <figure class="h-auto md:h-48 overflow-hidden m-0 rounded-t-lg">
                                                 <img src="<%= myImageUrl%>" alt="<%= blog.title %> Image"
-                                                    class="w-full h-48 object-cover blog-image-transition rounded-t-lg"
+                                                    class="w-full h-auto md:h-48 object-cover blog-image-transition rounded-t-lg"
                                                     style="--blog-image-id: blog-image-<%= blog.id %>" loading="lazy" />
                                             </figure>
                                             <% } %>
-                                                <div class="card-body gap-0 blog-body-transition">
-                                                    <div class="flex flex-wrap">
+                                                <div class="card-body p-8 gap-0 blog-body-transition">
+                                                    <div class="flex flex-wrap gap-2 pb-4">
                                                         <% if (blog.tags && blog.tags?.length> 0) {
                                                             blog.tags?.split(';').forEach(tag => { %>
-                                                            <div class="pb-4 text-wrap">
-                                                                <span
-                                                                    class="badge badge-outline badge-sm mr-2 text-nowrap">
-                                                                    <%= tag %>
-                                                                </span>
-                                                            </div>
+                                                            <span
+                                                                class="badge badge-outline badge-sm text-nowrap h-auto">
+                                                                <%= tag %>
+                                                            </span>
                                                             <% }) %>
                                                                 <% } %>
                                                     </div>

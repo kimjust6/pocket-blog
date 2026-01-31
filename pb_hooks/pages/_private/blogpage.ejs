@@ -123,18 +123,16 @@
                                 </h1>
                                 <!-- Tags -->
                                 <% if (singleBlog?.tags && singleBlog.tags.length> 0) { %>
-                                    <div class="flex flex-wrap">
+                                    <div class="flex flex-wrap gap-2">
                                         <% singleBlog.tags.split(';').forEach(function(tag) { %>
                                             <% if (tag.trim()) { %>
-                                                <div class="pb-4 text-wrap">
-                                                    <a href="/blog/posts?query=<%= encodeURIComponent(tag.trim()) %>"
-                                                        class="no-underline">
-                                                        <span
-                                                            class="badge badge-outline badge-lg mr-2 text-nowrap hover:bg-base-content hover:text-base-100 transition-all duration-200 cursor-pointer">
-                                                            <%= tag.trim() %>
-                                                        </span>
-                                                    </a>
-                                                </div>
+                                                <a href="/blog/posts?query=<%= encodeURIComponent(tag.trim()) %>"
+                                                    class="no-underline">
+                                                    <span
+                                                        class="badge badge-outline badge-lg text-nowrap hover:bg-base-content hover:text-base-100 transition-all duration-200 cursor-pointer">
+                                                        <%= tag.trim() %>
+                                                    </span>
+                                                </a>
                                                 <% } %>
                                                     <% }); %>
                                     </div>

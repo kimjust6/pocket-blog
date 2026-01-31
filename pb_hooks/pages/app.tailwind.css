@@ -2,6 +2,21 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Global squircle corner shape for all rounded elements */
+*[class*="rounded-"] {
+    corner-shape: squircle;
+}
+
+.card,
+.btn,
+.badge,
+.input,
+.mockup-code,
+figure,
+img {
+    corner-shape: squircle;
+}
+
 /* View Transitions API */
 @view-transition {
     navigation: auto;
