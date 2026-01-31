@@ -102,13 +102,13 @@
                             style="--blog-card-id: blog-card-<%= heroPost.id %>">
                             <% if (heroImageUrl && heroImageUrl !=="" ) { %>
                                 <figure
-                                    class="lg:w-1/2 h-64 lg:h-auto m-0 rounded-t-lg lg:rounded-t-none lg:rounded-l-lg">
+                                    class="lg:w-1/2 h-64 lg:h-auto m-0 rounded-t-lg lg:rounded-t-none lg:rounded-l-lg relative">
                                     <img src="<%= heroImageUrl %>" alt="<%= heroPost.title %> Image"
                                         class="w-full h-full object-cover blog-image-transition rounded-t-lg lg:rounded-t-none lg:rounded-l-lg"
                                         style="--blog-image-id: blog-image-<%= heroPost.id %>" loading="lazy" />
                                 </figure>
                                 <% } %>
-                                    <div class="card-body lg:w-1/2 justify-center blog-body-transition p-8 md:p-16">
+                                    <div class="card-body lg:w-1/2 justify-center blog-body-transition p-8 md:p-12">
                                         <h2 class="card-title text-3xl md:text-4xl font-bold group-hover:text-primary transition-colors duration-200 mt-0 blog-title-transition"
                                             style="--blog-title-id: blog-title-<%= heroPost.id %>">
                                             <%= heroPost.title %>
@@ -127,7 +127,7 @@
                                         <p class="text-lg text-base-content/80 mt-4 line-clamp-4">
                                             <%= heroText %>
                                         </p>
-                                        <span class="text-sm text-base-content/50 mt-4 block">
+                                        <span class="text-sm text-base-content/50 block">
                                             <%= formatDateTime(new Date(heroPost.manualPublishDate || heroPost.created))
                                                 %>
                                         </span>

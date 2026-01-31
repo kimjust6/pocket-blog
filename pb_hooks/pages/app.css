@@ -3286,10 +3286,6 @@ html:has(.drawer-toggle:checked) {
   width: 100%;
 }
 
-.w-screen {
-  width: 100vw;
-}
-
 .min-w-80 {
   min-width: 20rem;
 }
@@ -3509,10 +3505,6 @@ html:has(.drawer-toggle:checked) {
      object-fit: cover;
 }
 
-.p-16 {
-  padding: 4rem;
-}
-
 .p-4 {
   padding: 1rem;
 }
@@ -3523,11 +3515,6 @@ html:has(.drawer-toggle:checked) {
 
 .p-8 {
   padding: 2rem;
-}
-
-.px-12 {
-  padding-left: 3rem;
-  padding-right: 3rem;
 }
 
 .px-14 {
@@ -4002,12 +3989,16 @@ html:has(.drawer-toggle:checked) {
     gap: 2rem;
   }
 
+  .md\:p-16 {
+    padding: 4rem;
+  }
+
   .md\:p-8 {
     padding: 2rem;
   }
 
-  .md\:p-16 {
-    padding: 4rem;
+  .md\:p-12 {
+    padding: 3rem;
   }
 
   .md\:px-12 {
