@@ -100,7 +100,7 @@
             <div class="hero bg-base-100 py-12 min-h-[calc(100vh-12.54rem)] flex flex-col items-center justify-start blog-card-transition"
                 style="--blog-card-id: blog-card-<%= singleBlog?.id %>">
                 <div class="hero-content max-w-4xl flex flex-col">
-                    <div class="w-full backdrop-blur-md p-6 rounded-lg mb-8">
+                    <div class="w-full backdrop-blur-md p-6 rounded-xl mb-8">
                         <h1 class="md:mb-0 font-extrabold text-3xl leading-tight md:flex hidden blog-title-transition"
                             style="--blog-title-id: blog-title-<%= singleBlog?.id %>">
                             <%= singleBlog?.title %>
@@ -109,14 +109,14 @@
                     <!-- Blog Image -->
                     <% if (imageUrl) { %>
                         <img src="<%= imageUrl %>"
-                            class="rounded-lg shadow-lg w-full h-auto max-h-96 object-cover m-0 blog-image-transition"
+                            class="rounded-xl shadow-lg w-full h-auto max-h-96 object-cover m-0 blog-image-transition"
                             style="
                 --blog-image-id: blog-image-<%= singleBlog?.id %>;
                 aspect-ratio: 16/9;
             " alt="<%= singleBlog?.title %> image" />
                         <% } %>
                             <!-- Blog Content -->
-                            <div class="w-full self-start backdrop-blur-md p-8 rounded-lg">
+                            <div class="w-full self-start backdrop-blur-md p-8 rounded-xl">
                                 <h1 class="mb-0 font-extrabold sm:text-2xl leading-tight flex md:hidden blog-title-transition"
                                     style="--blog-title-id: blog-title-<%= singleBlog?.id %>">
                                     <%= singleBlog?.title %>
@@ -154,12 +154,12 @@
                                                         View all posts
                                                     </a>
                                                     <!-- <span>By: <strong>Justin K</strong></span> -->
-                                                    <div>Posted:
+                                                    <div class="text-right">Posted:
                                                         <strong>
                                                             <%= formatDateTime(new Date(singleBlog?.manualPublishDate ||
                                                                 singleBlog.created)) %>
                                                         </strong></span>
-                                                        <div>Updated:
+                                                        <div class="text-right">Updated:
                                                             <strong>
                                                                 <%= formatDateTime(new Date(singleBlog?.updated)) %>
                                                             </strong></span>
