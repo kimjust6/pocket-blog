@@ -1,9 +1,6 @@
 <script server>
-  const client = pb({ request })
-  const blogposts = client.collection('blogposts').getFullList({
-    sort: '-updated',
-    filter: 'isDeleted = false',
-  })
+  const { getAllBlogPosts } = resolve('../utils/pocket')
+  const blogposts = getAllBlogPosts("-updated")
 
   response.header('Content-Type', 'application/xml')
 

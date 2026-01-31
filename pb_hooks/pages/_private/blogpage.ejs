@@ -1,18 +1,12 @@
 <script server>
     const { formatDateTime, getImageUrl } = resolve('../../utils/common')
-    const { POCKET_BLOGPOSTS } = resolve('../../utils/constants')
+    const { getBlogPostById } = resolve('../../utils/pocket')
 
     let singleBlog = null
     let imageUrl = null
     if (params?.postId) {
-        const client = pb({ request })
         try {
-            singleBlog = client
-                .collection(POCKET_BLOGPOSTS)
-                .getFirstListItem(
-                    `id = "${params.postId}" && isDeleted = false`,
-                    { sort: '-updated' }
-                )
+            singleBlog = getBlogPostById(params.postId)
             if (!singleBlog) {
                 return
             }

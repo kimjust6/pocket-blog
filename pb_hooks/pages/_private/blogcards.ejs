@@ -1,26 +1,14 @@
 <script server>
     const { formatDateTime, getImageUrl } = resolve('../../utils/common')
-    const { POCKET_BLOGPOSTS } = resolve('../../utils/constants')
+    const { getBlogPosts } = resolve('../../utils/pocket')
 
     if (typeof isHomepage === 'undefined') {
         var isHomepage = false
     }
-    function fetchBlogPosts(page, perPage, query) {
-        const client = pb({ request })
-        let filter = 'isDeleted = false'
-        if (query) {
-            filter = `${filter} && (title ~ "${query}" || tags ~ "${query}" || content1 ~ "${query}" || content2 ~ "${query}")`
-        }
-
-        return client.collection(POCKET_BLOGPOSTS).getList(page, perPage, {
-            sort: '-manualPublishDate,-created',
-            filter,
-        })
-    }
-    const currentPage = params?.page ?? 1
+    const currentPage = parseInt(params?.page) || 1
     const perPage = params?.perPage ?? (isHomepage ? 7 : 6)
 
-    blogposts = fetchBlogPosts(currentPage, perPage, params.query) ?? []
+    const blogposts = getBlogPosts(currentPage, perPage, params.query) ?? { items: [], totalPages: 1 }
     const totalPages = blogposts?.totalPages || 1
 </script>
 
