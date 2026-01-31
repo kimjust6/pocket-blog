@@ -98,14 +98,19 @@
                 <!-- Hero Post -->
                 <div class="mb-24">
                     <a href="/blog/posts/<%= heroPost.id %>" class="no-underline group">
-                        <div class="card w-full lg:card-side backdrop-blur-md shadow-2xl lg:shadow-xl transition-shadow duration-300 blog-card-transition overflow-hidden rounded-lg bg-base-300"
+                        <div class="card w-full lg:card-side backdrop-blur-md shadow-2xl lg:shadow-xl transition-shadow duration-300 blog-card-transition overflow-hidden rounded-lg bg-base-300 relative"
                             style="--blog-card-id: blog-card-<%= heroPost.id %>">
+                            <span
+                                class="absolute py-1 px-2 sm:py-2 sm:px-4 bg-base-100/60 backdrop-blur-md border border-white/20 shadow-lg text-base-content text-xs md:text-sm lg:text-base font-semibold uppercase tracking-wide z-10 rounded-full"
+                                style="position-anchor: --blog-image; bottom:calc(anchor(bottom) + 0.75rem); left:calc(anchor(left) + 0.75rem)">Latest
+                                Post</span>
                             <% if (heroImageUrl && heroImageUrl !=="" ) { %>
                                 <figure
-                                    class="lg:w-1/2 h-64 lg:h-auto m-0 rounded-t-lg lg:rounded-t-none lg:rounded-l-lg relative">
+                                    class="lg:w-1/2 h-auto m-0 rounded-t-lg lg:rounded-t-none lg:rounded-l-lg relative">
                                     <img src="<%= heroImageUrl %>" alt="<%= heroPost.title %> Image"
                                         class="w-full h-full object-cover blog-image-transition rounded-t-lg lg:rounded-t-none lg:rounded-l-lg"
-                                        style="--blog-image-id: blog-image-<%= heroPost.id %>" loading="lazy" />
+                                        style="--blog-image-id: blog-image-<%= heroPost.id %>; anchor-name: --blog-image"
+                                        loading="lazy" />
                                 </figure>
                                 <% } %>
                                     <div class="card-body lg:w-1/2 justify-center blog-body-transition p-8 md:p-12">
@@ -135,11 +140,20 @@
                         </div>
                     </a>
                 </div>
+
                 <% } %>
 
                     <a href="/blog/posts" class="no-underline">
                         <div class="mb-12 text-center">
-                            <h1 class="text-5xl font-bold">Latest Posts</h1>
+                            <h1 class="text-5xl font-bold">
+
+                                <% if (heroPost) { %>
+                                    Older
+                                    <% } else { %>
+                                        Latest
+                                        <% } %>
+                                            Posts
+                            </h1>
                         </div>
                     </a>
 
