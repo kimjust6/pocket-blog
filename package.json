@@ -4,6 +4,7 @@
     "version": "0.0.2",
     "scripts": {
         "dev": "concurrently \"tailwindcss -i ./pb_hooks/pages/app.tailwind.css -o ./pb_hooks/pages/app.css --watch\" \"pocketbase serve --dir=pb_data --dev\"",
+        "wsl": "wsl npm run dev",
         "start": "pocketbase serve --dir=pb_data --dev",
         "css": "tailwindcss -i ./pb_hooks/pages/app.tailwind.css -o ./pb_hooks/pages/app.css --watch\"",
         "push": "npx phio deploy mlt-blog",
