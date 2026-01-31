@@ -81,3 +81,25 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
 }
+
+/* Hide the latest post badge during view transitions */
+::view-transition-old(latest-post-badge) {
+    animation: badge-fade-out 0.15s linear forwards;
+}
+
+::view-transition-new(latest-post-badge) {
+    display: none;
+}
+
+::view-transition-group(latest-post-badge) {
+    animation: none;
+}
+
+@keyframes badge-fade-out {
+    0% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+    }
+}

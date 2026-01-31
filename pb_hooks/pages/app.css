@@ -3875,6 +3875,30 @@ html:has(.drawer-toggle:checked) {
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* Hide the latest post badge during view transitions */
+
+::view-transition-old(latest-post-badge) {
+  animation: badge-fade-out 0.15s linear forwards;
+}
+
+::view-transition-new(latest-post-badge) {
+  display: none;
+}
+
+::view-transition-group(latest-post-badge) {
+  animation: none;
+}
+
+@keyframes badge-fade-out {
+  0% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+  }
+}
+
 @media (min-width: 1024px) {
   .lg\:badge-lg {
     height: 1.5rem;
@@ -3972,6 +3996,16 @@ html:has(.drawer-toggle:checked) {
     padding-right: 3rem;
   }
 
+  .sm\:px-4 {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  .sm\:py-2 {
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+  }
+
   .sm\:text-2xl {
     font-size: 1.5rem;
     line-height: 2rem;
@@ -4019,16 +4053,6 @@ html:has(.drawer-toggle:checked) {
     padding: 2rem;
   }
 
-  .md\:px-4 {
-    padding-left: 1rem;
-    padding-right: 1rem;
-  }
-
-  .md\:py-2 {
-    padding-top: 0.5rem;
-    padding-bottom: 0.5rem;
-  }
-
   .md\:text-left {
     text-align: left;
   }
@@ -4069,16 +4093,6 @@ html:has(.drawer-toggle:checked) {
   .lg\:rounded-t-none {
     border-top-left-radius: 0px;
     border-top-right-radius: 0px;
-  }
-
-  .lg\:px-6 {
-    padding-left: 1.5rem;
-    padding-right: 1.5rem;
-  }
-
-  .lg\:py-3 {
-    padding-top: 0.75rem;
-    padding-bottom: 0.75rem;
   }
 
   .lg\:text-base {
