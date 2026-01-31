@@ -1,29 +1,16 @@
 const { POCKET_BLOGPOSTS } = require('./constants')
 
 /**
- * Convert a PocketBase Record to a plain object
- * Server-side records need to use .get() method or be serialized
- * @param {Record} record - PocketBase Record object
- * @returns {object} Plain JavaScript object
- */
-const recordToObject = (record) => {
-    if (!record) return null
-    // Use JSON serialization to get a plain object
-    return JSON.parse(JSON.stringify(record))
-}
-
-/**
  * Get a single blog post by ID using server-side $app
  * @param {string} id - The blog post ID
- * @returns {object} The blog post as a plain object
+ * @returns {Record} The blog post Record object (use .getString(), .get() to access fields)
  */
 const getBlogPostById = (id) => {
-    const record = $app.findFirstRecordByFilter(
+    return $app.findFirstRecordByFilter(
         POCKET_BLOGPOSTS,
         "id = {:id} && isDeleted = false",
         { id }
     )
-    return recordToObject(record)
 }
 
 /**
@@ -31,7 +18,7 @@ const getBlogPostById = (id) => {
  * @param {number} page - Page number (1-indexed)
  * @param {number} perPage - Items per page
  * @param {string} query - Optional search query
- * @returns {object} Object with items array and pagination info
+ * @returns {object} Object with items array (Record objects) and pagination info
  */
 const getBlogPosts = (page, perPage, query) => {
     const offset = (page - 1) * perPage
@@ -65,7 +52,7 @@ const getBlogPosts = (page, perPage, query) => {
     const totalPages = Math.ceil(totalItems / perPage)
 
     return {
-        items: (records || []).map(recordToObject),
+        items: records || [],
         totalItems,
         totalPages,
         page
@@ -75,17 +62,16 @@ const getBlogPosts = (page, perPage, query) => {
 /**
  * Get all blog posts (for sitemap/RSS) using server-side $app
  * @param {string} sort - Sort order (e.g., "-updated", "-created")
- * @returns {array} Array of blog posts as plain objects
+ * @returns {array} Array of blog post Record objects
  */
 const getAllBlogPosts = (sort = "-updated") => {
-    const records = $app.findRecordsByFilter(
+    return $app.findRecordsByFilter(
         POCKET_BLOGPOSTS,
         "isDeleted = false",
         sort,
         0, // no limit (returns all)
         0
-    )
-    return (records || []).map(recordToObject)
+    ) || []
 }
 
 module.exports = {

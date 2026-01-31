@@ -80,8 +80,9 @@
             }
             %>
 
-            <% if (heroPost) { const heroText=heroPost.content1.replace(/<[^>]*>/g, '');
-                const heroImageUrl = getImageUrl(heroPost) ? `${getImageUrl(heroPost)}` : heroPost.coverImageAlt;
+            <% if (heroPost) { const heroText=heroPost.getString('content1').replace(/<[^>]*>/g, '');
+                const heroImageUrl = getImageUrl(heroPost) ? `${getImageUrl(heroPost)}` :
+                heroPost.getString('coverImageAlt');
                 %>
                 <!-- Hero Post -->
                 <div class="mb-24">
@@ -94,7 +95,7 @@
                                 Post</span>
                             <% if (heroImageUrl && heroImageUrl !=="" ) { %>
                                 <figure class="lg:w-1/2 h-auto m-0 rounded-t-lg lg:rounded-t-none lg:rounded-l-lg">
-                                    <img src="<%= heroImageUrl %>" alt="<%= heroPost.title %> Image"
+                                    <img src="<%= heroImageUrl %>" alt="<%= heroPost.getString('title') %> Image"
                                         class="w-full h-full object-cover blog-image-transition rounded-t-lg lg:rounded-t-none lg:rounded-l-lg"
                                         style="--blog-image-id: blog-image-<%= heroPost.id %>; anchor-name: --blog-image"
                                         loading="lazy" />
@@ -103,11 +104,12 @@
                                     <div class="card-body lg:w-1/2 justify-center blog-body-transition p-8 md:p-12">
                                         <h2 class="card-title text-3xl md:text-4xl font-bold group-hover:text-primary transition-colors duration-200 mt-0 blog-title-transition"
                                             style="--blog-title-id: blog-title-<%= heroPost.id %>">
-                                            <%= heroPost.title %>
+                                            <%= heroPost.getString('title') %>
                                         </h2>
                                         <div class="flex flex-wrap pb-4 gap-2">
-                                            <% if (heroPost.tags && heroPost.tags?.length> 0) {
-                                                heroPost.tags?.split(';').forEach(tag => { %>
+                                            <% const heroTags=heroPost.getString('tags'); if (heroTags &&
+                                                heroTags.length> 0) {
+                                                heroTags.split(';').forEach(tag => { %>
                                                 <span class="badge badge-outline lg:badge-lg text-nowrap">
                                                     <%= tag %>
                                                 </span>
@@ -118,8 +120,8 @@
                                             <%= heroText %>
                                         </p>
                                         <span class="text-sm text-base-content/50 block">
-                                            <%= formatDateTime(new Date(heroPost.manualPublishDate || heroPost.created))
-                                                %>
+                                            <%= formatDateTime(new Date(heroPost.getString('manualPublishDate') ||
+                                                heroPost.getString('created'))) %>
                                         </span>
                                     </div>
                         </div>
@@ -144,24 +146,25 @@
 
                     <div class="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
                         <% gridPosts.forEach(blog=> {
-                            const text = blog.content1.replace(/<[^>]*>/g, '');
+                            const text = blog.getString('content1').replace(/<[^>]*>/g, '');
                                 const myImageUrl = getImageUrl(blog) ? `${getImageUrl(blog)}?thumb=350x0`
-                                : blog.coverImageAlt %>
+                                : blog.getString('coverImageAlt') %>
 
                                 <a href="/blog/posts/<%= blog.id %>" class="no-underline group">
                                     <div class="card bg-base-300 backdrop-blur-md shadow-xl transition-shadow duration-300 blog-card-transition"
                                         style="--blog-card-id: blog-card-<%= blog.id %>">
                                         <% if (myImageUrl !==null && myImageUrl !=="" ) { %>
                                             <figure class="h-auto md:h-48 overflow-hidden m-0 rounded-t-lg">
-                                                <img src="<%= myImageUrl%>" alt="<%= blog.title %> Image"
+                                                <img src="<%= myImageUrl%>" alt="<%= blog.getString('title') %> Image"
                                                     class="w-full h-auto md:h-48 object-cover blog-image-transition rounded-t-lg"
                                                     style="--blog-image-id: blog-image-<%= blog.id %>" loading="lazy" />
                                             </figure>
                                             <% } %>
                                                 <div class="card-body p-8 gap-0 blog-body-transition">
                                                     <div class="flex flex-wrap gap-2 pb-4">
-                                                        <% if (blog.tags && blog.tags?.length> 0) {
-                                                            blog.tags?.split(';').forEach(tag => { %>
+                                                        <% const blogTags=blog.getString('tags'); if (blogTags &&
+                                                            blogTags.length> 0) {
+                                                            blogTags.split(';').forEach(tag => { %>
                                                             <span
                                                                 class="badge badge-outline badge-sm text-nowrap h-auto">
                                                                 <%= tag %>
@@ -171,14 +174,14 @@
                                                     </div>
                                                     <h2 class="card-title group-hover:text-primary transition-colors duration-200 mt-0 blog-title-transition"
                                                         style="--blog-title-id: blog-title-<%= blog.id %>">
-                                                        <%= blog.title %>
+                                                        <%= blog.getString('title') %>
                                                     </h2>
                                                     <p class="text-sm text-base-content/70 line-clamp-3">
                                                         <%= text %>
                                                     </p>
                                                     <span class="text-xs text-base-content/50 mt-2">
-                                                        <%= formatDateTime(new Date(blog.manualPublishDate ||
-                                                            blog.created)) %>
+                                                        <%= formatDateTime(new Date(blog.getString('manualPublishDate')
+                                                            || blog.getString('created'))) %>
                                                     </span>
                                                 </div>
                                     </div>

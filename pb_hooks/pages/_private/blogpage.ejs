@@ -11,7 +11,7 @@
                 return
             }
             // Update the page title metadata
-            const newTitle = `${singleBlog.title} | The Justin Blog`
+            const newTitle = `${singleBlog.getString('title')} | The Justin Blog`
             data.metadata
                 .filter((m) => m.name.includes('title'))
                 .forEach((m) => (m.content = newTitle))
@@ -22,7 +22,7 @@
                 )
                 .forEach((m) => (m.content = getImageUrl(singleBlog)))
             // update the description metadata
-            const description = singleBlog.content1
+            const description = singleBlog.getString('content1')
                 .replace(/<[^>]*>/g, '')
                 .slice(0, 160)
                 .trim()
@@ -36,8 +36,9 @@
                 .forEach((m) => (m.content = description))
 
             // add tags to metadata
-            if (singleBlog.tags && singleBlog.tags.length > 0) {
-                const tags = singleBlog.tags.split(';')
+            const blogTags = singleBlog.getString('tags')
+            if (blogTags && blogTags.length > 0) {
+                const tags = blogTags.split(';')
                 tags.forEach((tag) => {
                     data.metadata.push({
                         name: 'article:tag',
@@ -53,7 +54,7 @@
 
 
             // add published and modified times
-            const publishedDate = singleBlog.manualPublishDate || singleBlog.created
+            const publishedDate = singleBlog.getString('manualPublishDate') || singleBlog.getString('created')
             console.log({ publishedDate })
             if (publishedDate) {
                 data.metadata.push({
@@ -61,10 +62,11 @@
                     content: new Date(publishedDate).toISOString(),
                 })
             }
-            if (singleBlog.updated) {
+            const updatedDate = singleBlog.getString('updated')
+            if (updatedDate) {
                 data.metadata.push({
                     name: 'article:modified_time',
-                    content: new Date(singleBlog.updated).toISOString(),
+                    content: new Date(updatedDate).toISOString(),
                 })
             }
 
@@ -82,10 +84,11 @@
             console.error('Error fetching single blog post: ', error)
         }
         //get length of imageUrl
+        const coverImageAlt = singleBlog?.getString('coverImageAlt')
         imageUrl =
-            singleBlog?.coverImageAlt?.length == 0
+            !coverImageAlt || coverImageAlt.length == 0
                 ? getImageUrl(singleBlog)
-                : singleBlog?.coverImageAlt
+                : coverImageAlt
     }
 </script>
 <% if (singleBlog==null) { %>
@@ -97,7 +100,7 @@
                     <div class="w-full backdrop-blur-md p-6 rounded-xl mb-8">
                         <h1 class="md:mb-0 font-extrabold text-3xl leading-tight md:flex hidden blog-title-transition"
                             style="--blog-title-id: blog-title-<%= singleBlog?.id %>">
-                            <%= singleBlog?.title %>
+                            <%= singleBlog?.getString('title') %>
                         </h1>
                     </div>
                     <!-- Blog Image -->
@@ -107,18 +110,19 @@
                             style="
                 --blog-image-id: blog-image-<%= singleBlog?.id %>;
                 aspect-ratio: 16/9;
-            " alt="<%= singleBlog?.title %> image" />
+            " alt="<%= singleBlog?.getString('title') %> image" />
                         <% } %>
                             <!-- Blog Content -->
                             <div class="w-full self-start backdrop-blur-md p-8 rounded-xl">
                                 <h1 class="mb-0 font-extrabold sm:text-2xl leading-tight flex md:hidden blog-title-transition"
                                     style="--blog-title-id: blog-title-<%= singleBlog?.id %>">
-                                    <%= singleBlog?.title %>
+                                    <%= singleBlog?.getString('title') %>
                                 </h1>
                                 <!-- Tags -->
-                                <% if (singleBlog?.tags && singleBlog.tags.length> 0) { %>
+                                <% const pageTags=singleBlog?.getString('tags'); if (pageTags && pageTags.length> 0) {
+                                    %>
                                     <div class="flex flex-wrap gap-2">
-                                        <% singleBlog.tags.split(';').forEach(function(tag) { %>
+                                        <% pageTags.split(';').forEach(function(tag) { %>
                                             <% if (tag.trim()) { %>
                                                 <a href="/blog/posts?query=<%= encodeURIComponent(tag.trim()) %>"
                                                     class="no-underline">
@@ -150,22 +154,24 @@
                                                     <!-- <span>By: <strong>Justin K</strong></span> -->
                                                     <div class="text-right">Posted:
                                                         <strong>
-                                                            <%= formatDateTime(new Date(singleBlog?.manualPublishDate ||
-                                                                singleBlog.created)) %>
+                                                            <%= formatDateTime(new
+                                                                Date(singleBlog?.getString('manualPublishDate') ||
+                                                                singleBlog?.getString('created'))) %>
                                                         </strong></span>
                                                         <div class="text-right">Updated:
                                                             <strong>
-                                                                <%= formatDateTime(new Date(singleBlog?.updated)) %>
+                                                                <%= formatDateTime(new
+                                                                    Date(singleBlog?.getString('updated'))) %>
                                                             </strong></span>
                                                         </div>
                                                     </div>
                                                 </div>
 
                                                 <p class="text-base-content/80 min-w-80">
-                                                    <%- singleBlog?.content1 %>
+                                                    <%- singleBlog?.getString('content1') %>
                                                 </p>
                                                 <p class="text-base-content/80 mb-6 min-w-80">
-                                                    <%- singleBlog?.content2 %>
+                                                    <%- singleBlog?.getString('content2') %>
                                                 </p>
                                             </div>
                                         </div>
