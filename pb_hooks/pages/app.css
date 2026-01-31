@@ -3950,6 +3950,11 @@ html:has(.drawer-toggle:checked) {
 }
 
 @media (min-width: 640px) {
+  .sm\:px-12 {
+    padding-left: 3rem;
+    padding-right: 3rem;
+  }
+
   .sm\:text-2xl {
     font-size: 1.5rem;
     line-height: 2rem;
@@ -3989,21 +3994,12 @@ html:has(.drawer-toggle:checked) {
     gap: 2rem;
   }
 
-  .md\:p-16 {
-    padding: 4rem;
-  }
-
-  .md\:p-8 {
-    padding: 2rem;
-  }
-
   .md\:p-12 {
     padding: 3rem;
   }
 
-  .md\:px-12 {
-    padding-left: 3rem;
-    padding-right: 3rem;
+  .md\:p-8 {
+    padding: 2rem;
   }
 
   .md\:text-left {
