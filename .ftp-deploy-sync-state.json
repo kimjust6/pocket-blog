@@ -1,7 +1,7 @@
 {
     "description": "DO NOT DELETE THIS FILE. This file is used to keep track of which files have been synced in the most recent deployment. If you delete this file a resync will need to be done (which can take a while) - read more: https://github.com/SamKirkland/FTP-Deploy-Action",
     "version": "1.0.0",
-    "generatedTime": 1769878136247,
+    "generatedTime": 1770092319395,
     "data": [
         {
             "type": "file",
@@ -12,6 +12,10 @@
         {
             "type": "folder",
             "name": "pb_public"
+        },
+        {
+            "type": "folder",
+            "name": "pb_migrations"
         },
         {
             "type": "folder",
@@ -44,6 +48,12 @@
             "name": "pb_public/js/petite-vue.es.js",
             "size": 17034,
             "hash": "217255c6119bab51e5ff6b86d54030c9a37f7aa6ea86bf411d475ea9c007128e"
+        },
+        {
+            "type": "file",
+            "name": "pb_migrations/1769882915_updated_blogposts.js",
+            "size": 483,
+            "hash": "e34fd487d0da774aee6ed0ee77cca397375fa171d9c09136306c47b5b316b579"
         },
         {
             "type": "file",
@@ -136,8 +146,8 @@
         {
             "type": "file",
             "name": "pb_hooks/pages/utils/pocket.js",
-            "size": 350,
-            "hash": "e2f1d02704be7b5cbb448b830728712473b4c6bf41b0c4ea3c733ac53f04a3e6"
+            "size": 2240,
+            "hash": "22aeb52bd140364d50662852f640054200ab26cda8aec47b0caf9cb09376c893"
         },
         {
             "type": "file",
@@ -148,14 +158,14 @@
         {
             "type": "file",
             "name": "pb_hooks/pages/utils/common.js",
-            "size": 20934,
-            "hash": "1e96d8a5af30fa7060f9df5b6ad5b6b335f76df6ee8ed35d945617dc17bacd46"
+            "size": 21490,
+            "hash": "f30b1eb10783aedc485c19637ea455ed8a22634c1ba52f1d61cf0f3bd7b9c8e5"
         },
         {
             "type": "file",
             "name": "pb_hooks/pages/sitemap.xml/index.ejs",
-            "size": 1057,
-            "hash": "3e20203148a1cbd9b39538846bd06d2969aceab908f19eef925db9988bd2c981"
+            "size": 1014,
+            "hash": "ea666eb90aaf9826d20e57aae1592c7cb6eee7cd9e20d2094e59c76eae0eeb13"
         },
         {
             "type": "file",
@@ -166,14 +176,14 @@
         {
             "type": "file",
             "name": "pb_hooks/pages/rss.xml/index.ejs",
-            "size": 1779,
-            "hash": "821f9bc173f40e7a5f1c1888aeadc2d00cb211615094a03f61dc9009443dfe45"
+            "size": 1761,
+            "hash": "d1543ecb8385870a02bd893b9142cd3b3c8060dd4286d2d3cae0708e87615091"
         },
         {
             "type": "file",
             "name": "pb_hooks/pages/robots.txt/index.ejs",
-            "size": 136,
-            "hash": "f5dd4d87a05e03d8d27fac1f7120cda0acca0af9f8478a4ced4aae5454f99cbb"
+            "size": 167,
+            "hash": "cafad6309a5203ce561b67e76dde5ef3aff40bfd46f7793d5eba31a63c630788"
         },
         {
             "type": "file",
@@ -208,8 +218,8 @@
         {
             "type": "file",
             "name": "pb_hooks/pages/_private/hero.ejs",
-            "size": 2936,
-            "hash": "4f1e40b488057bba7585e36aa9f43800924f9cd3cc2406d353179819ee753652"
+            "size": 2919,
+            "hash": "4fcadb0895d1488056b8a807f5bc58a73c4ef624e5c822365dabdce327fa3014"
         },
         {
             "type": "file",
@@ -220,14 +230,14 @@
         {
             "type": "file",
             "name": "pb_hooks/pages/_private/blogpage.ejs",
-            "size": 9536,
-            "hash": "06191d14269c24789cc7ae68338d0f19afae39164bfb4f267ef4b657c9df22bf"
+            "size": 9778,
+            "hash": "04d0f1342d24a2c6e99f57fc1600b43d6008c8f6a622333b687505a5ba746c97"
         },
         {
             "type": "file",
             "name": "pb_hooks/pages/_private/blogcards.ejs",
-            "size": 13005,
-            "hash": "a6228130ca0bb167b55f78edb0b55763b0fbb5ad212a4b55135e8e13eb31fc4a"
+            "size": 12853,
+            "hash": "83221c94770c687aabb4c4032f58f6b0863ecf5046245a8b71c24633d613ca04"
         },
         {
             "type": "folder",
