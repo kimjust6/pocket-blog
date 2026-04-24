@@ -1,4 +1,5 @@
 <script server>
+  const { slugifyTitle } = resolve('../../utils/common')
   const client = pb({ request })
   const blogposts = client.collection('blogposts').getFullList({
     sort: '-created',
@@ -10,7 +11,7 @@
 
   const items = blogposts.map(post => {
     const pubDate = new Date(post.manualPublishDate || post.created).toUTCString()
-    const postLink = `https://www.jkim.win/blog/posts/${encodeURIComponent(post.title.replace(/\s+/g, '-').toLowerCase())}`
+    const postLink = `https://www.jkim.win/blog/posts/${encodeURIComponent(slugifyTitle(post.title))}`
     const postDesc = (post.content1 || '')
       .replace(/<[^>]*>/g, '') // Strip HTML
       .substring(0, 300) // Truncate

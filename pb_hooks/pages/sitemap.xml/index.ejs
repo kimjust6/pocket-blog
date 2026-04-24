@@ -1,4 +1,5 @@
 <script server>
+  const { slugifyTitle } = resolve('../../utils/common')
   const client = pb({ request })
   const blogposts = client.collection('blogposts').getFullList({
     sort: '-updated',
@@ -22,7 +23,7 @@
     ?.map(
       (post) =>
         `<url>
-    <loc>https://www.jkim.win/blog/posts/${encodeURIComponent(post?.title?.replace(/\s+/g, '-').toLowerCase())}</loc>
+    <loc>https://www.jkim.win/blog/posts/${encodeURIComponent(slugifyTitle(post?.title))}</loc>
     <lastmod>${new Date(post?.updated).toISOString().split('.')[0] + 'Z'}</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.80</priority>

@@ -1,5 +1,5 @@
 <script server>
-    const { formatDateTime, getImageUrl } = resolve('../../utils/common')
+    const { formatDateTime, getImageUrl, slugifyTitle } = resolve('../../utils/common')
     const { POCKET_BLOGPOSTS } = resolve('../../utils/constants')
 
     let singleBlog = null
@@ -17,7 +17,7 @@
             
             const targetSlug = params.title.toLowerCase();
             singleBlog = possibleBlogs.find(b => 
-                b.title.replace(/\s+/g, '-').toLowerCase() === targetSlug
+                slugifyTitle(b.title) === targetSlug
             ) || null;
 
             if (!singleBlog) {

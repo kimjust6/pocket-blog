@@ -144,6 +144,19 @@ function getImageUrl(blog) {
 }
 
 /**
+ * 
+ * @param {string} title 
+ * @returns {string}
+ */
+function slugifyTitle(title) {
+    if (!title) return '';
+    return title
+        .replace(/[^a-zA-Z0-9]+/g, '-')
+        .replace(/^-+|-+$/g, '')
+        .toLowerCase();
+}
+
+/**
  *
  * @param {Object} data
  * @param {string} assignee_id
@@ -732,5 +745,6 @@ module.exports = {
     generateSlaBreachingSoonMessage,
     isTicketClosed,
     getDiscordIdfromData,
-    isTicketCreated
+    isTicketCreated,
+    slugifyTitle
 }
