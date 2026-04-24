@@ -25,7 +25,7 @@
 </script>
 
 <script>
-    const SearchApp = {
+    var SearchApp = {
         searchQuery: '<%= params?.query || "" %>',
         hasQuery: '<%= params?.query ? "true" : "" %>',
         handleSearch() {
@@ -34,20 +34,24 @@
         },
         clearSearch() {
             this.searchQuery = ''
-            this.$refs.searchInput.focus()
+            if (this.$refs.searchInput) {
+                this.$refs.searchInput.focus()
+            }
             if (this.hasQuery) {
                 window.location.href = '/blog/posts'
             }
         },
         mounted() {
-            this.$refs.searchInput.focus()
+            if (this.$refs.searchInput) {
+                this.$refs.searchInput.focus()
+            }
         },
     }
 </script>
 
 <div
     class="bg-base-100 pt-16 flex flex-col justify-between <%= !isHomepage ? 'min-h-[calc(100vh-12.54rem)]' : 'pb-12' %>">
-    <div class="max-w-6xl mx-auto px-4" v-scope="SearchApp">
+    <div class="max-w-6xl mx-auto px-4" v-scope="SearchApp" @vue:mounted="mounted">
         <div class="text-center">
 
             <% if (!isHomepage) { %>
@@ -98,7 +102,8 @@
                 %>
                 <!-- Hero Post -->
                 <div class="mb-12">
-                    <a href="/blog/posts/<%= encodeURIComponent(slugifyTitle(heroPost.title)) %>" class="no-underline group">
+                    <a href="/blog/posts/<%= encodeURIComponent(slugifyTitle(heroPost.title)) %>"
+                        class="no-underline group">
                         <div class="card lg:card-side bg-base-200 shadow-xl transition-shadow duration-300 blog-card-transition overflow-hidden"
                             style="--blog-card-id: blog-card-<%= heroPost.id %>">
                             <% if (heroImageUrl && heroImageUrl !=="" ) { %>
@@ -148,7 +153,8 @@
                                 const myImageUrl = getImageUrl(blog) ? `${getImageUrl(blog)}?thumb=350x0`
                                 : blog.coverImageAlt %>
 
-                                <a href="/blog/posts/<%= encodeURIComponent(slugifyTitle(blog.title)) %>" class="no-underline group">
+                                <a href="/blog/posts/<%= encodeURIComponent(slugifyTitle(blog.title)) %>"
+                                    class="no-underline group">
                                     <div class="card bg-base-200 shadow-xl transition-shadow duration-300 blog-card-transition"
                                         style="--blog-card-id: blog-card-<%= blog.id %>">
                                         <% if (myImageUrl !==null && myImageUrl !=="" ) { %>

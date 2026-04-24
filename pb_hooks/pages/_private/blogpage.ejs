@@ -7,11 +7,11 @@
     if (params?.title) {
         const client = pb({ request })
         try {
-            const likePattern = params.title.replace(/-/g, '%').replace(/"/g, '\\"');
+            const firstWord = params.title.split('-')[0].replace(/"/g, '\\"');
             const possibleBlogs = client
                 .collection(POCKET_BLOGPOSTS)
                 .getFullList({
-                    filter: `title ~ "${likePattern}" && isDeleted = false`,
+                    filter: `title ~ "${firstWord}" && isDeleted = false`,
                     sort: '-manualPublishDate,-updated'
                 });
             
