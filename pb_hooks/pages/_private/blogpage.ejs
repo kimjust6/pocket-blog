@@ -4,15 +4,22 @@
 
     let singleBlog = null
     let imageUrl = null
-    if (params?.postId) {
+    if (params?.title) {
         const client = pb({ request })
         try {
-            singleBlog = client
+            const likePattern = params.title.replace(/-/g, '%').replace(/"/g, '\\"');
+            const possibleBlogs = client
                 .collection(POCKET_BLOGPOSTS)
-                .getFirstListItem(
-                    `id = "${params.postId}" && isDeleted = false`,
-                    { sort: '-updated' }
-                )
+                .getFullList({
+                    filter: `title ~ "${likePattern}" && isDeleted = false`,
+                    sort: '-updated'
+                });
+            
+            const targetSlug = params.title.toLowerCase();
+            singleBlog = possibleBlogs.find(b => 
+                b.title.replace(/\s+/g, '-').toLowerCase() === targetSlug
+            ) || null;
+
             if (!singleBlog) {
                 return
             }

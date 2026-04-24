@@ -22,7 +22,7 @@
     ?.map(
       (post) =>
         `<url>
-    <loc>https://www.jkim.win/blog/posts/${post?.id}</loc>
+    <loc>https://www.jkim.win/blog/posts/${encodeURIComponent(post?.title?.replace(/\s+/g, '-').toLowerCase())}</loc>
     <lastmod>${new Date(post?.updated).toISOString().split('.')[0] + 'Z'}</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.80</priority>
