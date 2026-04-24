@@ -1,26 +1,14 @@
 <script server>
     const { formatDateTime, getImageUrl, slugifyTitle } = resolve('../../utils/common')
-    const { POCKET_BLOGPOSTS } = resolve('../../utils/constants')
+    const { getBlogPosts } = resolve('../../utils/pocket')
 
     if (typeof isHomepage === 'undefined') {
         var isHomepage = false
     }
-    function fetchBlogPosts(page, perPage, query) {
-        const client = pb({ request })
-        let filter = 'isDeleted = false'
-        if (query) {
-            filter = `${filter} && (title ~ "${query}" || tags ~ "${query}" || content1 ~ "${query}" || content2 ~ "${query}")`
-        }
-
-        return client.collection(POCKET_BLOGPOSTS).getList(page, perPage, {
-            sort: '-manualPublishDate,-updated',
-            filter,
-        })
-    }
-    const currentPage = params?.page ?? 1
+    const currentPage = parseInt(params?.page) || 1
     const perPage = params?.perPage ?? (isHomepage ? 7 : 6)
 
-    blogposts = fetchBlogPosts(currentPage, perPage, params.query) ?? []
+    const blogposts = getBlogPosts(currentPage, perPage, params.query) ?? { items: [], totalPages: 1 }
     const totalPages = blogposts?.totalPages || 1
 </script>
 
@@ -49,13 +37,12 @@
     }
 </script>
 
-<div
-    class="bg-base-100 pt-16 flex flex-col justify-between <%= !isHomepage ? 'min-h-[calc(100vh-12.54rem)]' : 'pb-12' %>">
+<div class="bg-base-100 pt-16 flex flex-col justify-between <%= !isHomepage ? 'min-h-[calc(100vh-12.54rem)]' : 'pb-12' %>">
     <div class="max-w-6xl mx-auto px-4" v-scope="SearchApp" @vue:mounted="mounted">
         <div class="text-center">
 
             <% if (!isHomepage) { %>
-                <p class="mt-4 text-lg text-base-content/80">
+                <p class="mt-16 text-lg text-base-content/80">
                     Explore recent insights, retrospectives, and stories.
                 </p>
                 <div class="flex justify-center">
@@ -75,7 +62,7 @@
                     </div>
                 </div>
                 <!-- Back to Posts Button -->
-                <div class="my-8 border-base-300 w-full">
+                <div class="my-8 w-full">
                     <div class="flex justify-end w-full">
                         <a href="/" class="btn btn-outline btn-sm gap-2 transition-all duration-200">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
@@ -97,95 +84,108 @@
             }
             %>
 
-            <% if (heroPost) { const heroText=heroPost.content1.replace(/<[^>]*>/g, '');
-                const heroImageUrl = getImageUrl(heroPost) ? `${getImageUrl(heroPost)}` : heroPost.coverImageAlt;
+            <% if (heroPost) { const heroText=heroPost.getString('content1').replace(/<[^>]*>/g, '');
+                const heroImageUrl = getImageUrl(heroPost) ? `${getImageUrl(heroPost)}` :
+                heroPost.getString('coverImageAlt');
                 %>
                 <!-- Hero Post -->
-                <div class="mb-12">
-                    <a href="/blog/posts/<%= encodeURIComponent(slugifyTitle(heroPost.title)) %>"
-                        class="no-underline group">
-                        <div class="card lg:card-side bg-base-200 shadow-xl transition-shadow duration-300 blog-card-transition overflow-hidden"
+                <div class="mb-24">
+                    <a href="/blog/posts/<%= encodeURIComponent(slugifyTitle(heroPost.getString('title'))) %>" class="no-underline group">
+                        <div class="card w-full lg:card-side backdrop-blur-md shadow-2xl lg:shadow-xl transition-shadow duration-300 blog-card-transition overflow-hidden rounded-xl bg-base-300 relative"
                             style="--blog-card-id: blog-card-<%= heroPost.id %>">
+                            <span
+                                class="absolute py-1 px-2 sm:py-2 sm:px-4 bg-base-100/60 backdrop-blur-md border border-white/20 shadow-lg text-base-content text-xs md:text-sm lg:text-base font-semibold uppercase tracking-wide z-10 rounded-full"
+                                style="position-anchor: --blog-image; bottom:calc(anchor(bottom) + 0.75rem); left:calc(anchor(left) + 0.75rem); view-transition-name: latest-post-badge">Latest
+                                Post</span>
                             <% if (heroImageUrl && heroImageUrl !=="" ) { %>
-                                <figure class="lg:w-1/2 h-64 lg:h-auto m-0 !rounded-none">
-                                    <img src="<%= heroImageUrl %>" alt="<%= heroPost.title %> Image"
-                                        class="w-full h-full object-cover blog-image-transition"
-                                        style="--blog-image-id: blog-image-<%= heroPost.id %>" loading="lazy" />
+                                <figure class="lg:w-1/2 h-auto m-0 rounded-t-lg lg:rounded-t-none lg:rounded-l-lg">
+                                    <img src="<%= heroImageUrl %>" alt="<%= heroPost.getString('title') %> Image"
+                                        class="w-full h-full object-cover blog-image-transition rounded-t-lg lg:rounded-t-none lg:rounded-l-lg"
+                                        style="--blog-image-id: blog-image-<%= heroPost.id %>; anchor-name: --blog-image"
+                                        loading="lazy" />
                                 </figure>
                                 <% } %>
-                                    <div class="card-body lg:w-1/2 justify-center blog-body-transition">
-                                        <div class="flex">
-                                            <% if (heroPost.tags && heroPost.tags?.length> 0) {
-                                                heroPost.tags?.split(';').forEach(tag => { %>
-                                                <div class="pb-4 text-wrap">
-                                                    <span class="badge badge-outline badge-lg mr-2 text-nowrap">
-                                                        <%= tag %>
-                                                    </span>
-                                                </div>
+                                    <div class="card-body lg:w-1/2 justify-center blog-body-transition p-8 md:p-12">
+                                        <h2 class="card-title text-3xl md:text-4xl font-bold group-hover:text-primary transition-colors duration-200 mt-0 blog-title-transition"
+                                            style="--blog-title-id: blog-title-<%= heroPost.id %>">
+                                            <%= heroPost.getString('title') %>
+                                        </h2>
+                                        <div class="flex flex-wrap pb-4 gap-2">
+                                            <% const heroTags=heroPost.getString('tags'); if (heroTags &&
+                                                heroTags.length> 0) {
+                                                heroTags.split(';').forEach(tag => { %>
+                                                <span class="badge badge-outline lg:badge-lg text-nowrap">
+                                                    <%= tag %>
+                                                </span>
                                                 <% }) %>
                                                     <% } %>
                                         </div>
-                                        <h2 class="card-title text-4xl font-bold group-hover:text-primary transition-colors duration-200 mt-0 blog-title-transition"
-                                            style="--blog-title-id: blog-title-<%= heroPost.id %>">
-                                            <%= heroPost.title %>
-                                        </h2>
                                         <p class="text-lg text-base-content/80 mt-4 line-clamp-4">
                                             <%= heroText %>
                                         </p>
-                                        <span class="text-sm text-base-content/50 mt-4 block">
-                                            <%= formatDateTime(new Date(heroPost.updated)) %>
+                                        <span class="text-sm text-base-content/50 block">
+                                            <%= formatDateTime(new Date(heroPost.getString('manualPublishDate') ||
+                                                heroPost.getString('created'))) %>
                                         </span>
                                     </div>
                         </div>
                     </a>
                 </div>
+
                 <% } %>
 
                     <a href="/blog/posts" class="no-underline">
-                        <div class="mb-8 text-center">
-                            <h1 class="text-5xl font-bold">Latest Posts</h1>
+                        <div class="mb-12 text-center">
+                            <h1 class="text-5xl font-bold">
+
+                                <% if (heroPost) { %>
+                                    Older
+                                    <% } else { %>
+                                        Latest
+                                        <% } %>
+                                            Posts
+                            </h1>
                         </div>
                     </a>
 
                     <div class="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
                         <% gridPosts.forEach(blog=> {
-                            const text = blog.content1.replace(/<[^>]*>/g, '');
+                            const text = blog.getString('content1').replace(/<[^>]*>/g, '');
                                 const myImageUrl = getImageUrl(blog) ? `${getImageUrl(blog)}?thumb=350x0`
-                                : blog.coverImageAlt %>
+                                : blog.getString('coverImageAlt') %>
 
-                                <a href="/blog/posts/<%= encodeURIComponent(slugifyTitle(blog.title)) %>"
-                                    class="no-underline group">
-                                    <div class="card bg-base-200 shadow-xl transition-shadow duration-300 blog-card-transition"
+                                <a href="/blog/posts/<%= encodeURIComponent(slugifyTitle(blog.getString('title'))) %>" class="no-underline group">
+                                    <div class="card bg-base-300 backdrop-blur-md shadow-xl transition-shadow duration-300 blog-card-transition"
                                         style="--blog-card-id: blog-card-<%= blog.id %>">
                                         <% if (myImageUrl !==null && myImageUrl !=="" ) { %>
-                                            <figure class="h-48 overflow-hidden m-0 rounded-t-2xl">
-                                                <img src="<%= myImageUrl%>" alt="<%= blog.title %> Image"
-                                                    class="w-full h-48 object-cover blog-image-transition rounded-t-2xl"
+                                            <figure class="h-auto md:h-48 overflow-hidden m-0 rounded-t-lg">
+                                                <img src="<%= myImageUrl%>" alt="<%= blog.getString('title') %> Image"
+                                                    class="w-full h-auto md:h-48 object-cover blog-image-transition rounded-t-lg"
                                                     style="--blog-image-id: blog-image-<%= blog.id %>" loading="lazy" />
                                             </figure>
                                             <% } %>
-                                                <div class="card-body gap-0 blog-body-transition">
-                                                    <div class="flex">
-                                                        <% if (blog.tags && blog.tags?.length> 0) {
-                                                            blog.tags?.split(';').forEach(tag => { %>
-                                                            <div class="pb-4 text-wrap">
-                                                                <span
-                                                                    class="badge badge-outline badge-sm mr-2 text-nowrap">
-                                                                    <%= tag %>
-                                                                </span>
-                                                            </div>
+                                                <div class="card-body p-8 gap-0 blog-body-transition">
+                                                    <div class="flex flex-wrap gap-2 pb-4">
+                                                        <% const blogTags=blog.getString('tags'); if (blogTags &&
+                                                            blogTags.length> 0) {
+                                                            blogTags.split(';').forEach(tag => { %>
+                                                            <span
+                                                                class="badge badge-outline badge-sm text-nowrap h-auto">
+                                                                <%= tag %>
+                                                            </span>
                                                             <% }) %>
                                                                 <% } %>
                                                     </div>
                                                     <h2 class="card-title group-hover:text-primary transition-colors duration-200 mt-0 blog-title-transition"
                                                         style="--blog-title-id: blog-title-<%= blog.id %>">
-                                                        <%= blog.title %>
+                                                        <%= blog.getString('title') %>
                                                     </h2>
                                                     <p class="text-sm text-base-content/70 line-clamp-3">
                                                         <%= text %>
                                                     </p>
                                                     <span class="text-xs text-base-content/50 mt-2">
-                                                        <%= formatDateTime(new Date(blog.updated)) %>
+                                                        <%= formatDateTime(new Date(blog.getString('manualPublishDate')
+                                                            || blog.getString('created'))) %>
                                                     </span>
                                                 </div>
                                     </div>

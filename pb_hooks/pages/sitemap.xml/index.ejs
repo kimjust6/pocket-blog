@@ -1,10 +1,7 @@
 <script server>
-  const { slugifyTitle } = resolve('../../utils/common')
-  const client = pb({ request })
-  const blogposts = client.collection('blogposts').getFullList({
-    sort: '-manualPublishDate,-updated',
-    filter: 'isDeleted = false',
-  })
+  const { slugifyTitle } = resolve('../utils/common')
+  const { getAllBlogPosts } = resolve('../utils/pocket')
+  const blogposts = getAllBlogPosts("-updated")
 
   response.header('Content-Type', 'application/xml')
 
@@ -23,8 +20,8 @@
     ?.map(
       (post) =>
         `<url>
-    <loc>https://www.jkim.win/blog/posts/${encodeURIComponent(slugifyTitle(post?.title))}</loc>
-    <lastmod>${new Date(post?.updated).toISOString().split('.')[0] + 'Z'}</lastmod>
+    <loc>https://www.jkim.win/blog/posts/${encodeURIComponent(slugifyTitle(post?.getString('title')))}</loc>
+    <lastmod>${new Date(post?.getString('updated')).toISOString().split('.')[0] + 'Z'}</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.80</priority>
   </url>`
