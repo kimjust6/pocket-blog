@@ -135,7 +135,22 @@ function getBaseUrl() {
  * @returns {string|null}
  */
 function getImageUrl(blog) {
-    if (blog && blog?.coverImage && blog?.collectionId && blog?.id) {
+    if (!blog) return null;
+
+    // Handle PocketBase Record objects (server-side)
+    if (typeof blog.getString === 'function') {
+        const coverImage = blog.getString('coverImage');
+        const collectionId = blog.collectionId || blog.getString('collectionId') || blog.collection?.()?.id;
+        const id = blog.id;
+
+        if (coverImage && collectionId && id) {
+            return `${getBaseUrl()}/api/files/${collectionId}/${id}/${coverImage}`;
+        }
+        return null;
+    }
+
+    // Handle plain objects (client-side or serialized)
+    if (blog.coverImage && blog.collectionId && blog.id) {
         return (
             `${getBaseUrl()}/api/files/${blog.collectionId}/${blog.id}/${blog.coverImage}`
         )
