@@ -2,7 +2,7 @@
   const { slugifyTitle } = resolve('../../utils/common')
   const client = pb({ request })
   const blogposts = client.collection('blogposts').getFullList({
-    sort: '-created',
+    sort: '-manualPublishDate,-updated',
     filter: 'isDeleted = false',
   })
 

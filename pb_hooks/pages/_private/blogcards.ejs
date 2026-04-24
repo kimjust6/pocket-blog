@@ -13,7 +13,7 @@
         }
 
         return client.collection(POCKET_BLOGPOSTS).getList(page, perPage, {
-            sort: '-created',
+            sort: '-manualPublishDate,-updated',
             filter,
         })
     }

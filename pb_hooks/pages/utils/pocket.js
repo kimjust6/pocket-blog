@@ -8,7 +8,7 @@ getBlogPostById = (request, id) => {
         .collection(POCKET_BLOGPOSTS)
         .getFirstListItem(
             `id = "${id}" && isDeleted = false`,
-            { sort: '-updated' }
+            { sort: '-manualPublishDate,-updated' }
         )
 }
 

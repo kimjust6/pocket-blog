@@ -12,7 +12,7 @@
                 .collection(POCKET_BLOGPOSTS)
                 .getFullList({
                     filter: `title ~ "${likePattern}" && isDeleted = false`,
-                    sort: '-updated'
+                    sort: '-manualPublishDate,-updated'
                 });
             
             const targetSlug = params.title.toLowerCase();

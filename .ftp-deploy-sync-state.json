@@ -1,13 +1,13 @@
 {
     "description": "DO NOT DELETE THIS FILE. This file is used to keep track of which files have been synced in the most recent deployment. If you delete this file a resync will need to be done (which can take a while) - read more: https://github.com/SamKirkland/FTP-Deploy-Action",
     "version": "1.0.0",
-    "generatedTime": 1769557177049,
+    "generatedTime": 1777002225032,
     "data": [
         {
             "type": "file",
             "name": "package.json",
-            "size": 1545,
-            "hash": "a899c87d0020f012540f1381754f6f66f0475363df6bea338b98f74c1780b18a"
+            "size": 1676,
+            "hash": "e361e706e9d9f77e18d62ecf1c98217370b2ddfbfc575cd94777f43eeebfe427"
         },
         {
             "type": "folder",
@@ -40,20 +40,44 @@
         {
             "type": "file",
             "name": "pb_public/js/petite-vue.es.js",
-            "size": 17033,
-            "hash": "f17d90e493295133d491e84c04e3a56a77e82eaafe20fd75f3625aa6a2c62ddd"
+            "size": 17034,
+            "hash": "217255c6119bab51e5ff6b86d54030c9a37f7aa6ea86bf411d475ea9c007128e"
         },
         {
             "type": "file",
-            "name": "pb_migrations/1769037648_updated_blogposts.js",
-            "size": 613,
-            "hash": "7013f6b9e466172bd946efd4969091f96d8d42876c8b87cf889f14c96f34da2f"
+            "name": "pb_migrations/1776990330_updated_blogposts.js",
+            "size": 441,
+            "hash": "072be2d8775edc720f7efadcea27a2cf2a7907b41d78a33978de03784f3acc80"
+        },
+        {
+            "type": "file",
+            "name": "pb_migrations/1776990323_updated_blogposts.js",
+            "size": 483,
+            "hash": "e34fd487d0da774aee6ed0ee77cca397375fa171d9c09136306c47b5b316b579"
+        },
+        {
+            "type": "file",
+            "name": "pb_migrations/1776990271_updated_blogposts.js",
+            "size": 483,
+            "hash": "e44919aab8df4e4da7f3ed733e6019ba5db449a0d412c80c06e24a6c39a4c9d7"
+        },
+        {
+            "type": "file",
+            "name": "pb_migrations/1776990220_updated_blogposts.js",
+            "size": 441,
+            "hash": "82c4fa0bdaf016d481d6a4f58cef0ffdd46225ff098571e6eaa01064b1fe2dd3"
+        },
+        {
+            "type": "file",
+            "name": "pb_migrations/1776990211_updated_blogposts.js",
+            "size": 441,
+            "hash": "bca345c7c092a899805395348b53620b7b2db2c847e859884a993e8179ee5745"
         },
         {
             "type": "file",
             "name": "pb_hooks/pocketpages.pb.js",
-            "size": 23,
-            "hash": "83f80163c8424e9245990124ea42a8b74425828cf66395cb680498225d26f275"
+            "size": 24,
+            "hash": "3fb74ee9c5eb663637dc8a18eae23ad88ad53ba47cf02f2944d97ece953627d0"
         },
         {
             "type": "folder",
@@ -62,8 +86,8 @@
         {
             "type": "file",
             "name": "pb_hooks/main.pb.js",
-            "size": 3571,
-            "hash": "19b6d6e668b0e121a9b45cf27b0d3f8b383ba713ff13d180d28feef82fe5501f"
+            "size": 3687,
+            "hash": "9ef0a68183754958ab550e96035596d5b359dd7fd3824d93d466d457b0730d4a"
         },
         {
             "type": "folder",
@@ -92,8 +116,8 @@
         {
             "type": "file",
             "name": "pb_hooks/pages/pagenotfound.ejs",
-            "size": 599,
-            "hash": "6d258bae72ff99e805dfd60bed90492b353bdd30d98d1e84c3b5406ea6abc08b"
+            "size": 616,
+            "hash": "8d87b2e302fec0106ac002c1392e37cd569db71afcead8772c1546971533ac42"
         },
         {
             "type": "folder",
@@ -102,14 +126,14 @@
         {
             "type": "file",
             "name": "pb_hooks/pages/app.tailwind.css",
-            "size": 1957,
-            "hash": "92556ad800c150acc3e752e2d3d7878b35384039c4baf78d637331c4134bbcb5"
+            "size": 2040,
+            "hash": "732cd2253b0bf224e6afb8137f78186f8a7d3bbf0cd011b8b25cd178b70e4447"
         },
         {
             "type": "file",
             "name": "pb_hooks/pages/app.css",
-            "size": 90866,
-            "hash": "ad0dab38de8e2749a0c970c5d771d111ae1c3ec95f79408161c045ffe7d40fd6"
+            "size": 90873,
+            "hash": "c84e9f0e1d35817d3870c95fb1293fccc6acd5bdd35812cdeae56233896f0953"
         },
         {
             "type": "folder",
@@ -118,14 +142,14 @@
         {
             "type": "file",
             "name": "pb_hooks/pages/+middleware.js",
-            "size": 3119,
-            "hash": "df3d1cda35818faca92c1188838f6580802254778a34250eaae77eb4bacfb5ed"
+            "size": 3205,
+            "hash": "5a544f9851cb6048206768cfbddc268d59d2256c79ea3242a3f9857f99c89256"
         },
         {
             "type": "file",
             "name": "pb_hooks/pages/+config.js",
-            "size": 369,
-            "hash": "b6f29acd241e7d863b1ba825e957d763af3b6bc94930ede78f0643d103565fa4"
+            "size": 384,
+            "hash": "dbb9881f76173ec44d6e5955c0a9554a67bb65e4f715ea5a6b6b43a79cc0de03"
         },
         {
             "type": "folder",
@@ -140,80 +164,80 @@
         {
             "type": "file",
             "name": "pb_hooks/pages/utils/pocket.js",
-            "size": 332,
-            "hash": "7a82d0588e05a7da2616e72eff5512055d7036779c075f1ab5ae098446158753"
+            "size": 369,
+            "hash": "2cd595bdc2e92555fc6884b1e5abb9257be3714af4f762e46d78e0e1b06678fe"
         },
         {
             "type": "file",
             "name": "pb_hooks/pages/utils/constants.js",
-            "size": 1684,
-            "hash": "ba753954fb61151a6cfe457b979e14ff4d20e35fb9852c43ee74e73acdfec7cb"
+            "size": 1725,
+            "hash": "d174a5ba53c7ec420fec32b278b3f45cd0c6892bbd94ec06152e88c1f34d85f7"
         },
         {
             "type": "file",
             "name": "pb_hooks/pages/utils/common.js",
-            "size": 20198,
-            "hash": "fb5d582809783479f06507f8913324ad012347e9ed912271a2a8a3648e239a17"
+            "size": 21200,
+            "hash": "d0982a9164ce80290d73dac610fb023b43ecdaeb198dbdd194319600bdd0fc32"
         },
         {
             "type": "file",
             "name": "pb_hooks/pages/sitemap.xml/index.ejs",
-            "size": 1018,
-            "hash": "08fcf77deff8f6c360762a16fe8df9be29805710c27175162b7c783f1fb2b88e"
+            "size": 1171,
+            "hash": "d04389ac3e06fba2538fae701fe5a0f2083a3c15a7fb5cc11f85957e0b77f1a1"
         },
         {
             "type": "file",
             "name": "pb_hooks/pages/sitemap/index.ejs",
-            "size": 31,
-            "hash": "081d70e4bb137769eaccda2c227604e9ed538bd84dd20995aae573ca814042d7"
+            "size": 32,
+            "hash": "9ecea8a597675b4358e971489379377e01701f772d029869619dda328150f08c"
         },
         {
             "type": "file",
             "name": "pb_hooks/pages/rss.xml/index.ejs",
-            "size": 1733,
-            "hash": "d4ff09547947a9b51e5d243a93351e4400139e382811ed2a3b3837e52f4136c4"
+            "size": 1847,
+            "hash": "97d1edd1e41f344a1180aff9be9ab2d7e88448bc9d5c48e75387dc57e1e274b6"
         },
         {
             "type": "file",
             "name": "pb_hooks/pages/robots.txt/index.ejs",
-            "size": 131,
-            "hash": "420c42f678ee451f759d069e2199969d7d8f3e43e8ec068fd52d4db6cee4a520"
+            "size": 136,
+            "hash": "f5dd4d87a05e03d8d27fac1f7120cda0acca0af9f8478a4ced4aae5454f99cbb"
         },
         {
             "type": "file",
             "name": "pb_hooks/pages/notfound/index.ejs",
-            "size": 166,
-            "hash": "c097476e44007fba048e73672e26ba5198ca2305e1abb81e0ee10bacd5b14c19"
+            "size": 174,
+            "hash": "611303206ca77d7f2864042301c76d33761365f9e1697dd00489d4b8c454a614"
         },
         {
             "type": "file",
             "name": "pb_hooks/pages/_private/pagenotfound.ejs",
-            "size": 1144,
-            "hash": "af8d0a5b69f90f6ce244fc25b17d4b3d457cd39a21c73cfa9953960dbadc46cf"
+            "size": 1175,
+            "hash": "74cf61c90511130854b9a2bd22865e29d075c15b46431eb090e95902ee1fa3d6"
         },
         {
             "type": "file",
             "name": "pb_hooks/pages/_private/loading.ejs",
-            "size": 19,
-            "hash": "37a211d19968b0bcc4ec84259dce2e5d8aace57041201b0505803008181bc890"
+            "size": 20,
+            "hash": "0b9d5927051bf55ddfd1e5e185e338d96950fac8a0f257e420fdd9fb4df96f9c"
         },
         {
             "type": "file",
             "name": "pb_hooks/pages/_private/footer.ejs",
-            "size": 2408,
-            "hash": "c0e386e8dc06798b094a8139915f5e0942172f1e55207972d0251cc32825bf45"
+            "size": 2485,
+            "hash": "14e1fdd053e22871da608b48a10d95a5624766668be00dd0f9a630bf02e0a8e9"
         },
         {
             "type": "file",
             "name": "pb_hooks/pages/_private/blogpage.ejs",
-            "size": 9331,
-            "hash": "bb6359c6d22aa0198bb028f49ad7da446b6ac493032a21a1d47d051bc792f94f"
+            "size": 9845,
+            "hash": "e03933a1efd2fc46e8e964d7e983184560bc6a6130dfc056d820678dd855ed6c"
         },
         {
             "type": "file",
             "name": "pb_hooks/pages/_private/blogcards.ejs",
-            "size": 11754,
-            "hash": "e24d1373bdb08ec854af9b0c53b1d2f1a76959bfa798dd2ddb8ca036c7d5abae"
+            "size": 12072,
+            "hash": "50b5f912641af7be333e3b11b6e7b0836b20bd0b0f135ff43d91ea298c67c9a0"
         },
         {
             "type": "folder",
@@ -222,26 +246,26 @@
         {
             "type": "file",
             "name": "pb_hooks/pages/(navbarLayout)/terms.ejs",
-            "size": 17,
-            "hash": "eecac24f36f751970b370f8dd168ab32e34751fe46a6b9790728831c691641f1"
+            "size": 18,
+            "hash": "c6c19220a313bc46c76b29a3a308b83e15eb50cb861ce432b81179f116d90cc1"
         },
         {
             "type": "file",
             "name": "pb_hooks/pages/(navbarLayout)/privacy.ejs",
-            "size": 8,
-            "hash": "ec35057113b1b61a227e578537f2b62d5620374974243569803c75fed6f53416"
+            "size": 9,
+            "hash": "53cac28969b422a6684068da9d1a89ebc78ae9bc5ad1125f960f6be63f6d950a"
         },
         {
             "type": "file",
             "name": "pb_hooks/pages/(navbarLayout)/index.ejs",
-            "size": 1059,
-            "hash": "4f08725bcef33a63216ff4c6fa8e331336f97e73baa502a221f413f4d8ac60d9"
+            "size": 1088,
+            "hash": "495899ce3af524822ab527f5ac8b7736d2092d0f1a1ffe4614bfec620390cce2"
         },
         {
             "type": "file",
             "name": "pb_hooks/pages/(navbarLayout)/faq.ejs",
-            "size": 4,
-            "hash": "4c8a9358048be009c27ad96abdd4fffcd6ea5d4f3fafbe211a9b038f42be67e4"
+            "size": 5,
+            "hash": "f0bad0223962db605f5170de3b54d228ea01ae237c98af31ac3948fda2136bad"
         },
         {
             "type": "folder",
@@ -250,14 +274,14 @@
         {
             "type": "file",
             "name": "pb_hooks/pages/(navbarLayout)/+layout.ejs",
-            "size": 6231,
-            "hash": "39f39ec93c62db9cbda9dfd4499d73550c6f192f7d93317dd3abed5597c7eb3c"
+            "size": 6375,
+            "hash": "e9c177d3dffb98e7e25c3c66c6cc120aa574f9478b0e4bd760ee3e88c54739df"
         },
         {
             "type": "file",
             "name": "pb_hooks/pages/(navbarLayout)/zen/index.ejs",
-            "size": 318,
-            "hash": "1082884ace907bb0d5638a1cbce68ebd5db0680a4367da457c826b92e93e9ae6"
+            "size": 327,
+            "hash": "f9e79fdcf1462ce500dbc6a3d6c9d5632162e86264aed42ff35dc68fa4952c99"
         },
         {
             "type": "folder",
@@ -266,20 +290,20 @@
         {
             "type": "file",
             "name": "pb_hooks/pages/(navbarLayout)/blog/index.ejs",
-            "size": 30,
-            "hash": "aa4f14d15c9b3cdd98e150f2b51836b271f9f2eed058a79fc8094912aee0cd82"
+            "size": 31,
+            "hash": "7f7647f4157b4ab3dc33787299c8d703feb80863b2f59ff2ca18cc4a9c093ea9"
         },
         {
             "type": "file",
-            "name": "pb_hooks/pages/(navbarLayout)/blog/posts/[postId].ejs",
-            "size": 163,
-            "hash": "a13a68e552230e0d7ed9bf81268a5b7b8fd58b434919f1b218f6cad4d44f5c54"
+            "name": "pb_hooks/pages/(navbarLayout)/blog/posts/[title].ejs",
+            "size": 169,
+            "hash": "93754e217780dc2a12f5cbacd9d5cd39d9f8567c5607148124384afda6219b4f"
         },
         {
             "type": "file",
             "name": "pb_hooks/lib/pocketbase-types.ts",
-            "size": 8028,
-            "hash": "cd0590287b22e78347e42ca84a47c1d307c57ee8f7e5430cac0d828971e37966"
+            "size": 8317,
+            "hash": "30fd5f1a6bd8341f484f99f50366fc18bcd746d8fae02aaf50dc8c9035fd3f68"
         }
     ]
 }
