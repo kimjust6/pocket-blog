@@ -1,54 +1,3 @@
-<script type="module">
-
-    // import pocketbase from 'https://cdn.jsdelivr.net/npm/pocketbase@0.26.2/+esm'
-    // const myPB = new pocketbase('http://127.0.0.1:8090');
-
-
-
-    function toggleTheme() {
-        const html = document.documentElement;
-        const currentTheme = html.getAttribute('data-theme');
-        const newTheme = currentTheme === 'dark' ? 'nord' : 'dark';
-
-        html.setAttribute('data-theme', newTheme);
-        document.cookie = `theme=${newTheme}; path=/; max-age=31536000`;
-
-        if (newTheme === 'dark') {
-            html.classList.add('dark');
-        } else {
-            html.classList.remove('dark');
-        }
-
-        // Toggle icon visibility
-        document.getElementById('theme-icon-sun').style.display = newTheme === 'nord' ? 'inline-block' : 'none';
-        document.getElementById('theme-icon-moon').style.display = newTheme === 'dark' ? 'inline-block' : 'none';
-    }
-    window.toggleTheme = toggleTheme;
-
-    // Enable View Transitions API for blog navigation
-    if ('startViewTransition' in document) {
-        // Intercept blog-related navigation for smooth transitions
-        document.addEventListener('click', (e) => {
-            const link = e.target.closest('a[href*="/blog/posts"]')
-            if (link && !e.ctrlKey && !e.metaKey && !e.shiftKey) {
-                e.preventDefault()
-                document.startViewTransition(() => {
-                    window.location.href = link.href
-                })
-            }
-        })
-
-        // Handle back navigation with view transitions
-        window.addEventListener('popstate', (e) => {
-            if ('startViewTransition' in document) {
-                document.startViewTransition(() => {
-                    window.location.reload()
-                })
-            }
-        })
-    }
-</script>
-
 <!doctype html>
 <html lang="en" data-theme="<%= data.theme %>" class="<%= data.theme === 'dark' ? 'dark' : '' %>">
 
@@ -71,16 +20,56 @@
                 crossorigin="anonymous" referrerpolicy="no-referrer" />
             <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
             <script src="https://unpkg.com/petite-vue" defer init></script>
+            <script type="module">
+                function toggleTheme() {
+                    const html = document.documentElement;
+                    const currentTheme = html.getAttribute('data-theme');
+                    const newTheme = currentTheme === 'dark' ? 'nord' : 'dark';
+
+                    html.setAttribute('data-theme', newTheme);
+                    document.cookie = `theme=${newTheme}; path=/; max-age=31536000`;
+
+                    if (newTheme === 'dark') {
+                        html.classList.add('dark');
+                    } else {
+                        html.classList.remove('dark');
+                    }
+
+                    document.getElementById('theme-icon-sun').style.display =
+                        newTheme === 'nord' ? 'inline-block' : 'none';
+                    document.getElementById('theme-icon-moon').style.display =
+                        newTheme === 'dark' ? 'inline-block' : 'none';
+                }
+                window.toggleTheme = toggleTheme;
+
+                if ('startViewTransition' in document) {
+                    document.addEventListener('click', (e) => {
+                        const link = e.target.closest('a[href*="/blog/posts"]');
+                        if (link && !e.ctrlKey && !e.metaKey && !e.shiftKey) {
+                            e.preventDefault();
+                            document.startViewTransition(() => {
+                                window.location.href = link.href;
+                            });
+                        }
+                    });
+
+                    window.addEventListener('popstate', () => {
+                        document.startViewTransition(() => {
+                            window.location.reload();
+                        });
+                    });
+                }
+            </script>
 </head>
 
-<body>
-    <div class="drawer">
+<body class="flex min-h-screen flex-col">
+    <div class="drawer flex-1">
 
         <input id="my-drawer-3" type="checkbox" class="drawer-toggle" />
-        <div class="drawer-content flex flex-col">
+        <div class="drawer-content flex min-h-full flex-col">
             <!-- Navbar -->
             <%- include('navbar.ejs') %>
-                <article class="prose max-w-none pt-16"><%- slot %></article>
+                <article class="prose max-w-none flex-1 pt-16"><%- slot %></article>
         </div>
         <%- include('sidebar.ejs') %>
     </div>

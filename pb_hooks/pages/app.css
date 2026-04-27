@@ -3246,8 +3246,8 @@ html:has(.drawer-toggle:checked) {
   min-height: calc(100vh - 12.54rem);
 }
 
-.min-h-\[calc\(100vh-15rem\)\] {
-  min-height: calc(100vh - 15rem);
+.min-h-\[calc\(100vh-12rem\)\] {
+  min-height: calc(100vh - 12rem);
 }
 
 .min-h-full {
@@ -3553,6 +3553,11 @@ html:has(.drawer-toggle:checked) {
   padding-bottom: 3rem;
 }
 
+.py-16 {
+  padding-top: 4rem;
+  padding-bottom: 4rem;
+}
+
 .py-4 {
   padding-top: 1rem;
   padding-bottom: 1rem;
@@ -3603,11 +3608,6 @@ html:has(.drawer-toggle:checked) {
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
 }
 
-.text-2xl {
-  font-size: 1.5rem;
-  line-height: 2rem;
-}
-
 .text-3xl {
   font-size: 1.875rem;
   line-height: 2.25rem;
@@ -3620,11 +3620,6 @@ html:has(.drawer-toggle:checked) {
 
 .text-5xl {
   font-size: 3rem;
-  line-height: 1;
-}
-
-.text-9xl {
-  font-size: 8rem;
   line-height: 1;
 }
 
