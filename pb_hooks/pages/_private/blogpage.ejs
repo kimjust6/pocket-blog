@@ -8,13 +8,13 @@
         try {
             const firstWord = params.title.split('-')[0].replace(/"/g, '\\"');
             const possibleBlogs = getBlogPostsByTitlePrefix(firstWord);
-            
+
             const targetSlug = params.title.toLowerCase();
-            singleBlog = possibleBlogs.find(b => 
+            singleBlog = possibleBlogs.find(b =>
                 slugifyTitle(b.getString('title')) === targetSlug
             ) || null;
             if (!singleBlog) {
-                return
+                return res.status(404).render('pagenotfound');
             }
             // Update the page title metadata
             const newTitle = `${singleBlog.getString('title')} | The Justin Blog`
