@@ -3584,16 +3584,16 @@ html:has(.drawer-toggle:checked) {
   padding-right: 2.5rem;
 }
 
-.pt-12 {
-  padding-top: 3rem;
-}
-
 .pt-16 {
   padding-top: 4rem;
 }
 
 .pt-36 {
   padding-top: 9rem;
+}
+
+.pt-8 {
+  padding-top: 2rem;
 }
 
 .text-left {
