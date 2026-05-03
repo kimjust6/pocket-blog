@@ -182,4 +182,15 @@
                                             </div>
                                         </div>
                             </div>
+                            <script>
+                                if (typeof window.gtag === 'function') {
+                                    window.gtag('event', 'view_item', {
+                                        event_category: 'blog_engagement',
+                                        item_id: '<%= singleBlog?.id %>',
+                                        item_name: decodeURIComponent('<%= encodeURIComponent(singleBlog?.getString("title") || "") %>'),
+                                        item_category: decodeURIComponent('<%= encodeURIComponent(singleBlog?.getString("tags") || "") %>'),
+                                        author: 'Justin K',
+                                    });
+                                }
+                            </script>
                             <% } %>
