@@ -18,11 +18,6 @@
         searchQuery: decodeURIComponent('<%- encodeURIComponent(params?.query || "").replace(/\'/g, "%27") %>'),
         hasQuery: ('<%= !!params?.query %>' === 'true'),
         handleSearch() {
-            if (typeof window.gtag === 'function' && this.searchQuery) {
-                window.gtag('event', 'search', {
-                    search_term: this.searchQuery
-                });
-            }
             // Update query params in URL
             window.location.href = `?query=${encodeURIComponent(this.searchQuery)}`
         },
