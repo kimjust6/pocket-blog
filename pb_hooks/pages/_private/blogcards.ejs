@@ -1,5 +1,5 @@
 <script server>
-    const { formatDateTime, getImageUrl } = resolve('../../utils/common')
+    const { formatDateTime, getImageUrl, slugifyTitle } = resolve('../../utils/common')
     const { getBlogPosts } = resolve('../../utils/pocket')
 
     if (typeof isHomepage === 'undefined') {
@@ -10,31 +10,37 @@
 
     const blogposts = getBlogPosts(currentPage, perPage, params.query) ?? { items: [], totalPages: 1 }
     const totalPages = blogposts?.totalPages || 1
+    const hasSearchQuery = !isHomepage && !!params?.query
 </script>
 
 <script>
-    const SearchApp = {
-        searchQuery: '<%= params?.query || "" %>',
-        hasQuery: '<%= params?.query ? "true" : "" %>',
+    var SearchApp = {
+        searchQuery: decodeURIComponent('<%- encodeURIComponent(params?.query || "").replace(/\'/g, "%27") %>'),
+        hasQuery: ('<%= !!params?.query %>' === 'true'),
         handleSearch() {
             // Update query params in URL
             window.location.href = `?query=${encodeURIComponent(this.searchQuery)}`
         },
         clearSearch() {
             this.searchQuery = ''
-            this.$refs.searchInput.focus()
+            if (this.$refs.searchInput) {
+                this.$refs.searchInput.focus()
+            }
             if (this.hasQuery) {
                 window.location.href = '/blog/posts'
             }
         },
         mounted() {
-            this.$refs.searchInput.focus()
+            if (this.$refs.searchInput) {
+                this.$refs.searchInput.focus()
+            }
         },
     }
 </script>
 
-<div class="bg-base-100 flex flex-col justify-between <%= !isHomepage ? 'min-h-[calc(100vh-12.54rem)]' : 'pb-12' %>">
-    <div class="max-w-6xl mx-auto px-4" v-scope="SearchApp">
+<div
+    class="bg-base-100 pt-16 flex flex-col justify-between <%= !isHomepage ? 'min-h-[calc(100vh-12.54rem)]' : 'pb-12' %>">
+    <div class="max-w-6xl mx-auto px-4" v-scope="SearchApp" @vue:mounted="mounted">
         <div class="text-center">
 
             <% if (!isHomepage) { %>
@@ -57,27 +63,31 @@
                         </button>
                     </div>
                 </div>
-                <!-- Back to Posts Button -->
-                <div class="my-8 w-full">
-                    <div class="flex justify-end w-full">
-                        <a href="/" class="btn btn-outline btn-sm gap-2 transition-all duration-200">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
-                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                stroke-linejoin="round">
-                                <path d="m12 19-7-7 7-7" />
-                                <path d="M19 12H5" />
-                            </svg>
-                            Back Home
-                        </a>
+                <% if (!hasSearchQuery) { %>
+                    <!-- Back to Posts Button -->
+                    <div class="my-8 w-full">
+                        <div class="flex justify-end w-full">
+                            <a href="/" class="btn btn-outline btn-sm gap-2 transition-all duration-200">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round">
+                                    <path d="m12 19-7-7 7-7" />
+                                    <path d="M19 12H5" />
+                                </svg>
+                                Back Home
+                            </a>
+                        </div>
                     </div>
-                </div>
-                <% } %>
+                    <% } %>
+                        <% } %>
         </div>
 
         <% let heroPost=null; let gridPosts=blogposts?.items || []; if (isHomepage && gridPosts.length> 0) {
             heroPost = gridPosts[0];
             gridPosts = gridPosts.slice(1);
             }
+            const hasPosts = !!heroPost || gridPosts.length > 0;
+            const hasNoSearchResults = hasSearchQuery && !hasPosts;
             %>
 
             <% if (heroPost) { const heroText=heroPost.getString('content1').replace(/<[^>]*>/g, '');
@@ -86,7 +96,9 @@
                 %>
                 <!-- Hero Post -->
                 <div class="mb-24">
-                    <a href="/blog/posts/<%= heroPost.id %>" class="no-underline group">
+                    <a href="/blog/posts/<%= encodeURIComponent(slugifyTitle(heroPost.getString('title'))) %>"
+                        class="no-underline group"
+                        onclick="if(window.gtag) window.gtag('event', 'click', { event_category: 'blog_post', event_label: decodeURIComponent('<%= encodeURIComponent(heroPost.getString(`title`)) %>') })">
                         <div class="card w-full lg:card-side backdrop-blur-md shadow-2xl lg:shadow-xl transition-shadow duration-300 blog-card-transition overflow-hidden rounded-xl bg-base-300 relative"
                             style="--blog-card-id: blog-card-<%= heroPost.id %>">
                             <span
@@ -130,84 +142,115 @@
 
                 <% } %>
 
-                    <a href="/blog/posts" class="no-underline">
-                        <div class="mb-12 text-center">
-                            <h1 class="text-5xl font-bold">
-
-                                <% if (heroPost) { %>
-                                    Older
-                                    <% } else { %>
-                                        Latest
-                                        <% } %>
-                                            Posts
-                            </h1>
+                    <% if (hasNoSearchResults) { %>
+                        <div class="mx-auto max-w-xl py-16 text-center">
+                            <h1 class="mb-4 text-4xl font-bold">No search results</h1>
+                            <p class="mb-6 text-lg text-base-content/70">
+                                No blog posts matched "<%= params.query %>".
+                            </p>
+                            <a href="/blog/posts" class="btn btn-primary">Clear Search</a>
                         </div>
-                    </a>
+                        <% } else { %>
+                            <% if (hasSearchQuery) { %>
+                                <div class="mb-12 pt-8 text-center">
+                                    <p class="mb-4 text-lg text-base-content/70">Results for
+                                        <span class="text-lg text-base-content/70">"<%= params.query %>"</span>
+                                    </p>
 
-                    <div class="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-                        <% gridPosts.forEach(blog=> {
-                            const text = blog.getString('content1').replace(/<[^>]*>/g, '');
-                                const myImageUrl = getImageUrl(blog) ? `${getImageUrl(blog)}?thumb=350x0`
-                                : blog.getString('coverImageAlt') %>
+                                </div>
+                                <% } else { %>
+                                    <a href="/blog/posts" class="no-underline">
+                                        <div class="mb-12 text-center">
+                                            <h1 class="text-5xl font-bold">
 
-                                <a href="/blog/posts/<%= blog.id %>" class="no-underline group">
-                                    <div class="card bg-base-300 backdrop-blur-md shadow-xl transition-shadow duration-300 blog-card-transition"
-                                        style="--blog-card-id: blog-card-<%= blog.id %>">
-                                        <% if (myImageUrl !==null && myImageUrl !=="" ) { %>
-                                            <figure class="h-auto md:h-48 overflow-hidden m-0 rounded-t-lg">
-                                                <img src="<%= myImageUrl%>" alt="<%= blog.getString('title') %> Image"
-                                                    class="w-full h-auto md:h-48 object-cover blog-image-transition rounded-t-lg"
-                                                    style="--blog-image-id: blog-image-<%= blog.id %>" loading="lazy" />
-                                            </figure>
-                                            <% } %>
-                                                <div class="card-body p-8 gap-0 blog-body-transition">
-                                                    <div class="flex flex-wrap gap-2 pb-4">
-                                                        <% const blogTags=blog.getString('tags'); if (blogTags &&
-                                                            blogTags.length> 0) {
-                                                            blogTags.split(';').forEach(tag => { %>
-                                                            <span
-                                                                class="badge badge-outline badge-sm text-nowrap h-auto">
-                                                                <%= tag %>
-                                                            </span>
-                                                            <% }) %>
+                                                <% if (heroPost) { %>
+                                                    Older
+                                                    <% } else { %>
+                                                        Latest
+                                                        <% } %>
+                                                            Posts
+                                            </h1>
+                                        </div>
+                                    </a>
+                                    <% } %>
+
+                                        <div class="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+                                            <% gridPosts.forEach(blog=> {
+                                                const text = blog.getString('content1').replace(/<[^>]*>/g, '');
+                                                    const myImageUrl = getImageUrl(blog) ?
+                                                    `${getImageUrl(blog)}?thumb=350x0`
+                                                    : blog.getString('coverImageAlt') %>
+
+                                                    <a href="/blog/posts/<%= encodeURIComponent(slugifyTitle(blog.getString('title'))) %>"
+                                                        class="no-underline group"
+                                                        onclick="if(window.gtag) window.gtag('event', 'click', { event_category: 'blog_post', event_label: decodeURIComponent('<%= encodeURIComponent(blog.getString(`title`)) %>') })">
+                                                        <div class="card bg-base-300 backdrop-blur-md shadow-xl transition-shadow duration-300 blog-card-transition"
+                                                            style="--blog-card-id: blog-card-<%= blog.id %>">
+                                                            <% if (myImageUrl !==null && myImageUrl !=="" ) { %>
+                                                                <figure
+                                                                    class="h-auto md:h-48 overflow-hidden m-0 rounded-t-lg">
+                                                                    <img src="<%= myImageUrl%>"
+                                                                        alt="<%= blog.getString('title') %> Image"
+                                                                        class="w-full h-auto md:h-48 object-cover blog-image-transition rounded-t-lg"
+                                                                        style="--blog-image-id: blog-image-<%= blog.id %>"
+                                                                        loading="lazy" />
+                                                                </figure>
                                                                 <% } %>
-                                                    </div>
-                                                    <h2 class="card-title group-hover:text-primary transition-colors duration-200 mt-0 blog-title-transition"
-                                                        style="--blog-title-id: blog-title-<%= blog.id %>">
-                                                        <%= blog.getString('title') %>
-                                                    </h2>
-                                                    <p class="text-sm text-base-content/70 line-clamp-3">
-                                                        <%= text %>
-                                                    </p>
-                                                    <span class="text-xs text-base-content/50 mt-2">
-                                                        <%= formatDateTime(new Date(blog.getString('manualPublishDate')
-                                                            || blog.getString('created'))) %>
-                                                    </span>
-                                                </div>
-                                    </div>
-                                </a>
-                                <% }) %>
-                    </div>
+                                                                    <div
+                                                                        class="card-body p-8 gap-0 blog-body-transition">
+                                                                        <div class="flex flex-wrap gap-2 pb-4">
+                                                                            <% const blogTags=blog.getString('tags'); if
+                                                                                (blogTags && blogTags.length> 0) {
+                                                                                blogTags.split(';').forEach(tag => { %>
+                                                                                <span
+                                                                                    class="badge badge-outline badge-sm text-nowrap h-auto">
+                                                                                    <%= tag %>
+                                                                                </span>
+                                                                                <% }) %>
+                                                                                    <% } %>
+                                                                        </div>
+                                                                        <h2 class="card-title group-hover:text-primary transition-colors duration-200 mt-0 blog-title-transition"
+                                                                            style="--blog-title-id: blog-title-<%= blog.id %>">
+                                                                            <%= blog.getString('title') %>
+                                                                        </h2>
+                                                                        <p
+                                                                            class="text-sm text-base-content/70 line-clamp-3">
+                                                                            <%= text %>
+                                                                        </p>
+                                                                        <span class="text-xs text-base-content/50 mt-2">
+                                                                            <%= formatDateTime(new
+                                                                                Date(blog.getString('manualPublishDate')
+                                                                                || blog.getString('created'))) %>
+                                                                        </span>
+                                                                    </div>
+                                                        </div>
+                                                    </a>
+                                                    <% }) %>
+                                        </div>
+                                        <% } %>
     </div>
-    <% if (!isHomepage) { %>
+    <% if (!isHomepage && !hasNoSearchResults) { %>
         <!-- Pagination -->
+        <% const queryStr = hasSearchQuery ? `&query=${encodeURIComponent(params.query)}` : ''; %>
         <div class="flex justify-center my-12">
             <div class="join">
-                <a href="?page=<%= currentPage - 1 %>" class="join-item btn btn-sm" <% if (currentPage <=1) { %>
-                    disabled <% } %>>
-                        «
-                </a>
+                <% if (currentPage <= 1) { %>
+                    <button class="join-item btn btn-sm btn-disabled">«</button>
+                <% } else { %>
+                    <a href="?page=<%= currentPage - 1 %><%= queryStr %>" class="join-item btn btn-sm">«</a>
+                <% } %>
 
                 <% for (let i=1; i <=totalPages; i++) { %>
-                    <a href="?page=<%= i %>" class="join-item btn btn-sm <%= currentPage === i ? 'btn-active' : '' %>">
+                    <a href="?page=<%= i %><%= queryStr %>" class="join-item btn btn-sm <%= currentPage === i ? 'btn-active' : '' %>">
                         <%= i %>
                     </a>
-                    <% } %>
+                <% } %>
 
-                        <a href="?page=<%= currentPage + 1 %>" class="join-item btn btn-sm" <% if (currentPage>=
-                            totalPages) { %> disabled <% } %>>
-                                »
-                        </a>
+                <% if (currentPage >= totalPages) { %>
+                    <button class="join-item btn btn-sm btn-disabled">»</button>
+                <% } else { %>
+                    <a href="?page=<%= currentPage + 1 %><%= queryStr %>" class="join-item btn btn-sm">»</a>
+                <% } %>
             </div>
         </div>
         <% } %>

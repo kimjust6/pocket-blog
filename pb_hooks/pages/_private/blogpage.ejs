@@ -1,14 +1,20 @@
 <script server>
-    const { formatDateTime, getImageUrl } = resolve('../../utils/common')
-    const { getBlogPostById } = resolve('../../utils/pocket')
+    const { formatDateTime, getImageUrl, slugifyTitle } = resolve('../../utils/common')
+    const { getBlogPostsByTitlePrefix } = resolve('../../utils/pocket')
 
     let singleBlog = null
     let imageUrl = null
-    if (params?.postId) {
+    if (params?.title) {
         try {
-            singleBlog = getBlogPostById(params.postId)
+            const firstWord = params.title.split('-')[0].replace(/"/g, '\\"');
+            const possibleBlogs = getBlogPostsByTitlePrefix(firstWord);
+
+            const targetSlug = params.title.toLowerCase();
+            singleBlog = possibleBlogs.find(b =>
+                slugifyTitle(b.getString('title')) === targetSlug
+            ) || null;
             if (!singleBlog) {
-                return
+                return res.status(404).render('pagenotfound');
             }
             // Update the page title metadata
             const newTitle = `${singleBlog.getString('title')} | The Justin Blog`
@@ -176,4 +182,15 @@
                                             </div>
                                         </div>
                             </div>
+                            <script>
+                                if (typeof window.gtag === 'function') {
+                                    window.gtag('event', 'view_item', {
+                                        event_category: 'blog_engagement',
+                                        item_id: '<%= singleBlog?.id %>',
+                                        item_name: decodeURIComponent('<%= encodeURIComponent(singleBlog?.getString("title") || "") %>'),
+                                        item_category: decodeURIComponent('<%= encodeURIComponent(singleBlog?.getString("tags") || "") %>'),
+                                        author: 'Justin K',
+                                    });
+                                }
+                            </script>
                             <% } %>

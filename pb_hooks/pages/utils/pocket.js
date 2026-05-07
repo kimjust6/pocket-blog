@@ -14,6 +14,22 @@ const getBlogPostById = (id) => {
 }
 
 /**
+ * Get blog posts by title prefix using server-side $app
+ * @param {string} titlePrefix - The prefix of the title to search for
+ * @returns {array} Array of blog post Record objects
+ */
+const getBlogPostsByTitlePrefix = (titlePrefix) => {
+    return $app.findRecordsByFilter(
+        POCKET_BLOGPOSTS,
+        "title ~ {:titlePrefix} && isDeleted = false",
+        "-manualPublishDate,-updated",
+        0, // no limit
+        0,
+        { titlePrefix }
+    ) || []
+}
+
+/**
  * Get a paginated list of blog posts using server-side $app
  * @param {number} page - Page number (1-indexed)
  * @param {number} perPage - Items per page
@@ -76,6 +92,7 @@ const getAllBlogPosts = (sort = "-updated") => {
 
 module.exports = {
     getBlogPostById,
+    getBlogPostsByTitlePrefix,
     getBlogPosts,
     getAllBlogPosts,
     POCKET_BLOGPOSTS
