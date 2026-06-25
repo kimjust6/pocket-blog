@@ -1,4 +1,4 @@
-POCKET_BLOGPOSTS = "blogposts"
+const POCKET_BLOGPOSTS = "blog_posts"
 const POCKET_ZENDESKUSER_DISCORDUSER = "zendeskuser_discorduser"
 const POCKET_SLA_BREACHING_SOON = "nearing_sla_breach_notified"
 const DISCORD_API_ENDPOINT = "https://zen.jkim.win/api/discord/send-dm/";

@@ -44,7 +44,7 @@
 
                 if ('startViewTransition' in document) {
                     document.addEventListener('click', (e) => {
-                        const link = e.target.closest('a[href*="/blog/posts"]');
+                        const link = e.target.closest('a[href*="/blog/posts"], a[href*="/climbing"]');
                         if (link && !e.ctrlKey && !e.metaKey && !e.shiftKey) {
                             e.preventDefault();
                             document.startViewTransition(() => {

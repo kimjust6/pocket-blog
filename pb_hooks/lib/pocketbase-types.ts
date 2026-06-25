@@ -5,20 +5,22 @@
 import type PocketBase from 'pocketbase'
 import type { RecordService } from 'pocketbase'
 
-export enum Collections {
-	Authorigins = "_authOrigins",
-	Externalauths = "_externalAuths",
-	Mfas = "_mfas",
-	Otps = "_otps",
-	Superusers = "_superusers",
-	AdminSettings = "admin_settings",
-	Blogposts = "blogposts",
-	Huggies = "huggies",
-	Users = "users",
-	ZendeskOrganizations = "zendesk_organizations",
-	ZendeskTickets = "zendesk_tickets",
-	ZendeskuserDiscorduser = "zendeskuser_discorduser",
-}
+export const Collections = {
+	Authorigins: "_authOrigins",
+	Externalauths: "_externalAuths",
+	Mfas: "_mfas",
+	Otps: "_otps",
+	Superusers: "_superusers",
+	AdminSettings: "admin_settings",
+	BlogPosts: "blog_posts",
+	ClimbingPosts: "climbing_posts",
+	Huggies: "huggies",
+	Users: "users",
+	ZendeskOrganizations: "zendesk_organizations",
+	ZendeskTickets: "zendesk_tickets",
+	ZendeskuserDiscorduser: "zendeskuser_discorduser",
+} as const
+export type Collections = typeof Collections[keyof typeof Collections]
 
 // Alias types for improved usability
 export type IsoDateString = string
@@ -107,7 +109,7 @@ export type AdminSettingsRecord = {
 	value?: string
 }
 
-export type BlogpostsRecord = {
+export type BlogPostsRecord = {
 	content1?: HTMLString
 	content2?: HTMLString
 	coverImage?: FileNameString
@@ -120,6 +122,37 @@ export type BlogpostsRecord = {
 	title?: string
 	updated: IsoAutoDateString
 	user?: RecordIdString
+}
+
+export const ClimbingPostsClimbTypeOptions = {
+	"Bouldering": "Bouldering",
+	"Sport": "Sport",
+	"Top Rope": "Top Rope",
+	"Trad": "Trad",
+} as const
+export type ClimbingPostsClimbTypeOptions = typeof ClimbingPostsClimbTypeOptions[keyof typeof ClimbingPostsClimbTypeOptions]
+
+export const ClimbingPostsStyleOptions = {
+	"Send": "Send",
+	"Flash": "Flash",
+	"Onsight": "Onsight",
+	"Project": "Project",
+	"Hangdog": "Hangdog",
+} as const
+export type ClimbingPostsStyleOptions = typeof ClimbingPostsStyleOptions[keyof typeof ClimbingPostsStyleOptions]
+export type ClimbingPostsRecord = {
+	climbType?: ClimbingPostsClimbTypeOptions
+	content?: HTMLString
+	coverImage?: FileNameString
+	created: IsoAutoDateString
+	date: IsoDateString
+	grade?: string
+	id: string
+	isDeleted?: boolean
+	location?: string
+	style?: ClimbingPostsStyleOptions
+	title: string
+	updated: IsoAutoDateString
 }
 
 export type HuggiesRecord = {
@@ -183,7 +216,8 @@ export type MfasResponse<Texpand = unknown> = Required<MfasRecord> & BaseSystemF
 export type OtpsResponse<Texpand = unknown> = Required<OtpsRecord> & BaseSystemFields<Texpand>
 export type SuperusersResponse<Texpand = unknown> = Required<SuperusersRecord> & AuthSystemFields<Texpand>
 export type AdminSettingsResponse<Texpand = unknown> = Required<AdminSettingsRecord> & BaseSystemFields<Texpand>
-export type BlogpostsResponse<Texpand = unknown> = Required<BlogpostsRecord> & BaseSystemFields<Texpand>
+export type BlogPostsResponse<Texpand = unknown> = Required<BlogPostsRecord> & BaseSystemFields<Texpand>
+export type ClimbingPostsResponse<Texpand = unknown> = Required<ClimbingPostsRecord> & BaseSystemFields<Texpand>
 export type HuggiesResponse<Texpand = unknown> = Required<HuggiesRecord> & BaseSystemFields<Texpand>
 export type UsersResponse<Texpand = unknown> = Required<UsersRecord> & AuthSystemFields<Texpand>
 export type ZendeskOrganizationsResponse<Texpand = unknown> = Required<ZendeskOrganizationsRecord> & BaseSystemFields<Texpand>
@@ -199,7 +233,8 @@ export type CollectionRecords = {
 	_otps: OtpsRecord
 	_superusers: SuperusersRecord
 	admin_settings: AdminSettingsRecord
-	blogposts: BlogpostsRecord
+	blog_posts: BlogPostsRecord
+	climbing_posts: ClimbingPostsRecord
 	huggies: HuggiesRecord
 	users: UsersRecord
 	zendesk_organizations: ZendeskOrganizationsRecord
@@ -214,7 +249,8 @@ export type CollectionResponses = {
 	_otps: OtpsResponse
 	_superusers: SuperusersResponse
 	admin_settings: AdminSettingsResponse
-	blogposts: BlogpostsResponse
+	blog_posts: BlogPostsResponse
+	climbing_posts: ClimbingPostsResponse
 	huggies: HuggiesResponse
 	users: UsersResponse
 	zendesk_organizations: ZendeskOrganizationsResponse

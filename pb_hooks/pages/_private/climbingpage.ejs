@@ -1,0 +1,83 @@
+<% 
+    const climbType = climbLog.getString('climbType');
+    const style = climbLog.getString('style');
+    const grade = climbLog.getString('grade');
+    const location = climbLog.getString('location');
+    const date = climbLog.getString('date');
+%>
+<div class="hero bg-base-100 py-12 min-h-[calc(100vh-12.54rem)] flex flex-col items-center justify-start blog-card-transition"
+     style="--blog-card-id: blog-card-<%= climbLog.id %>">
+    <div class="hero-content max-w-4xl w-full flex flex-col px-4">
+        
+        <!-- Header section -->
+        <div class="w-full backdrop-blur-md p-6 rounded-xl mb-8">
+            <h1 class="md:mb-0 font-extrabold text-3xl leading-tight md:flex hidden blog-title-transition"
+                style="--blog-title-id: blog-title-<%= climbLog.id %>">
+                <%= climbLog.getString('title') %>
+            </h1>
+        </div>
+
+        <!-- Climb Image Banner -->
+        <% if (imgUrl) { %>
+            <img src="<%= imgUrl %>"
+                 class="rounded-xl shadow-lg w-full h-auto max-h-96 object-cover m-0 blog-image-transition"
+                 style="--blog-image-id: blog-image-<%= climbLog.id %>; aspect-ratio: 16/9;" 
+                 alt="<%= climbLog.getString('title') %> image" />
+        <% } %>
+
+        <!-- Content -->
+        <div class="w-full self-start backdrop-blur-md p-8 rounded-xl">
+            <h1 class="mb-0 font-extrabold sm:text-2xl leading-tight flex md:hidden blog-title-transition"
+                style="--blog-title-id: blog-title-<%= climbLog.id %>">
+                <%= climbLog.getString('title') %>
+            </h1>
+            
+            <!-- Tags -->
+            <div class="flex flex-wrap gap-2">
+                <span class="badge badge-outline badge-lg text-nowrap">
+                    <%= climbType %>
+                </span>
+                <% if (grade) { %>
+                    <span class="badge badge-outline badge-lg text-nowrap">
+                        <%= grade %>
+                    </span>
+                <% } %>
+                <% if (style) { %>
+                    <span class="badge badge-outline badge-lg text-nowrap">
+                        <%= style %>
+                    </span>
+                <% } %>
+                <% if (location) { %>
+                    <span class="badge badge-outline badge-lg text-nowrap">
+                        <%= location %>
+                    </span>
+                <% } %>
+            </div>
+
+            <div class="text-sm text-base-content/70">
+                <div class="mt-6">
+                    <div class="flex justify-between items-center w-full">
+                        <a href="/climbing"
+                           class="btn btn-outline btn-sm gap-2 transition-all duration-200">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="m12 19-7-7 7-7" />
+                                <path d="M19 12H5" />
+                            </svg>
+                            Back to journal
+                        </a>
+                        <div class="text-right">Logged:
+                            <strong>
+                                <%= formatDateTime(new Date(date)) %>
+                            </strong>
+                        </div>
+                    </div>
+
+                    <div class="prose max-w-none text-base-content/80 mt-6 min-w-80 font-normal leading-relaxed">
+                        <%- climbLog.getString('content') %>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>

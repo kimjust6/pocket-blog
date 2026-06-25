@@ -1,0 +1,57 @@
+<script server>
+    const { formatDateTime, getImageUrl, slugifyTitle } = resolve('../../utils/common')
+    const { getClimbingLogsByTitlePrefix } = resolve('../../utils/pocket')
+
+    let climbLog = null
+    let imgUrl = null
+
+    if (params?.title) {
+        try {
+            const firstWord = params.title.split('-')[0].replace(/"/g, '\\"');
+            const possibleLogs = getClimbingLogsByTitlePrefix(firstWord);
+
+            const targetSlug = params.title.toLowerCase();
+            climbLog = possibleLogs.find(b =>
+                slugifyTitle(b.getString('title')) === targetSlug
+            ) || null;
+
+            if (climbLog) {
+                // Update the page title metadata
+                const newTitle = `${climbLog.getString('title')} | Climbing Blog`
+                data.metadata
+                    .filter((m) => m.name.includes('title'))
+                    .forEach((m) => (m.content = newTitle))
+
+                // Replace the metadata image
+                const metaImg = getImageUrl(climbLog) || 'https://www.jkim.win/climbing-placeholder.png';
+                data.metadata
+                    .filter((m) => m.name === 'og:image' || m.name === 'twitter:image')
+                    .forEach((m) => (m.content = metaImg))
+
+                // Update description metadata
+                const description = climbLog.getString('content')
+                    .replace(/<[^>]*>/g, '')
+                    .slice(0, 160)
+                    .trim()
+                data.metadata
+                    .filter((m) => m.name === 'description' || m.name === 'og:description' || m.name === 'twitter:description')
+                    .forEach((m) => (m.content = description))
+
+                imgUrl = getImageUrl(climbLog) || '/climbing-placeholder.png';
+            }
+        } catch (error) {
+            console.error('Error fetching single climb log: ', error)
+        }
+    }
+</script>
+
+<% if (typeof(params.title) === "undefined") { %>
+    <%- include('climbingcards.ejs') %>
+<% } else { %>
+    <% if (climbLog == null) { %>
+        <%- include('pagenotfound.ejs') %>
+    <% } else { %>
+        <%- include('climbingpage.ejs') %>
+    <% } %>
+<% } %>
+
