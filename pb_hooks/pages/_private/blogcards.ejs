@@ -49,7 +49,18 @@
         <div class="text-center">
 
             <% if (!isHomepage) { %>
-                <p class="mt-16 text-lg text-base-content/80">
+                <a href="<%= isClimbing ? '/climbing' : '/blog/posts' %>" class="no-underline">
+                    <div class="mt-12 mb-6 text-center">
+                        <h1 class="text-5xl font-bold">
+                            <% if (isClimbing) { %>
+                                The Climbing Blog
+                            <% } else { %>
+                                The Development Blog
+                            <% } %>
+                        </h1>
+                    </div>
+                </a>
+                <p class="mt-8 text-lg text-base-content/80">
                     <%= isClimbing ? 'A personal record of sends, failures, and hard-fought projects on the rock and in the gym.' : 'Explore recent insights, retrospectives, and stories.' %>
                 </p>
                 <div class="flex justify-center">
@@ -165,14 +176,8 @@
                                     <a href="<%= isClimbing ? '/climbing' : '/blog/posts' %>" class="no-underline">
                                         <div class="mb-12 text-center">
                                             <h1 class="text-5xl font-bold">
-                                                <% if (isClimbing) { %>
-                                                    The Climbing Blog
-                                                <% } else { %>
-                                                    <% if (heroPost) { %>
-                                                        Older Posts
-                                                    <% } else { %>
-                                                        The Development Blog
-                                                    <% } %>
+                                                <% if (heroPost) { %>
+                                                    Older Posts
                                                 <% } %>
                                             </h1>
                                         </div>

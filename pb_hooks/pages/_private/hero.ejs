@@ -24,15 +24,15 @@
 </script>
 
 <div class="hero bg-base-100 not-prose bg-cover bg-center -mt-16">
-    <div class="hero-content pb-20 pt-36 text-center text-base-content">
-        <div class="max-w-3xl bg-base-100/60 backdrop-blur-lg md:p-8 rounded-xl">
+    <div class="hero-content pt-36 text-center text-base-content">
+        <div class="max-w-4xl bg-base-100/60 backdrop-blur-lg md:p-8 rounded-xl">
             <a href="/" class="no-underline">
                 <h1 class="text-5xl font-bold">
                     <%= (data.metadata.find(meta=> meta.name ===
                         "og:site_name")).content %>
                 </h1>
             </a>
-            <nav class="py-12">
+            <nav class="py-6 lg:py-12">
                 <ul class="flex flex-row flex-wrap justify-center gap-4">
                     <% socials.forEach(social=> { %>
                         <li>
@@ -48,20 +48,31 @@
                         <% }) %>
                 </ul>
             </nav>
-            <a href="/blog/posts" class="no-underline">
-                <div
-                    class="mockup-code text-left group transition-all dark:bg-base-300/70 bg-base-300/60 hover:bg-base-300/80 dark:hover:bg-base-300/90 backdrop-blur-xl px-4 sm:px-12 py-8 max-w-xl text-primary">
+            <div class="flex flex-col lg:flex-row items-stretch justify-center w-full gap-2 lg:gap-0">
+                <a href="/blog/posts" class="no-underline flex-1 flex flex-col w-full max-w-xl mx-auto">
                     <div
-                        class="flex py-4 text-base h-full group-hover:text-primary transition-all dark:text-base-content text-info-content font-mono">
-                        <span class="mr-4 select-none opacity-50">$</span>
-                        <span class="text-wrap break-words">read about the lessons I have learned (from the mistakes I
-                            have made).</span>
+                        class="mockup-code text-left group transition-all dark:bg-base-300/70 bg-base-300/60 hover:bg-base-300/80 dark:hover:bg-base-300/90 backdrop-blur-xl px-4 sm:px-12 py-8 text-primary flex-1 flex flex-col justify-center">
+                        <div
+                            class="flex py-4 text-base group-hover:text-primary transition-all dark:text-base-content text-info-content font-mono">
+                            <span class="mr-4 select-none opacity-50">$</span>
+                            <span class="text-wrap break-words">read about the lessons I have learned (from the mistakes I
+                                have made).</span>
+                        </div>
                     </div>
-                </div>
-            </a>
+                </a>
 
+                <div class="divider lg:divider-horizontal my-0 lg:mx-4"></div>
 
-
+                <a href="/climbing" class="no-underline flex-1 flex flex-col w-full max-w-xl mx-auto">
+                    <div
+                        class="card text-left group transition-all dark:bg-base-300/70 bg-base-300/60 hover:bg-base-300/80 dark:hover:bg-base-300/90 backdrop-blur-xl px-4 sm:px-12 py-8 text-primary flex-1 flex flex-col justify-center border border-base-content/10">
+                        <div class="flex py-4 text-base group-hover:text-primary transition-all dark:text-base-content text-info-content font-mono">
+                            <span class="mr-4 select-none opacity-50"></span>
+                            <span class="text-wrap break-words">read about my climbing progression, projects, and (hopefully) sends</span>
+                        </div>
+                    </div>
+                </a>
+            </div>
         </div>
     </div>
 </div>
