@@ -82,8 +82,8 @@ module.exports = function (api) {
         ],
         theme: cookieValue,
         navigation: [
-            { title: 'Development', url: '/blog/posts' },
-            { title: 'Climbing', url: '/climbing' }
+            { title: 'Climbing', url: '/climbing' },
+            { title: 'Development', url: '/blog/posts' }
         ]
     }
 }

@@ -17,13 +17,13 @@
 
             if (climbLog) {
                 // Update the page title metadata
-                const newTitle = `${climbLog.getString('title')} | Climbing Blog`
+                const newTitle = `${climbLog.getString('title')} | The Climbing Blog`
                 data.metadata
                     .filter((m) => m.name.includes('title'))
                     .forEach((m) => (m.content = newTitle))
 
                 // Replace the metadata image
-                const metaImg = getImageUrl(climbLog) || 'https://www.jkim.win/climbing-placeholder.png';
+                const metaImg = getImageUrl(climbLog) || 'https://www.jkim.win/background.jpg';
                 data.metadata
                     .filter((m) => m.name === 'og:image' || m.name === 'twitter:image')
                     .forEach((m) => (m.content = metaImg))
@@ -37,7 +37,7 @@
                     .filter((m) => m.name === 'description' || m.name === 'og:description' || m.name === 'twitter:description')
                     .forEach((m) => (m.content = description))
 
-                imgUrl = getImageUrl(climbLog) || '/climbing-placeholder.png';
+                imgUrl = getImageUrl(climbLog) || '/background.jpg';
             }
         } catch (error) {
             console.error('Error fetching single climb log: ', error)
@@ -46,12 +46,12 @@
 </script>
 
 <% if (typeof(params.title) === "undefined") { %>
-    <%- include('climbingcards.ejs') %>
+    <%- include('blogcards.ejs', { isClimbing: true }) %>
 <% } else { %>
     <% if (climbLog == null) { %>
         <%- include('pagenotfound.ejs') %>
     <% } else { %>
-        <%- include('climbingpage.ejs') %>
+        <%- include('blogpage.ejs', { isClimbing: true, singleBlog: climbLog }) %>
     <% } %>
 <% } %>
 

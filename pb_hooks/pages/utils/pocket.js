@@ -1,5 +1,4 @@
-const { POCKET_BLOGPOSTS } = require('./constants')
-const POCKET_CLIMBING_LOGS = "climbing_logs"
+const { POCKET_BLOGPOSTS, POCKET_CLIMBING_POSTS } = require('./constants')
 
 /**
  * Get a single blog post by ID using server-side $app
@@ -100,7 +99,7 @@ module.exports = {
     getClimbingLogs,
     getClimbingLogsByTitlePrefix,
     getAllClimbingLogs,
-    POCKET_CLIMBING_LOGS
+    POCKET_CLIMBING_POSTS
 }
 
 /**
@@ -126,7 +125,7 @@ function getClimbingLogs(page, perPage, query, climbType) {
     }
 
     const records = $app.findRecordsByFilter(
-        POCKET_CLIMBING_LOGS,
+        POCKET_CLIMBING_POSTS,
         filter,
         "-date,-created",
         perPage,
@@ -136,7 +135,7 @@ function getClimbingLogs(page, perPage, query, climbType) {
 
     // Get total count for pagination
     const allRecords = $app.findRecordsByFilter(
-        POCKET_CLIMBING_LOGS,
+        POCKET_CLIMBING_POSTS,
         filter,
         "",
         0, // no limit
@@ -161,7 +160,7 @@ function getClimbingLogs(page, perPage, query, climbType) {
  */
 function getClimbingLogsByTitlePrefix(titlePrefix) {
     return $app.findRecordsByFilter(
-        POCKET_CLIMBING_LOGS,
+        POCKET_CLIMBING_POSTS,
         "title ~ {:titlePrefix} && isDeleted = false",
         "-date,-created",
         0, // no limit
@@ -177,7 +176,7 @@ function getClimbingLogsByTitlePrefix(titlePrefix) {
  */
 function getAllClimbingLogs(sort = "-date") {
     return $app.findRecordsByFilter(
-        POCKET_CLIMBING_LOGS,
+        POCKET_CLIMBING_POSTS,
         "isDeleted = false",
         sort,
         0, // no limit (returns all)
