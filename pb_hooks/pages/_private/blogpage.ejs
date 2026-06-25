@@ -6,6 +6,10 @@
         var isClimbing = false
     }
 
+    if (typeof singleBlog === 'undefined') {
+        var singleBlog = null
+    }
+
     let imageUrl = null
     
     // singleBlog might be passed in already, if not let's fetch it:
