@@ -1,4 +1,4 @@
-const { POCKET_BLOGPOSTS } = require('./constants')
+const { POCKET_BLOGPOSTS, POCKET_CLIMBING_POSTS } = require('./constants')
 
 /**
  * Get a single blog post by ID using server-side $app
@@ -95,6 +95,93 @@ module.exports = {
     getBlogPostsByTitlePrefix,
     getBlogPosts,
     getAllBlogPosts,
-    POCKET_BLOGPOSTS
+    POCKET_BLOGPOSTS,
+    getClimbingLogs,
+    getClimbingLogsByTitlePrefix,
+    getAllClimbingLogs,
+    POCKET_CLIMBING_POSTS
 }
+
+/**
+ * Get a paginated list of climbing logs using server-side $app
+ * @param {number} page - Page number (1-indexed)
+ * @param {number} perPage - Items per page
+ * @param {string} query - Optional search query
+ * @param {string} climbType - Optional climb type filter
+ * @returns {object} Object with items array (Record objects) and pagination info
+ */
+function getClimbingLogs(page, perPage, query, climbType) {
+    const offset = (page - 1) * perPage
+    let filter = "isDeleted = false"
+    let filterParams = {}
+
+    if (query) {
+        filter += " && (title ~ {:query} || location ~ {:query} || content ~ {:query})"
+        filterParams.query = query
+    }
+    if (climbType) {
+        filter += " && climbType = {:climbType}"
+        filterParams.climbType = climbType
+    }
+
+    const records = $app.findRecordsByFilter(
+        POCKET_CLIMBING_POSTS,
+        filter,
+        "-date,-created",
+        perPage,
+        offset,
+        filterParams
+    )
+
+    // Get total count for pagination
+    const allRecords = $app.findRecordsByFilter(
+        POCKET_CLIMBING_POSTS,
+        filter,
+        "",
+        0, // no limit
+        0,
+        filterParams
+    )
+    const totalItems = allRecords?.length || 0
+    const totalPages = Math.ceil(totalItems / perPage)
+
+    return {
+        items: records || [],
+        totalItems,
+        totalPages,
+        page
+    }
+}
+
+/**
+ * Get climbing logs by title prefix using server-side $app (for slugs)
+ * @param {string} titlePrefix - The prefix of the title to search for
+ * @returns {array} Array of climbing log Record objects
+ */
+function getClimbingLogsByTitlePrefix(titlePrefix) {
+    return $app.findRecordsByFilter(
+        POCKET_CLIMBING_POSTS,
+        "title ~ {:titlePrefix} && isDeleted = false",
+        "-date,-created",
+        0, // no limit
+        0,
+        { titlePrefix }
+    ) || []
+}
+
+/**
+ * Get all climbing logs using server-side $app
+ * @param {string} sort - Sort order (e.g., "-date", "-created")
+ * @returns {array} Array of climbing log Record objects
+ */
+function getAllClimbingLogs(sort = "-date") {
+    return $app.findRecordsByFilter(
+        POCKET_CLIMBING_POSTS,
+        "isDeleted = false",
+        sort,
+        0, // no limit (returns all)
+        0
+    ) || []
+}
+
 
