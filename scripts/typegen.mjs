@@ -2,8 +2,13 @@ import 'dotenv/config'
 
 import { spawnSync } from 'node:child_process'
 
-const required = ['PB_TYPEGEN_URL', 'PB_TYPEGEN_TOKEN']
+const username = process.env.PB_TYPEGEN_USERNAME || process.env.PB_TYPEGEN_EMAIL
+const required = ['PB_TYPEGEN_URL', 'PB_TYPEGEN_PASSWORD']
 const missing = required.filter((key) => !process.env[key])
+
+if (!username) {
+    missing.push('PB_TYPEGEN_USERNAME')
+}
 
 if (missing.length) {
     console.error(`Missing required env vars: ${missing.join(', ')}`)
@@ -15,11 +20,20 @@ const outFile = 'pb_hooks/lib/pocketbase-types.ts'
 
 const result = spawnSync(
     'npx',
-    ['pocketbase-typegen', '-o', outFile],
+    [
+        'pocketbase-typegen',
+        '--url',
+        process.env.PB_TYPEGEN_URL,
+        '--email',
+        username,
+        '--password',
+        process.env.PB_TYPEGEN_PASSWORD,
+        '-o',
+        outFile,
+    ],
     {
         stdio: 'inherit',
         shell: true,
-        env: process.env,
     },
 )
 
