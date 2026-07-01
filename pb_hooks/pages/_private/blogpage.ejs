@@ -1,5 +1,6 @@
 <script server>
-    const { formatDateTime, getImageUrl, slugifyTitle } = resolve('../../utils/common')
+    const { formatDateTime, getImageUrl, slugifyTitle } =
+        resolve('../../utils/common')
     const { getBlogPostsByTitlePrefix } = resolve('../../utils/pocket')
 
     if (typeof isClimbing === 'undefined') {
@@ -11,17 +12,18 @@
     }
 
     let imageUrl = null
-    
+
     // singleBlog might be passed in already, if not let's fetch it:
     if (!singleBlog && params?.title) {
         try {
-            const firstWord = params.title.split('-')[0].replace(/"/g, '\\"');
-            const possibleBlogs = getBlogPostsByTitlePrefix(firstWord);
+            const firstWord = params.title.split('-')[0].replace(/"/g, '\\"')
+            const possibleBlogs = getBlogPostsByTitlePrefix(firstWord)
 
-            const targetSlug = params.title.toLowerCase();
-            singleBlog = possibleBlogs.find(b =>
-                slugifyTitle(b.getString('title')) === targetSlug
-            ) || null;
+            const targetSlug = params.title.toLowerCase()
+            singleBlog =
+                possibleBlogs.find(
+                    (b) => slugifyTitle(b.getString('title')) === targetSlug
+                ) || null
         } catch (error) {
             console.error('Error fetching single blog post: ', error)
         }
@@ -30,7 +32,7 @@
     if (singleBlog) {
         try {
             if (!singleBlog) {
-                return res.status(404).render('pagenotfound');
+                return res.status(404).render('pagenotfound')
             }
             // Update the page title metadata
             const newTitle = isClimbing
@@ -46,7 +48,8 @@
                 )
                 .forEach((m) => (m.content = getImageUrl(singleBlog)))
             // update the description metadata
-            const description = singleBlog.getString(isClimbing ? 'content' : 'content1')
+            const description = singleBlog
+                .getString(isClimbing ? 'content' : 'content1')
                 .replace(/<[^>]*>/g, '')
                 .slice(0, 160)
                 .trim()
@@ -65,7 +68,9 @@
                 const grade = singleBlog.getString('grade')
                 const style = singleBlog.getString('style')
                 const location = singleBlog.getString('location')
-                const climbTags = [climbType, grade, style, location].filter(Boolean)
+                const climbTags = [climbType, grade, style, location].filter(
+                    Boolean
+                )
                 climbTags.forEach((tag) => {
                     data.metadata.push({
                         name: 'article:tag',
@@ -96,7 +101,8 @@
             // add published and modified times
             const publishedDate = isClimbing
                 ? singleBlog.getString('date')
-                : (singleBlog.getString('manualPublishDate') || singleBlog.getString('created'))
+                : singleBlog.getString('manualPublishDate') ||
+                  singleBlog.getString('created')
             console.log({ publishedDate })
             if (publishedDate) {
                 data.metadata.push({
@@ -128,133 +134,176 @@
         //get length of imageUrl
         const coverImageAlt = singleBlog?.getString('coverImageAlt')
         imageUrl = isClimbing
-            ? (getImageUrl(singleBlog) || '/background.jpg')
-            : (!coverImageAlt || coverImageAlt.length == 0
-                ? getImageUrl(singleBlog)
-                : coverImageAlt)
+            ? getImageUrl(singleBlog) || '/background.jpg'
+            : !coverImageAlt || coverImageAlt.length == 0
+              ? getImageUrl(singleBlog)
+              : coverImageAlt
     }
 </script>
 <% if (singleBlog==null) { %>
-    <%- include('pagenotfound.ejs') %>
-        <% } else { %>
-            <div class="hero bg-base-100 py-12 min-h-[calc(100vh-12.54rem)] flex flex-col items-center justify-start blog-card-transition"
-                style="--blog-card-id: blog-card-<%= singleBlog?.id %>">
-                <div class="hero-content max-w-4xl flex flex-col">
-                    <div class="w-full backdrop-blur-md p-6 rounded-xl mb-8">
-                        <h1 class="md:mb-0 font-extrabold text-3xl leading-tight md:flex hidden blog-title-transition"
-                            style="--blog-title-id: blog-title-<%= singleBlog?.id %>">
-                            <%= singleBlog?.getString('title') %>
-                        </h1>
-                    </div>
-                    <!-- Blog Image -->
-                    <% if (imageUrl) { %>
-                        <img src="<%= imageUrl %>"
-                            class="rounded-xl shadow-lg w-full h-auto max-h-96 object-cover m-0 blog-image-transition"
-                            style="
+<%- include('pagenotfound.ejs') %>
+<% } else { %>
+<div
+    class="hero bg-base-100 py-12 min-h-[calc(100vh-12.54rem)] flex flex-col items-center justify-start blog-card-transition"
+    style="--blog-card-id: blog-card-<%= singleBlog?.id %>"
+>
+    <div class="hero-content max-w-4xl flex flex-col">
+        <div class="w-full backdrop-blur-md p-6 rounded-xl mb-8">
+            <h1
+                class="md:mb-0 font-extrabold text-3xl leading-tight md:flex hidden blog-title-transition"
+                style="--blog-title-id: blog-title-<%= singleBlog?.id %>"
+            >
+                <%= singleBlog?.getString('title') %>
+            </h1>
+        </div>
+        <!-- Blog Image -->
+        <% if (imageUrl) { %>
+        <img
+            src="<%= imageUrl %>"
+            class="rounded-xl shadow-lg w-full h-auto max-h-96 object-cover m-0 blog-image-transition"
+            style="
                 --blog-image-id: blog-image-<%= singleBlog?.id %>;
                 aspect-ratio: 16/9;
-            " alt="<%= singleBlog?.getString('title') %> image" />
-                        <% } %>
-                            <!-- Blog Content -->
-                            <div class="w-full self-start backdrop-blur-md p-8 rounded-xl">
-                                <h1 class="mb-0 font-extrabold sm:text-2xl leading-tight flex md:hidden blog-title-transition"
-                                    style="--blog-title-id: blog-title-<%= singleBlog?.id %>">
-                                    <%= singleBlog?.getString('title') %>
-                                </h1>
-                                 <!-- Tags -->
-                                 <div class="flex flex-wrap gap-2">
-                                     <% if (isClimbing) { %>
-                                         <span class="badge badge-outline badge-lg text-nowrap">
-                                             <%= singleBlog?.getString('climbType') %>
-                                         </span>
-                                         <% if (singleBlog?.getString('grade')) { %>
-                                             <span class="badge badge-outline badge-lg text-nowrap">
-                                                 <%= singleBlog?.getString('grade') %>
-                                             </span>
-                                         <% } %>
-                                         <% if (singleBlog?.getString('style')) { %>
-                                             <span class="badge badge-outline badge-lg text-nowrap">
-                                                 <%= singleBlog?.getString('style') %>
-                                             </span>
-                                         <% } %>
-                                         <% if (singleBlog?.getString('location')) { %>
-                                             <span class="badge badge-outline badge-lg text-nowrap">
-                                                 <%= singleBlog?.getString('location') %>
-                                             </span>
-                                         <% } %>
-                                     <% } else { %>
-                                         <% const pageTags=singleBlog?.getString('tags'); if (pageTags && pageTags.length> 0) {
-                                             pageTags.split(';').forEach(function(tag) { %>
-                                                 <% if (tag.trim()) { %>
-                                                     <a href="/blog/posts?query=<%= encodeURIComponent(tag.trim()) %>"
-                                                         class="no-underline">
-                                                         <span
-                                                             class="badge badge-outline badge-lg text-nowrap hover:bg-base-content hover:text-base-100 transition-all duration-200 cursor-pointer">
-                                                             <%= tag.trim() %>
-                                                         </span>
-                                                     </a>
-                                                     <% } %>
-                                                 <% }); %>
-                                             <% } %>
-                                     <% } %>
-                                 </div>
+            "
+            alt="<%= singleBlog?.getString('title') %> image"
+        />
+        <% } %>
+        <!-- Blog Content -->
+        <div class="w-full self-start backdrop-blur-md p-8 rounded-xl">
+            <h1
+                class="mb-0 font-extrabold sm:text-2xl leading-tight flex md:hidden blog-title-transition"
+                style="--blog-title-id: blog-title-<%= singleBlog?.id %>"
+            >
+                <%= singleBlog?.getString('title') %>
+            </h1>
+            <!-- Tags -->
+            <div class="flex flex-wrap gap-2">
+                <% if (isClimbing) { %>
+                <span class="badge badge-outline badge-lg text-nowrap">
+                    <%= singleBlog?.getString('climbType') %>
+                </span>
+                <% if (singleBlog?.getString('grade')) { %>
+                <span class="badge badge-outline badge-lg text-nowrap">
+                    <%= singleBlog?.getString('grade') %>
+                </span>
+                <% } %>
+                <% if (singleBlog?.getString('style')) { %>
+                <span class="badge badge-outline badge-lg text-nowrap">
+                    <%= singleBlog?.getString('style') %>
+                </span>
+                <% } %>
+                <% if (singleBlog?.getString('location')) { %>
+                <span class="badge badge-outline badge-lg text-nowrap">
+                    <%= singleBlog?.getString('location') %>
+                </span>
+                <% } %>
+                <% } else { %>
+                <% const pageTags=singleBlog?.getString('tags'); if (pageTags &&
+                pageTags.length> 0) { pageTags.split(';').forEach(function(tag)
+                { %>
+                <% if (tag.trim()) { %>
+                <a
+                    href="/blog/posts?query=<%= encodeURIComponent(tag.trim()) %>"
+                    class="no-underline"
+                >
+                    <span
+                        class="badge badge-outline badge-lg text-nowrap hover:bg-base-content hover:text-base-100 transition-all duration-200 cursor-pointer"
+                    >
+                        <%= tag.trim() %>
+                    </span>
+                </a>
+                <% } %>
+                <% }); %>
+                <% } %>
+                <% } %>
+            </div>
 
-                                        <div class="text-sm text-base-content/70">
-                                             <!-- Back to Posts Button -->
-                                             <div class="mt-6">
-                                                 <div class="flex justify-between items-center w-full">
-                                                     <a href="<%= isClimbing ? '/climbing' : '/blog/posts' %>"
-                                                         class="btn btn-outline btn-sm gap-2 transition-all duration-200">
-                                                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
-                                                             viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                                             stroke-width="2" stroke-linecap="round"
-                                                             stroke-linejoin="round">
-                                                             <path d="m12 19-7-7 7-7" />
-                                                             <path d="M19 12H5" />
-                                                         </svg>
-                                                         <%= isClimbing ? 'Back to journal' : 'View all posts' %>
-                                                     </a>
-                                                     <!-- <span>By: <strong>Justin K</strong></span> -->
-                                                     <div class="text-right">
-                                                         <%= isClimbing ? 'Logged' : 'Posted' %>:
-                                                         <strong>
-                                                             <%= formatDateTime(new
+            <div class="text-sm text-base-content/70">
+                <!-- Back to Posts Button -->
+                <div class="mt-6">
+                    <div class="flex justify-between items-center w-full">
+                        <a
+                            href="<%= isClimbing ? '/climbing' : '/blog/posts' %>"
+                            class="btn btn-outline btn-sm gap-2 transition-all duration-200"
+                        >
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="16"
+                                height="16"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="2"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                            >
+                                <path d="m12 19-7-7 7-7" />
+                                <path d="M19 12H5" />
+                            </svg>
+                            <%= isClimbing ? 'Back to journal' : 'View all posts' %>
+                        </a>
+                        <!-- <span>By: <strong>Justin K</strong></span> -->
+                        <div class="text-right">
+                            <%= isClimbing ? 'Logged' : 'Posted' %>:
+                            <strong>
+                                <%= formatDateTime(new
                                                                  Date(isClimbing ? singleBlog?.getString('date') : (singleBlog?.getString('manualPublishDate') ||
                                                                  singleBlog?.getString('created')))) %>
-                                                         </strong>
-                                                         <div class="text-right">Updated:
-                                                             <strong>
-                                                                 <%= formatDateTime(new
+                            </strong>
+                            <div class="text-right">
+                                Updated:
+                                <strong>
+                                    <%= formatDateTime(new
                                                                      Date(singleBlog?.getString('updated'))) %>
-                                                             </strong>
-                                                         </div>
-                                                     </div>
-                                                 </div>
-
-                                                 <% if (isClimbing) { %>
-                                                     <div class="prose max-w-none text-base-content/80 mt-6 min-w-80 font-normal leading-relaxed">
-                                                         <%- singleBlog?.getString('content') %>
-                                                     </div>
-                                                 <% } else { %>
-                                                     <p class="text-base-content/80 min-w-80">
-                                                         <%- singleBlog?.getString('content1') %>
-                                                     </p>
-                                                     <p class="text-base-content/80 mb-6 min-w-80">
-                                                         <%- singleBlog?.getString('content2') %>
-                                                     </p>
-                                                 <% } %>
-                                             </div></div>
-                                        </div>
+                                </strong>
                             </div>
-                             <script>
-                                 if (typeof window.gtag === 'function') {
-                                     window.gtag('event', 'view_item', {
-                                         event_category: '<%= isClimbing ? "climbing_engagement" : "blog_engagement" %>',
-                                         item_id: '<%= singleBlog?.id %>',
-                                         item_name: decodeURIComponent('<%= encodeURIComponent(singleBlog?.getString("title") || "") %>'),
-                                         item_category: decodeURIComponent('<%= encodeURIComponent(isClimbing ? (singleBlog?.getString("climbType") || "") : (singleBlog?.getString("tags") || "")) %>'),
-                                         author: 'Justin K',
-                                     });
-                                 }
-                             </script>
-                            <% } %>
+                        </div>
+                    </div>
+
+                    <% const toNoCookie = (s) => (s || '')
+                        .replace(/https?:\/\/(www\.)?youtube\.com\/embed\//g, 'https://www.youtube-nocookie.com/embed/')
+                        .replace(/<iframe([^>]*?)(?:\s+sandbox="[^"]*")?([^>]*?)>/gi, (match, pre, post) => {
+                            const isYT = /youtube(-nocookie)?\.com\/embed\//.test(match);
+                            if (!isYT) return match;
+                            const stripped = match.replace(/\s+sandbox="[^"]*"/gi, '');
+                            const hasAllow = /\ballow=/i.test(stripped);
+                            return hasAllow
+                                ? stripped
+                                : stripped.replace(/<iframe/i, '<iframe allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen');
+                        }) %>
+                    <% if (isClimbing) { %>
+                    <div
+                        class="prose max-w-none text-base-content/80 mt-6 min-w-80 font-normal leading-relaxed"
+                    >
+                        <%- toNoCookie(singleBlog?.getString('content')) %>
+                    </div>
+                    <% } else { %>
+                    <p class="text-base-content/80 min-w-80">
+                        <%- toNoCookie(singleBlog?.getString('content1')) %>
+                    </p>
+                    <p class="text-base-content/80 mb-6 min-w-80">
+                        <%- toNoCookie(singleBlog?.getString('content2')) %>
+                    </p>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        if (typeof window.gtag === 'function') {
+            window.gtag('event', 'view_item', {
+                event_category:
+                    '<%= isClimbing ? "climbing_engagement" : "blog_engagement" %>',
+                item_id: '<%= singleBlog?.id %>',
+                item_name: decodeURIComponent(
+                    '<%= encodeURIComponent(singleBlog?.getString("title") || "") %>'
+                ),
+                item_category: decodeURIComponent(
+                    '<%= encodeURIComponent(isClimbing ? (singleBlog?.getString("climbType") || "") : (singleBlog?.getString("tags") || "")) %>'
+                ),
+                author: 'Justin K',
+            })
+        }
+    </script>
+    <% } %>
+</div>

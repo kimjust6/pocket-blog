@@ -1,7 +1,7 @@
 {
     "description": "DO NOT DELETE THIS FILE. This file is used to keep track of which files have been synced in the most recent deployment. If you delete this file a resync will need to be done (which can take a while) - read more: https://github.com/SamKirkland/FTP-Deploy-Action",
     "version": "1.0.0",
-    "generatedTime": 1782528049737,
+    "generatedTime": 1782875670800,
     "data": [
         {
             "type": "folder",
@@ -30,12 +30,6 @@
             "name": "pb_public/favicon.ico",
             "size": 131070,
             "hash": "eade4d177060fc5f49cee53a4a1cc1d3e757de60ba8178c568465cd2b4436ebe"
-        },
-        {
-            "type": "file",
-            "name": "pb_public/climbing-placeholder.png",
-            "size": 490248,
-            "hash": "ef7a72b40720380b8d4a763d000dac5a8bebaa562ce5f98326226007447b6ce5"
         },
         {
             "type": "file",
@@ -272,8 +266,8 @@
         {
             "type": "file",
             "name": "pb_hooks/pages/_private/blogpage.ejs",
-            "size": 14893,
-            "hash": "7fba98618ab201316aa2f3e6ce256440baf67fa267956bb6acb6d1bd509bd08c"
+            "size": 13651,
+            "hash": "b37d4aab4dba94e63796a3af815c2015548896a85aa627ba10f32a6eb2b255ce"
         },
         {
             "type": "file",
@@ -374,8 +368,8 @@
         {
             "type": "file",
             "name": "pb_hooks/pages/(navbarLayout)/+layout.ejs",
-            "size": 3844,
-            "hash": "468a66936593fd50e46e0b52d7e887b224618c168f373799f0be180a7466999c"
+            "size": 5002,
+            "hash": "711487accd9410d63435b2204d0a815d54866841f53dec62f33a28bf47f9086f"
         },
         {
             "type": "file",
@@ -386,8 +380,8 @@
         {
             "type": "file",
             "name": "pb_hooks/pages/(navbarLayout)/climbing/[title].ejs",
-            "size": 2223,
-            "hash": "ddd0c2a09e72176aca614ca81e5f2f45acbce246dc7765758b5f5e6ebb6ee155"
+            "size": 2280,
+            "hash": "9d6fab1753f759711a4c514333457021d54f202e74c24dab60a7a55de9a05292"
         },
         {
             "type": "folder",
@@ -408,8 +402,8 @@
         {
             "type": "file",
             "name": "pb_hooks/lib/pocketbase-types.ts",
-            "size": 9199,
-            "hash": "a4cc007f1f5f30f82ed08b5c7a70fe7480a03080a5bde30cfd3d057af853c137"
+            "size": 9524,
+            "hash": "9a1b042d75906525dd692b84513c8f0ee039d348298ba15e1c7cbafb1811b0c0"
         }
     ]
 }
