@@ -305,19 +305,52 @@ function buildCollectionScheduleResponse(geocoderResponse, configResponse, calen
     };
 }
 
-function formatCollectionDiscordMessage(response) {
-    const payload = response.json ?? response.raw ?? "";
-    const payloadText = typeof payload === "string"
-        ? payload
-        : JSON.stringify(payload, null, 2);
-    const message = [
-        `Collection status: ${response.statusCode}`,
-        payloadText,
-    ].join("\n\n");
+const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+const dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
-    return message.length > DISCORD_MESSAGE_MAX_LENGTH
-        ? `${message.slice(0, DISCORD_MESSAGE_MAX_LENGTH - 3)}...`
-        : message;
+function formatHumanDate(date) {
+    const dayName = dayNames[date.getUTCDay()];
+    const monthName = monthNames[date.getUTCMonth()];
+    const day = date.getUTCDate();
+    const year = date.getUTCFullYear();
+    return `${dayName}, ${monthName} ${day}, ${year}`;
+}
+
+function formatCollectionDiscordMessage(response) {
+    const data = response?.json;
+    if (!data) {
+        return `Collection status: ${response?.statusCode ?? 'Unknown'}\nNo schedule data available.`;
+    }
+
+    const address = data.address || "Unknown Address";
+    const areaDesc = data.collectionArea?.description || "";
+    const pdfUrl = data.pdfUrl;
+    const events = data.collectionCalendar || [];
+
+    if (events.length === 0) {
+        return `Waste Collection Schedule for **${address}**:\nNo upcoming pickups found in the calendar.`;
+    }
+
+    const dateStr = events[0].start;
+    const dateObj = parseIsoDate(dateStr);
+    const humanDate = formatHumanDate(dateObj);
+
+    const items = events.map(event => `- ${event.title}`).join("\n");
+
+    const messageLines = [
+        `🗑️ **Waste Collection Schedule**`,
+        `📍 **Address**: ${address}${areaDesc ? ` (${areaDesc})` : ""}`,
+        `📅 **Next Pickup Date**: ${humanDate}`,
+        ``,
+        `**Items to set out:**`,
+        items
+    ];
+
+    if (pdfUrl) {
+        messageLines.push(``, `📅 [Download Schedule PDF](${pdfUrl})`);
+    }
+
+    return messageLines.join("\n");
 }
 
 module.exports = {
