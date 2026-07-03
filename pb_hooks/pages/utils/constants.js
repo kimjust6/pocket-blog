@@ -55,6 +55,7 @@ const COLLECTION_TYPE_METADATA = {
         url: "https://www.toronto.ca/services-payments/recycling-organics-garbage/houses/yard-waste/",
     },
 };
+
 const COLLECTION_DAY_NAMES = {
     M: "Monday",
     T: "Tuesday",
@@ -64,6 +65,7 @@ const COLLECTION_DAY_NAMES = {
     S: "Saturday",
     0: "No pick-up",
 };
+
 const WEEKDAY_INDEX = {
     Sunday: 0,
     Monday: 1,
@@ -73,6 +75,10 @@ const WEEKDAY_INDEX = {
     Friday: 5,
     Saturday: 6,
 };
+
+const COLLECTION_ENDPOINT_BASE_URL = "https://map.toronto.ca/cotgeocoder/rest/geocoder/findAddressCandidates";
+const COLLECTION_SUGGEST_URL = "https://map.toronto.ca/cotgeocoder/rest/geocoder/suggest";
+const DEFAULT_COLLECTION_KEY_STRING = "ADDRESS:geoid:546720:rowid:367935";
 
 module.exports = {
     POCKET_BLOGPOSTS,
@@ -100,4 +106,7 @@ module.exports = {
     COLLECTION_TYPE_METADATA,
     COLLECTION_DAY_NAMES,
     WEEKDAY_INDEX,
+    COLLECTION_ENDPOINT_BASE_URL,
+    COLLECTION_SUGGEST_URL,
+    DEFAULT_COLLECTION_KEY_STRING,
 }
