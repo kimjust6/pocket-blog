@@ -58,17 +58,17 @@ routerAdd("GET", "/api/collection-schedule", (e) => {
     try {
         const requestInfo = e.requestInfo();
 
-        const arcgisResponse = sendHttpOrThrowLocal("ArcGIS Style", {
-            url: "https://www.arcgis.com/sharing/rest/content/items/8a2cba3b0ebf4140b7c0dc5ee149549a/resources/styles/root.json?f=json",
-            method: "GET",
-            headers: {
-                "sec-ch-ua-platform": '"Windows"',
-                "Referer": "https://www.toronto.ca/",
-                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36",
-                "sec-ch-ua": '"Brave";v="149", "Chromium";v="149", "Not)A;Brand";v="24"',
-                "sec-ch-ua-mobile": "?0",
-            },
-        });
+        // const arcgisResponse = sendHttpOrThrowLocal("ArcGIS Style", {
+        //     url: "https://www.arcgis.com/sharing/rest/content/items/8a2cba3b0ebf4140b7c0dc5ee149549a/resources/styles/root.json?f=json",
+        //     method: "GET",
+        //     headers: {
+        //         "sec-ch-ua-platform": '"Windows"',
+        //         "Referer": "https://www.toronto.ca/",
+        //         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36",
+        //         "sec-ch-ua": '"Brave";v="149", "Chromium";v="149", "Not)A;Brand";v="24"',
+        //         "sec-ch-ua-mobile": "?0",
+        //     },
+        // });
 
         const resolveCollectionEndpointUrlLocal = (requestInfoArg) => {
             const query = requestInfoArg?.query;
