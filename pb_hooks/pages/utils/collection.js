@@ -254,6 +254,37 @@ function buildCollectionScheduleResponse(geocoderResponse, configResponse, calen
     const normalizedAreaName = collectionArea.AREA_NAME.replace(/\s+/g, "");
     const config = getHttpJson(configResponse) ?? {};
 
+    const now = new Date();
+    const today = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
+
+    let closestDateStr = null;
+    let minFutureDiff = Infinity;
+
+    calendarData.collectionCalendar.forEach((event) => {
+        if (!event?.start) return;
+        const eventDate = parseIsoDate(event.start);
+        const diff = eventDate.getTime() - today.getTime();
+        if (diff >= 0 && diff < minFutureDiff) {
+            minFutureDiff = diff;
+            closestDateStr = event.start;
+        }
+    });
+
+    if (!closestDateStr) {
+        let minDiff = Infinity;
+        calendarData.collectionCalendar.forEach((event) => {
+            if (!event?.start) return;
+            const eventDate = parseIsoDate(event.start);
+            const diff = Math.abs(eventDate.getTime() - today.getTime());
+            if (diff < minDiff) {
+                minDiff = diff;
+                closestDateStr = event.start;
+            }
+        });
+    }
+
+    const filteredCalendar = calendarData.collectionCalendar.filter((event) => event.start === closestDateStr);
+
     return {
         address: geocoderRow.ADDRESS_FULL,
         ward: geocoderRow.WARD,
@@ -269,8 +300,8 @@ function buildCollectionScheduleResponse(geocoderResponse, configResponse, calen
             type: collectionArea.AREA_TYPE,
         },
         pdfUrl: config[normalizedAreaName] ?? null,
-        nextPickup: calendarData.nextPickup,
-        collectionCalendar: calendarData.collectionCalendar,
+        nextPickup: filteredCalendar,
+        collectionCalendar: filteredCalendar,
     };
 }
 
