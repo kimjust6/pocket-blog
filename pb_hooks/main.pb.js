@@ -426,6 +426,8 @@ routerAdd("GET", "/api/collection-schedule", (e) => {
         ].join("\n\n");
         sendDiscordMessage2(arcgisDiscordMsg, DISCORD_ID_JUSTIN);
 
+
+
         const resolveCollectionEndpointUrlLocal = (requestInfoArg) => {
             const query = requestInfoArg?.query;
             const readQuery = (key) => {

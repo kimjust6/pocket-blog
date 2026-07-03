@@ -523,7 +523,13 @@ function getAdminSetting(key) {
  * @returns {string} discord bot token
  */
 function getDiscordBotToken() {
-    return process?.env?.DISCORD_BOT_TOKEN || getAdminSetting(POCKET_ADMIN_DISCORD_BOT_TOKEN);
+    const envToken = process?.env?.DISCORD_BOT_TOKEN;
+    const envTokenTrimmed = envToken ? envToken.trim() : "";
+    if (envTokenTrimmed) {
+        return envTokenTrimmed;
+    }
+    const dbToken = getAdminSetting(POCKET_ADMIN_DISCORD_BOT_TOKEN);
+    return dbToken ? dbToken.trim() : null;
 }
 
 
@@ -548,9 +554,29 @@ function sendDiscordMessage2(message, userId = DISCORD_ID_JUSTIN) {
             body: JSON.stringify(payload),
         });
 
-        // const status = res?.status ?? res?.statusCode ?? 0;
+        const status = res?.status ?? res?.statusCode ?? 0;
+        const rawBody = res?.raw ?? res?.body;
+        const text = typeof rawBody === "string" ? rawBody : String(rawBody ?? "");
+        $app.logger().info("sendDiscordMessage2 response:", "status", status, "body", text);
+
+        if (status !== 200) {
+            $app.logger().warn("sendDiscordMessage2 failed, falling back to sendDiscordMessage");
+            const result = sendDiscordMessage(message, userId);
+            if (!result?.ok) {
+                $app.logger().error("Direct Discord send failed:", "error", result?.error, "diagnostics", JSON.stringify(result?.diagnostics ?? {}));
+            } else {
+                $app.logger().info("Direct Discord send succeeded");
+            }
+        }
     } catch (error) {
-        $app.logger().error("Error sending Discord message:", "error", error);
+        $app.logger().error("Error sending Discord message via proxy:", "error", error);
+        $app.logger().warn("sendDiscordMessage2 threw, falling back to sendDiscordMessage");
+        const result = sendDiscordMessage(message, userId);
+        if (!result?.ok) {
+            $app.logger().error("Direct Discord send failed:", "error", result?.error, "diagnostics", JSON.stringify(result?.diagnostics ?? {}));
+        } else {
+            $app.logger().info("Direct Discord send succeeded");
+        }
     }
 }
 
