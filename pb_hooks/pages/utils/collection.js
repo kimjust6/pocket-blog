@@ -1,57 +1,12 @@
-const COLLECTION_ENDPOINT_BASE_URL = "https://map.toronto.ca/cotgeocoder/rest/geocoder/findAddressCandidates";
-const COLLECTION_SUGGEST_URL = "https://map.toronto.ca/cotgeocoder/rest/geocoder/suggest";
-const DEFAULT_COLLECTION_KEY_STRING = "ADDRESS:geoid:546720:rowid:367935";
-const COLLECTION_CONFIG_URL = "https://www.toronto.ca/app_content/swm_collection_calendar_config/";
-const COLLECTION_CALENDAR_URL = "https://www.toronto.ca/ext/swms/collection_calendar.csv";
-const COLLECTION_ENDPOINT_HEADERS = {
-    Accept: "*/*",
-    "Accept-Language": "en-US,en;q=0.7",
-    Origin: "https://www.toronto.ca",
-    Referer: "https://www.toronto.ca/",
-    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36",
-};
-
-const DISCORD_MESSAGE_MAX_LENGTH = 1900;
-const COLLECTION_TYPE_METADATA = {
-    GreenBin: {
-        title: "Green Bin",
-        url: "https://www.toronto.ca/services-payments/recycling-organics-garbage/houses/what-goes-in-my-green-bin/",
-    },
-    Garbage: {
-        title: "Garbage",
-        url: "https://www.toronto.ca/services-payments/recycling-organics-garbage/houses/what-goes-in-my-garbage-bin/",
-    },
-    Recycling: {
-        title: "Recycling",
-        url: "https://www.toronto.ca/services-payments/recycling-organics-garbage/houses/what-goes-in-my-blue-bin/",
-    },
-    YardWaste: {
-        title: "Yard Waste",
-        url: "https://www.toronto.ca/services-payments/recycling-organics-garbage/houses/yard-waste/",
-    },
-    ChristmasTree: {
-        title: "Christmas Tree",
-        url: "https://www.toronto.ca/services-payments/recycling-organics-garbage/houses/yard-waste/",
-    },
-};
-const COLLECTION_DAY_NAMES = {
-    M: "Monday",
-    T: "Tuesday",
-    W: "Wednesday",
-    R: "Thursday",
-    F: "Friday",
-    S: "Saturday",
-    0: "No pick-up",
-};
-const WEEKDAY_INDEX = {
-    Sunday: 0,
-    Monday: 1,
-    Tuesday: 2,
-    Wednesday: 3,
-    Thursday: 4,
-    Friday: 5,
-    Saturday: 6,
-};
+const {
+    COLLECTION_CONFIG_URL,
+    COLLECTION_CALENDAR_URL,
+    COLLECTION_ENDPOINT_HEADERS,
+    DISCORD_MESSAGE_MAX_LENGTH,
+    COLLECTION_TYPE_METADATA,
+    COLLECTION_DAY_NAMES,
+    WEEKDAY_INDEX,
+} = require("./constants.js");
 
 function parseIsoDate(dateString) {
     const [year, month, day] = dateString.split("-").map((value) => parseInt(value, 10));
@@ -338,16 +293,16 @@ function formatCollectionDiscordMessage(response) {
     const items = events.map(event => `- ${event.title}`).join("\n");
 
     const messageLines = [
-        `🗑️ **Waste Collection Schedule**`,
-        `📍 **Address**: ${address}${areaDesc ? ` (${areaDesc})` : ""}`,
-        `📅 **Next Pickup Date**: ${humanDate}`,
+        `**Waste Collection Schedule**`,
+        `**Address**: ${address}${areaDesc ? ` (${areaDesc})` : ""}`,
+        `**Next Pickup Date**: ${humanDate}`,
         ``,
         `**Items to set out:**`,
         items
     ];
 
     if (pdfUrl) {
-        messageLines.push(``, `📅 [Download Schedule PDF](${pdfUrl})`);
+        messageLines.push(``, `[Download Schedule PDF](${pdfUrl})`);
     }
 
     return messageLines.join("\n");

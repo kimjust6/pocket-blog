@@ -22,6 +22,58 @@ const POCKET_ADMIN_MAX_RANDOM_DELAY_IN_SECONDS = "MAX_RANDOM_DELAY_IN_SECONDS";
 const POCKET_ADMIN_DISCORD_BOT_TOKEN = "SECRET_DISCORD_BOT_TOKEN";
 
 
+const COLLECTION_CONFIG_URL = "https://www.toronto.ca/app_content/swm_collection_calendar_config/";
+const COLLECTION_CALENDAR_URL = "https://www.toronto.ca/ext/swms/collection_calendar.csv";
+const COLLECTION_ENDPOINT_HEADERS = {
+    Accept: "*/*",
+    "Accept-Language": "en-US,en;q=0.7",
+    Origin: "https://www.toronto.ca",
+    Referer: "https://www.toronto.ca/",
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36",
+};
+
+const DISCORD_MESSAGE_MAX_LENGTH = 1900;
+const COLLECTION_TYPE_METADATA = {
+    GreenBin: {
+        title: "Green Bin",
+        url: "https://www.toronto.ca/services-payments/recycling-organics-garbage/houses/what-goes-in-my-green-bin/",
+    },
+    Garbage: {
+        title: "Garbage",
+        url: "https://www.toronto.ca/services-payments/recycling-organics-garbage/houses/what-goes-in-my-garbage-bin/",
+    },
+    Recycling: {
+        title: "Recycling",
+        url: "https://www.toronto.ca/services-payments/recycling-organics-garbage/houses/what-goes-in-my-blue-bin/",
+    },
+    YardWaste: {
+        title: "Yard Waste",
+        url: "https://www.toronto.ca/services-payments/recycling-organics-garbage/houses/yard-waste/",
+    },
+    ChristmasTree: {
+        title: "Christmas Tree",
+        url: "https://www.toronto.ca/services-payments/recycling-organics-garbage/houses/yard-waste/",
+    },
+};
+const COLLECTION_DAY_NAMES = {
+    M: "Monday",
+    T: "Tuesday",
+    W: "Wednesday",
+    R: "Thursday",
+    F: "Friday",
+    S: "Saturday",
+    0: "No pick-up",
+};
+const WEEKDAY_INDEX = {
+    Sunday: 0,
+    Monday: 1,
+    Tuesday: 2,
+    Wednesday: 3,
+    Thursday: 4,
+    Friday: 5,
+    Saturday: 6,
+};
+
 module.exports = {
     POCKET_BLOGPOSTS,
     POCKET_CLIMBING_POSTS,
@@ -40,5 +92,12 @@ module.exports = {
     DISCORD_ID_JUSTIN,
     POCKET_ADMIN_IGNORE_DUPLICATE_ZENDESK_CALLBACK_IN_SECONDS,
     POCKET_ADMIN_MAX_RANDOM_DELAY_IN_SECONDS,
-    POCKET_ADMIN_DISCORD_BOT_TOKEN
+    POCKET_ADMIN_DISCORD_BOT_TOKEN,
+    COLLECTION_CONFIG_URL,
+    COLLECTION_CALENDAR_URL,
+    COLLECTION_ENDPOINT_HEADERS,
+    DISCORD_MESSAGE_MAX_LENGTH,
+    COLLECTION_TYPE_METADATA,
+    COLLECTION_DAY_NAMES,
+    WEEKDAY_INDEX,
 }
