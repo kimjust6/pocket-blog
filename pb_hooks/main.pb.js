@@ -87,10 +87,22 @@ routerAdd("GET", "/api/collection-schedule", (e) => {
                 return buildEndpointFromKeyString(explicitKeyString);
             }
 
-            const location = readQuery("location") || readQuery("address");
+            let location = readQuery("location") || readQuery("address");
             if (!location) {
                 return buildEndpointFromKeyString(DEFAULT_COLLECTION_KEY_STRING);
             }
+
+            // Normalize common address suffixes to Toronto geocoder abbreviations
+            location = location
+                .replace(/\bcourt\b/gi, "crt")
+                .replace(/\bct\b/gi, "crt")
+                .replace(/\bstreet\b/gi, "st")
+                .replace(/\broad\b/gi, "rd")
+                .replace(/\bavenue\b/gi, "ave")
+                .replace(/\bdrive\b/gi, "dr")
+                .replace(/\bboulevard\b/gi, "blvd")
+                .replace(/\bplace\b/gi, "pl")
+                .replace(/\bcrescent\b/gi, "cres");
 
             const suggestUrl = `${COLLECTION_SUGGEST_URL}?f=json&matchAddress=1&matchPlaceName=1&matchPostalCode=1&addressOnly=0&retRowLimit=100&searchString=${encodeURIComponent(location)}&filter=5`;
             const suggestResponse = sendHttpOrThrowLocal("Toronto suggest", {
