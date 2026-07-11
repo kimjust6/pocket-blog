@@ -78,7 +78,6 @@ const WEEKDAY_INDEX = {
 
 const COLLECTION_ENDPOINT_BASE_URL = "https://map.toronto.ca/cotgeocoder/rest/geocoder/findAddressCandidates";
 const COLLECTION_SUGGEST_URL = "https://map.toronto.ca/cotgeocoder/rest/geocoder/suggest";
-const DEFAULT_COLLECTION_KEY_STRING = "ADDRESS:geoid:546720:rowid:367937";
 
 module.exports = {
     POCKET_BLOGPOSTS,
@@ -108,5 +107,4 @@ module.exports = {
     WEEKDAY_INDEX,
     COLLECTION_ENDPOINT_BASE_URL,
     COLLECTION_SUGGEST_URL,
-    DEFAULT_COLLECTION_KEY_STRING,
 }

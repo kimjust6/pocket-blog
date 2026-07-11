@@ -8,13 +8,13 @@ routerAdd("GET", "/api/collection-schedule", (e) => {
         COLLECTION_ENDPOINT_HEADERS,
         buildCollectionScheduleResponse,
         formatCollectionDiscordMessage,
+        getHttpJson,
     } = require(`${__hooks}/pages/utils/collection.js`);
 
     const {
         DISCORD_ID_JUSTIN,
         COLLECTION_ENDPOINT_BASE_URL,
         COLLECTION_SUGGEST_URL,
-        DEFAULT_COLLECTION_KEY_STRING,
     } = require(`${__hooks}/pages/utils/constants.js`);
 
     const {
@@ -37,60 +37,9 @@ routerAdd("GET", "/api/collection-schedule", (e) => {
         }
     };
 
-    const getHttpJsonLocal = (response) => {
-        if (response?.json && typeof response.json === "object") {
-            return response.json;
-        }
-
-        const rawBody = response?.raw ?? response?.body;
-        const payload = typeof rawBody === "string" ? rawBody : String(rawBody ?? "");
-        if (!payload.trim()) {
-            return null;
-        }
-
-        try {
-            return JSON.parse(payload);
-        } catch (_) {
-            return null;
-        }
-    };
-
     try {
-        const requestInfo = e.requestInfo();
-
-        // const arcgisResponse = sendHttpOrThrowLocal("ArcGIS Style", {
-        //     url: "https://www.arcgis.com/sharing/rest/content/items/8a2cba3b0ebf4140b7c0dc5ee149549a/resources/styles/root.json?f=json",
-        //     method: "GET",
-        //     headers: {
-        //         "sec-ch-ua-platform": '"Windows"',
-        //         "Referer": "https://www.toronto.ca/",
-        //         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36",
-        //         "sec-ch-ua": '"Brave";v="149", "Chromium";v="149", "Not)A;Brand";v="24"',
-        //         "sec-ch-ua-mobile": "?0",
-        //     },
-        // });
-
-        const resolveCollectionEndpointUrlLocal = (requestInfoArg) => {
-            const query = requestInfoArg?.query;
-            const readQuery = (key) => {
-                if (!query) {
-                    return "";
-                }
-                if (typeof query.get === "function") {
-                    return String(query.get(key) ?? "").trim();
-                }
-                return String(query[key] ?? "").trim();
-            };
-
-            const explicitKeyString = readQuery("keyString");
-            if (explicitKeyString) {
-                return buildEndpointFromKeyString(explicitKeyString);
-            }
-
-            let location = readQuery("location") || readQuery("address");
-            if (!location) {
-                return buildEndpointFromKeyString(DEFAULT_COLLECTION_KEY_STRING);
-            }
+        const resolveCollectionEndpointUrlLocal = () => {
+            let location = "5 o'meara court";
 
             // Normalize common address suffixes to Toronto geocoder abbreviations
             location = location
@@ -109,7 +58,7 @@ routerAdd("GET", "/api/collection-schedule", (e) => {
                 url: suggestUrl,
                 headers: COLLECTION_ENDPOINT_HEADERS,
             });
-            const suggestJson = getHttpJsonLocal(suggestResponse);
+            const suggestJson = getHttpJson(suggestResponse);
             const suggestRows = suggestJson?.result?.rows;
             if (Array.isArray(suggestRows) && suggestRows.length > 0) {
                 const keyString = suggestRows[0]?.KEYSTRING ?? suggestRows[0]?.keyString;
@@ -121,7 +70,7 @@ routerAdd("GET", "/api/collection-schedule", (e) => {
             return buildEndpointFromLocation(location);
         };
 
-        const geocoderUrl = resolveCollectionEndpointUrlLocal(requestInfo);
+        const geocoderUrl = resolveCollectionEndpointUrlLocal();
         const geocoderResponse = sendHttpOrThrowLocal("Toronto geocoder", {
             url: geocoderUrl,
             headers: COLLECTION_ENDPOINT_HEADERS,
