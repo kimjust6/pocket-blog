@@ -30,13 +30,8 @@
             <%= data.metadata.find(x=> x.name === 'title')?.content %>
         </title>
         <link href="<%=asset('/app.css')%>" rel="stylesheet" />
-        <link
-            rel="stylesheet"
-            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
-            integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg=="
-            crossorigin="anonymous"
-            referrerpolicy="no-referrer"
-        />
+        <link rel="preconnect" href="https://unpkg.com" crossorigin />
+        <link rel="preconnect" href="https://www.googletagmanager.com" crossorigin />
         <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
         <script src="https://unpkg.com/petite-vue" defer init></script>
         <script type="module">
@@ -103,9 +98,9 @@
             <div class="drawer-content flex min-h-full flex-col">
                 <!-- Navbar -->
                 <%- include('navbar.ejs') %>
-                <article class="prose max-w-none flex-1 pt-16">
+                <main class="prose max-w-none flex-1 pt-16">
                     <%- slot %>
-                </article>
+                </main>
             </div>
             <%- include('sidebar.ejs') %>
         </div>
