@@ -173,19 +173,19 @@
                                     </p>
                                 </div>
                                 <% } else { %>
-                                    <a href="<%= isClimbing ? '/climbing' : '/blog/posts' %>" class="no-underline">
-                                        <div class="mb-12 text-center">
-                                            <h1 class="text-5xl font-bold">
-                                                <% if (heroPost) { %>
+                                    <% if (heroPost) { %>
+                                        <a href="<%= isClimbing ? '/climbing' : '/blog/posts' %>" class="no-underline">
+                                            <div class="mb-12 text-center">
+                                                <h1 class="text-5xl font-bold">
                                                     Older Posts
-                                                <% } %>
-                                            </h1>
-                                        </div>
-                                    </a>
+                                                </h1>
+                                            </div>
+                                        </a>
+                                    <% } %>
                                     <% } %>
 
                                         <div class="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-                                            <% gridPosts.forEach(blog=> {
+                                            <% gridPosts.forEach((blog, index) => {
                                                 const text = (isClimbing ? blog.getString('content') : blog.getString('content1')).replace(/<[^>]*>/g, '');
                                                 const myImageUrl = isClimbing 
                                                     ? ((getImageUrl(blog) ? `${getImageUrl(blog)}?thumb=350x0` : '/background.jpg'))
@@ -196,14 +196,15 @@
                                                          onclick="if(window.gtag) window.gtag('event', 'click', { event_category: '<%= isClimbing ? `climbing_log` : `blog_post` %>', event_label: decodeURIComponent('<%= encodeURIComponent(blog.getString(`title`)) %>') })">
                                                          <div class="card bg-base-300 backdrop-blur-md shadow-xl transition-shadow duration-300 blog-card-transition"
                                                              style="--blog-card-id: blog-card-<%= blog.id %>">
-                                                             <% if (myImageUrl !==null && myImageUrl !=="" ) { %>
+                                                              <% if (myImageUrl !==null && myImageUrl !=="" ) { %>
                                                                  <figure
                                                                      class="h-auto md:h-48 overflow-hidden m-0 rounded-t-lg">
+                                                                     <% const isLcp = (!isHomepage && index === 0); %>
                                                                      <img src="<%= myImageUrl%>"
                                                                          alt="<%= blog.getString('title') %>"
                                                                          class="w-full h-auto md:h-48 object-cover blog-image-transition rounded-t-lg"
                                                                          style="--blog-image-id: blog-image-<%= blog.id %>"
-                                                                         loading="lazy" />
+                                                                         <%= isLcp ? 'fetchpriority="high"' : 'loading="lazy"' %> />
                                                                  </figure>
                                                                  <% } %>
                                                                      <div
@@ -248,10 +249,10 @@
                                                                              </div>
                                                                          <% } %>
                                                                          <p
-                                                                             class="text-sm text-base-content/70 line-clamp-3">
+                                                                             class="text-sm text-base-content/90 line-clamp-3">
                                                                              <%= text %>
                                                                          </p>
-                                                                         <span class="text-xs text-base-content/70 mt-2">
+                                                                         <span class="text-xs text-base-content/90 mt-2">
                                                                              <%= formatDateTime(new Date(isClimbing ? blog.getString('date') : (blog.getString('manualPublishDate') || blog.getString('created')))) %>
                                                                          </span>
                                                                      </div>
