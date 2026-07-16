@@ -26,10 +26,10 @@
 <div class="hero bg-base-100 not-prose bg-cover bg-center -mt-16">
     <div class="hero-content pt-36 text-center text-base-content">
         <div class="max-w-4xl bg-base-100/60 backdrop-blur-lg md:p-8 rounded-xl">
-            <a href="/" class="no-underline">
+            <a href="/" class="no-underline" aria-label="Go to Homepage">
                 <h1 class="text-5xl font-bold">
                     <%= (data.metadata.find(meta=> meta.name ===
-                        "og:site_name")).content %>
+                        "og:site_name"))?.content || "The Justin Blog" %>
                 </h1>
             </a>
             <nav class="py-6 lg:py-12">

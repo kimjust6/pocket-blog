@@ -60,7 +60,7 @@
                         </h1>
                     </div>
                 </a>
-                <p class="mt-8 text-lg text-base-content/80">
+                <p class="mt-8 text-lg text-base-content">
                     <%= isClimbing ? 'A personal record of sends, failures, and hard-fought projects on the rock and in the gym.' : 'Explore recent insights, retrospectives, and stories.' %>
                 </p>
                 <div class="flex justify-center">
@@ -126,6 +126,8 @@
                                     <img src="<%= heroImageUrl %>" alt="<%= heroPost.getString('title') %>"
                                         class="w-full h-full object-cover blog-image-transition rounded-t-lg lg:rounded-t-none lg:rounded-l-lg"
                                         style="--blog-image-id: blog-image-<%= heroPost.id %>; anchor-name: --blog-image"
+                                        width="610"
+                                        height="407"
                                         fetchpriority="high" />
                                 </figure>
                                 <% } %>
@@ -144,10 +146,10 @@
                                                 <% }) %>
                                                     <% } %>
                                         </div>
-                                        <p class="text-lg text-base-content/80 mt-4 line-clamp-4">
+                                        <p class="text-lg text-base-content mt-4 line-clamp-4">
                                             <%= heroText %>
                                         </p>
-                                        <span class="text-sm text-base-content/70 block">
+                                        <span class="text-sm text-base-content block">
                                             <%= formatDateTime(new Date(heroPost.getString('manualPublishDate') ||
                                                 heroPost.getString('created'))) %>
                                         </span>
@@ -160,7 +162,7 @@
                     <% if (hasNoSearchResults) { %>
                         <div class="mx-auto max-w-xl py-16 text-center">
                             <h1 class="mb-4 text-4xl font-bold">No search results</h1>
-                            <p class="mb-6 text-lg text-base-content/70">
+                            <p class="mb-6 text-lg text-base-content">
                                 <%= isClimbing ? 'No climbing entries' : 'No blog posts' %> matched "<%= params.query %>".
                             </p>
                             <a href="<%= isClimbing ? '/climbing' : '/blog/posts' %>" class="btn btn-primary">Clear Search</a>
@@ -168,8 +170,8 @@
                         <% } else { %>
                             <% if (hasSearchQuery) { %>
                                 <div class="mb-12 pt-8 text-center">
-                                    <p class="mb-4 text-lg text-base-content/70">Results for
-                                        <span class="text-lg text-base-content/70">"<%= params.query %>"</span>
+                                    <p class="mb-4 text-lg text-base-content">Results for
+                                        <span class="text-lg text-base-content">"<%= params.query %>"</span>
                                     </p>
                                 </div>
                                 <% } else { %>
@@ -204,6 +206,8 @@
                                                                          alt="<%= blog.getString('title') %>"
                                                                          class="w-full h-auto md:h-48 object-cover blog-image-transition rounded-t-lg"
                                                                          style="--blog-image-id: blog-image-<%= blog.id %>"
+                                                                         width="350"
+                                                                         height="192"
                                                                          <%= isLcp ? 'fetchpriority="high"' : 'loading="lazy"' %> />
                                                                  </figure>
                                                                  <% } %>
@@ -241,7 +245,7 @@
                                                                              <%= blog.getString('title') %>
                                                                          </h2>
                                                                          <% if (isClimbing && blog.getString('location')) { %>
-                                                                             <div class="flex items-center gap-1 text-xs text-base-content/60 mb-2">
+                                                                             <div class="flex items-center gap-1 text-xs text-base-content mb-2">
                                                                                  <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor">
                                                                                      <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd" />
                                                                                  </svg>
@@ -249,10 +253,10 @@
                                                                              </div>
                                                                          <% } %>
                                                                          <p
-                                                                             class="text-sm text-base-content/90 line-clamp-3">
+                                                                             class="text-sm text-base-content line-clamp-3">
                                                                              <%= text %>
                                                                          </p>
-                                                                         <span class="text-xs text-base-content/90 mt-2">
+                                                                         <span class="text-xs text-base-content mt-2">
                                                                              <%= formatDateTime(new Date(isClimbing ? blog.getString('date') : (blog.getString('manualPublishDate') || blog.getString('created')))) %>
                                                                          </span>
                                                                      </div>
