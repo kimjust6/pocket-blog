@@ -3,10 +3,10 @@
   "private": true,
   "version": "0.0.2",
   "scripts": {
-    "dev": "concurrently \"tailwindcss -i ./pb_hooks/pages/app.tailwind.css -o ./pb_hooks/pages/app.css --watch\" \"pocketbase serve --dir=pb_data --dev\"",
+    "dev": "concurrently \"tailwindcss -i ./pb_hooks/pages/app.tailwind.css -o ./pb_hooks/pages/app.css --minify --watch\" \"pocketbase serve --dir=pb_data --dev\"",
     "start": "pocketbase serve --dir=pb_data --dev",
     "wsl": "wsl bash -c \"set -a && source .env && set +a && npm run dev\"",
-    "css": "tailwindcss -i ./pb_hooks/pages/app.tailwind.css -o ./pb_hooks/pages/app.css --watch\"",
+    "css": "tailwindcss -i ./pb_hooks/pages/app.tailwind.css -o ./pb_hooks/pages/app.css --minify --watch",
     "push": "npx phio deploy mlt-blog -e pb_data \"pb_data/**/*\" package.json bun.lock bun.lockb patches \"patches/**/*\"",
     "login": "npx phio login",
     "update": "pocketbase update",

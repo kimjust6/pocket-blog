@@ -25,7 +25,7 @@
         </ul>
     </div>
     <div class="flex-none">
-        <button onclick="toggleTheme()" class="btn btn-ghost btn-circle group">
+        <button onclick="toggleTheme()" class="btn btn-ghost btn-circle group" aria-label="Toggle theme">
             <!-- Sun Icon (Variables for display style injected by EJS) -->
             <svg id="theme-icon-sun" style="display: <%= data.theme === 'nord' ? 'inline-block' : 'none' %>"
                 xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"

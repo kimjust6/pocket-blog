@@ -134,9 +134,9 @@
         //get length of imageUrl
         const coverImageAlt = singleBlog?.getString('coverImageAlt')
         imageUrl = isClimbing
-            ? getImageUrl(singleBlog) || '/background.jpg'
+            ? (getImageUrl(singleBlog) ? `${getImageUrl(singleBlog)}?thumb=1000x0` : '/background.jpg')
             : !coverImageAlt || coverImageAlt.length == 0
-              ? getImageUrl(singleBlog)
+              ? (getImageUrl(singleBlog) ? `${getImageUrl(singleBlog)}?thumb=1000x0` : null)
               : coverImageAlt
     }
 </script>
@@ -166,6 +166,7 @@
                 aspect-ratio: 16/9;
             "
             alt="<%= singleBlog?.getString('title') %> image"
+            fetchpriority="high"
         />
         <% } %>
         <!-- Blog Content -->

@@ -70,7 +70,7 @@
                             @keydown.enter="handleSearch" />
                         <button v-show="searchQuery" @click="clearSearch"
                             class="absolute right-3 top-1/2 !-translate-y-1/2 btn btn-ghost btn-sm btn-circle active:!-translate-y-1/2"
-                            type="button">
+                            type="button" aria-label="Clear search">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
                                 stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -106,10 +106,10 @@
             const hasNoSearchResults = hasSearchQuery && !hasPosts;
             %>
 
-            <% if (heroPost) { const heroText=heroPost.getString('content1').replace(/<[^>]*>/g, '');
-                const heroImageUrl = getImageUrl(heroPost) ? `${getImageUrl(heroPost)}` :
-                heroPost.getString('coverImageAlt');
-                %>
+            <% if (heroPost) { 
+                const heroText = heroPost.getString('content1').replace(/<[^>]*>/g, '');
+                const heroImageUrl = getImageUrl(heroPost) ? `${getImageUrl(heroPost)}?thumb=800x0` : heroPost.getString('coverImageAlt');
+            %>
                 <!-- Hero Post -->
                 <div class="mb-24">
                     <a href="/blog/posts/<%= encodeURIComponent(slugifyTitle(heroPost.getString('title'))) %>"
@@ -123,10 +123,10 @@
                                 Post</span>
                             <% if (heroImageUrl && heroImageUrl !=="" ) { %>
                                 <figure class="lg:w-1/2 h-auto m-0 rounded-t-lg lg:rounded-t-none lg:rounded-l-lg">
-                                    <img src="<%= heroImageUrl %>" alt="<%= heroPost.getString('title') %> Image"
+                                    <img src="<%= heroImageUrl %>" alt="<%= heroPost.getString('title') %>"
                                         class="w-full h-full object-cover blog-image-transition rounded-t-lg lg:rounded-t-none lg:rounded-l-lg"
                                         style="--blog-image-id: blog-image-<%= heroPost.id %>; anchor-name: --blog-image"
-                                        loading="lazy" />
+                                        fetchpriority="high" />
                                 </figure>
                                 <% } %>
                                     <div class="card-body lg:w-1/2 justify-center blog-body-transition p-8 md:p-12">
@@ -147,7 +147,7 @@
                                         <p class="text-lg text-base-content/80 mt-4 line-clamp-4">
                                             <%= heroText %>
                                         </p>
-                                        <span class="text-sm text-base-content/50 block">
+                                        <span class="text-sm text-base-content/70 block">
                                             <%= formatDateTime(new Date(heroPost.getString('manualPublishDate') ||
                                                 heroPost.getString('created'))) %>
                                         </span>
@@ -200,7 +200,7 @@
                                                                  <figure
                                                                      class="h-auto md:h-48 overflow-hidden m-0 rounded-t-lg">
                                                                      <img src="<%= myImageUrl%>"
-                                                                         alt="<%= blog.getString('title') %> Image"
+                                                                         alt="<%= blog.getString('title') %>"
                                                                          class="w-full h-auto md:h-48 object-cover blog-image-transition rounded-t-lg"
                                                                          style="--blog-image-id: blog-image-<%= blog.id %>"
                                                                          loading="lazy" />
@@ -251,7 +251,7 @@
                                                                              class="text-sm text-base-content/70 line-clamp-3">
                                                                              <%= text %>
                                                                          </p>
-                                                                         <span class="text-xs text-base-content/50 mt-2">
+                                                                         <span class="text-xs text-base-content/70 mt-2">
                                                                              <%= formatDateTime(new Date(isClimbing ? blog.getString('date') : (blog.getString('manualPublishDate') || blog.getString('created')))) %>
                                                                          </span>
                                                                      </div>
@@ -272,21 +272,21 @@
         <div class="flex justify-center my-12">
             <div class="join">
                 <% if (currentPage <= 1) { %>
-                    <button class="join-item btn btn-sm btn-disabled">«</button>
+                    <button class="join-item btn btn-sm btn-disabled" aria-label="Previous page">«</button>
                 <% } else { %>
-                    <a href="?page=<%= currentPage - 1 %><%= fullParams %>" class="join-item btn btn-sm">«</a>
+                    <a href="?page=<%= currentPage - 1 %><%= fullParams %>" class="join-item btn btn-sm" aria-label="Previous page">«</a>
                 <% } %>
 
                 <% for (let i=1; i <=totalPages; i++) { %>
-                    <a href="?page=<%= i %><%= fullParams %>" class="join-item btn btn-sm <%= currentPage === i ? 'btn-active' : '' %>">
+                    <a href="?page=<%= i %><%= fullParams %>" class="join-item btn btn-sm <%= currentPage === i ? 'btn-active' : '' %>" aria-label="Page <%= i %>">
                         <%= i %>
                     </a>
                 <% } %>
 
                 <% if (currentPage >= totalPages) { %>
-                    <button class="join-item btn btn-sm btn-disabled">»</button>
+                    <button class="join-item btn btn-sm btn-disabled" aria-label="Next page">»</button>
                 <% } else { %>
-                    <a href="?page=<%= currentPage + 1 %><%= fullParams %>" class="join-item btn btn-sm">»</a>
+                    <a href="?page=<%= currentPage + 1 %><%= fullParams %>" class="join-item btn btn-sm" aria-label="Next page">»</a>
                 <% } %>
             </div>
         </div>
