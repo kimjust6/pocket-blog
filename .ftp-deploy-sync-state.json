@@ -1,7 +1,7 @@
 {
     "description": "DO NOT DELETE THIS FILE. This file is used to keep track of which files have been synced in the most recent deployment. If you delete this file a resync will need to be done (which can take a while) - read more: https://github.com/SamKirkland/FTP-Deploy-Action",
     "version": "1.0.0",
-    "generatedTime": 1784173744255,
+    "generatedTime": 1784550474621,
     "data": [
         {
             "type": "folder",
@@ -14,6 +14,12 @@
         {
             "type": "folder",
             "name": "pb_hooks"
+        },
+        {
+            "type": "file",
+            "name": "pb_public/og-image.webp",
+            "size": 16450,
+            "hash": "b6052d7fe6a130911327ea90c412901fa557d2548602cfd5986004ea6c06131e"
         },
         {
             "type": "file",
@@ -30,6 +36,12 @@
             "name": "pb_public/favicon.ico",
             "size": 131070,
             "hash": "eade4d177060fc5f49cee53a4a1cc1d3e757de60ba8178c568465cd2b4436ebe"
+        },
+        {
+            "type": "file",
+            "name": "pb_public/background.webp",
+            "size": 309432,
+            "hash": "0fd36d815ca055ed8eee3388c696a764b63fddd6266c6382623c5feec90bd393"
         },
         {
             "type": "file",
@@ -272,14 +284,14 @@
         {
             "type": "file",
             "name": "pb_hooks/pages/_private/blogpage.ejs",
-            "size": 13822,
-            "hash": "c52a551b80809ea71908f87b40f406c66650b9d8a598ed83fb1874b3b148af95"
+            "size": 13778,
+            "hash": "a7f84297182fa87bf7724067c0267f0860bc6fa5afdc48f2c94e69bbd6b216fd"
         },
         {
             "type": "file",
             "name": "pb_hooks/pages/_private/blogcards.ejs",
-            "size": 21686,
-            "hash": "9ff65e402f258b371bece510d3f94fad60c1639674cf79321e708eeb53c097c7"
+            "size": 21687,
+            "hash": "5bcdabf4f3697b0649f955b6866f33845f6762b97c20c686e80887da831ba497"
         },
         {
             "type": "file",
@@ -290,8 +302,8 @@
         {
             "type": "file",
             "name": "pb_hooks/pages/utils/pocket.js",
-            "size": 5238,
-            "hash": "0c84086017960091c74ac440477dc1af10ef4b4ddc8c1f22013541dbc1bc2a7b"
+            "size": 6121,
+            "hash": "ca8276949037b5c6f2336bb90028f10b2734b63078804ec8047928b70f7754a0"
         },
         {
             "type": "file",
@@ -392,8 +404,8 @@
         {
             "type": "file",
             "name": "pb_hooks/pages/(navbarLayout)/climbing/[title].ejs",
-            "size": 2280,
-            "hash": "9d6fab1753f759711a4c514333457021d54f202e74c24dab60a7a55de9a05292"
+            "size": 2281,
+            "hash": "972de67aaafde12bcedfae382cda43ba2484d3788ca16fabc91d597d9b3ef2e2"
         },
         {
             "type": "folder",
