@@ -190,7 +190,7 @@
                                             <% gridPosts.forEach((blog, index) => {
                                                 const text = (isClimbing ? blog.getString('content') : blog.getString('content1')).replace(/<[^>]*>/g, '');
                                                 const myImageUrl = isClimbing 
-                                                    ? ((getImageUrl(blog) ? `${getImageUrl(blog)}?thumb=350x0` : '/background.jpg'))
+                                                    ? ((getImageUrl(blog) ? `${getImageUrl(blog)}?thumb=350x0` : '/background.webp'))
                                                     : (getImageUrl(blog) ? `${getImageUrl(blog)}?thumb=350x0` : blog.getString('coverImageAlt')); %>
 
                                                      <a href="<%= isClimbing ? '/climbing/' : '/blog/posts/' %><%= encodeURIComponent(slugifyTitle(blog.getString('title'))) %>"

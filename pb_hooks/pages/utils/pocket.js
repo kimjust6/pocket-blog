@@ -55,16 +55,27 @@ const getBlogPosts = (page, perPage, query) => {
         filterParams
     )
 
-    // Get total count for pagination
-    const allRecords = $app.findRecordsByFilter(
-        POCKET_BLOGPOSTS,
-        filter,
-        "",
-        0, // no limit
-        0,
-        filterParams
-    )
-    const totalItems = allRecords?.length || 0
+    // Get total count for pagination using efficient DB query
+    const countResult = arrayOf(new DynamicModel({
+        "total": 0
+    }))
+
+    let queryBuilder = $app.db()
+        .select("COUNT(*) as total")
+        .from("blog_posts")
+        .where($dbx.exp("isDeleted = 0"))
+
+    if (query) {
+        queryBuilder.andWhere(
+            $dbx.exp(
+                "(title LIKE {:query} OR tags LIKE {:query} OR content1 LIKE {:query} OR content2 LIKE {:query})",
+                { query: `%${query}%` }
+            )
+        )
+    }
+
+    queryBuilder.all(countResult)
+    const totalItems = countResult[0]?.total || 0
     const totalPages = Math.ceil(totalItems / perPage)
 
     return {
@@ -133,16 +144,32 @@ function getClimbingLogs(page, perPage, query, climbType) {
         filterParams
     )
 
-    // Get total count for pagination
-    const allRecords = $app.findRecordsByFilter(
-        POCKET_CLIMBING_POSTS,
-        filter,
-        "",
-        0, // no limit
-        0,
-        filterParams
-    )
-    const totalItems = allRecords?.length || 0
+    // Get total count for pagination using efficient DB query
+    const countResult = arrayOf(new DynamicModel({
+        "total": 0
+    }))
+
+    let queryBuilder = $app.db()
+        .select("COUNT(*) as total")
+        .from("climbing_posts")
+        .where($dbx.exp("isDeleted = 0"))
+
+    if (query) {
+        queryBuilder.andWhere(
+            $dbx.exp(
+                "(title LIKE {:query} OR location LIKE {:query} OR content LIKE {:query})",
+                { query: `%${query}%` }
+            )
+        )
+    }
+    if (climbType) {
+        queryBuilder.andWhere(
+            $dbx.exp("climbType = {:climbType}", { climbType })
+        )
+    }
+
+    queryBuilder.all(countResult)
+    const totalItems = countResult[0]?.total || 0
     const totalPages = Math.ceil(totalItems / perPage)
 
     return {

@@ -37,7 +37,7 @@
                     .filter((m) => m.name === 'description' || m.name === 'og:description' || m.name === 'twitter:description')
                     .forEach((m) => (m.content = description))
 
-                imgUrl = getImageUrl(climbLog) || '/background.jpg';
+                imgUrl = getImageUrl(climbLog) || '/background.webp';
             }
         } catch (error) {
             console.error('Error fetching single climb log: ', error)

@@ -134,10 +134,10 @@
         //get length of imageUrl
         const coverImageAlt = singleBlog?.getString('coverImageAlt')
         imageUrl = isClimbing
-            ? (getImageUrl(singleBlog) ? `${getImageUrl(singleBlog)}?thumb=1000x0` : '/background.jpg')
-            : !coverImageAlt || coverImageAlt.length == 0
-              ? (getImageUrl(singleBlog) ? `${getImageUrl(singleBlog)}?thumb=1000x0` : null)
-              : coverImageAlt
+            ? (getImageUrl(singleBlog) ? `${getImageUrl(singleBlog)}?thumb=1000x0` : '/background.webp')
+            : getImageUrl(singleBlog)
+              ? `${getImageUrl(singleBlog)}?thumb=1000x0`
+              : (coverImageAlt || null)
     }
 </script>
 <% if (singleBlog==null) { %>
