@@ -1,0 +1,60 @@
+<script server>
+  const { getCombinedHomepagePosts, isClimbingRecord } = resolve('../../utils/pocket')
+  const { formatDateTime, getImageUrl, slugifyTitle } = resolve('../../utils/common')
+
+  const page = parseInt(params?.page || '1', 10)
+  const perPage = parseInt(params?.perPage || '6', 10)
+  const query = params?.query || ''
+
+  const result = getCombinedHomepagePosts(page, perPage, query)
+
+  const formattedItems = (result.items || []).map((blog) => {
+      const itemIsClimbing = isClimbingRecord(blog)
+      const title = blog.getString("title")
+      const slug = slugifyTitle(title)
+      const rawText = (itemIsClimbing ? blog.getString("content") : blog.getString("content1")) || ""
+      const text = rawText.replace(/<[^>]*>/g, "")
+      const rawImg = getImageUrl(blog)
+      const imageUrl = itemIsClimbing
+          ? (rawImg ? `${rawImg}?thumb=350x0` : "/background.webp")
+          : (rawImg ? `${rawImg}?thumb=350x0` : (blog.getString("coverImageAlt") || null))
+      const link = itemIsClimbing ? `/climbing/${encodeURIComponent(slug)}` : `/blog/posts/${encodeURIComponent(slug)}`
+      const dateRaw = itemIsClimbing
+          ? (blog.getString("date") || blog.getString("created"))
+          : (blog.getString("manualPublishDate") || blog.getString("created"))
+      const formattedDate = formatDateTime(new Date(dateRaw))
+
+      let badges = []
+      if (itemIsClimbing) {
+          if (blog.getString("climbType")) badges.push(blog.getString("climbType"))
+          if (blog.getString("grade")) badges.push(blog.getString("grade"))
+          if (blog.getString("style")) badges.push(blog.getString("style"))
+      } else {
+          const tags = blog.getString("tags")
+          if (tags) {
+              badges = tags.split(";").map(t => t.trim()).filter(Boolean)
+          }
+      }
+
+      return {
+          id: blog.id,
+          title,
+          slug,
+          link,
+          text,
+          imageUrl,
+          date: formattedDate,
+          itemIsClimbing,
+          badges,
+          location: itemIsClimbing ? blog.getString("location") : null
+      }
+  })
+
+  response.header('Content-Type', 'application/json')
+  response.write(JSON.stringify({
+      items: formattedItems,
+      page: result.page,
+      totalPages: result.totalPages,
+      hasMore: page < result.totalPages
+  }))
+</script>

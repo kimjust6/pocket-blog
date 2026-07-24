@@ -33,6 +33,12 @@
     var SearchApp = {
         searchQuery: decodeURIComponent('<%- encodeURIComponent(params?.query || "").replace(/\'/g, "%27") %>'),
         hasQuery: ('<%= !!params?.query %>' === 'true'),
+        isHomepage: ('<%= !!isHomepage %>' === 'true'),
+        page: parseInt('<%= currentPage %>', 10) || 1,
+        totalPages: parseInt('<%= totalPages %>', 10) || 1,
+        loadingMore: false,
+        hasMore: parseInt('<%= currentPage %>', 10) < parseInt('<%= totalPages %>', 10),
+        extraPosts: [],
         handleSearch() {
             // Update query params in URL
             window.location.href = `?query=${encodeURIComponent(this.searchQuery)}`
@@ -46,9 +52,56 @@
                 window.location.href = window.location.pathname.startsWith('/climbing') ? '/climbing' : '/blog/posts'
             }
         },
+        async loadMore() {
+            if (this.loadingMore || !this.hasMore) return;
+            this.loadingMore = true;
+            try {
+                const nextPage = this.page + 1;
+                const endpoint = this.isHomepage ? '/api/homepage-posts' : null;
+                if (!endpoint) {
+                    this.loadingMore = false;
+                    this.hasMore = false;
+                    return;
+                }
+                const url = `${endpoint}?page=${nextPage}${this.searchQuery ? '&query=' + encodeURIComponent(this.searchQuery) : ''}`;
+                const res = await fetch(url);
+                if (res.ok) {
+                    const json = await res.json();
+                    if (Array.isArray(json.items) && json.items.length > 0) {
+                        this.extraPosts.push(...json.items);
+                        this.page = nextPage;
+                        this.hasMore = !!json.hasMore;
+                    } else {
+                        this.hasMore = false;
+                    }
+                } else {
+                    this.hasMore = false;
+                }
+            } catch (e) {
+                console.error('Error loading more posts:', e);
+                this.hasMore = false;
+            } finally {
+                this.loadingMore = false;
+                if (!this.hasMore && this._observer) {
+                    this._observer.disconnect();
+                }
+            }
+        },
         mounted() {
             if (this.$refs.searchInput) {
                 this.$refs.searchInput.focus()
+            }
+            if (this.isHomepage && this.hasMore) {
+                this._observer = new IntersectionObserver((entries) => {
+                    if (entries[0] && entries[0].isIntersecting && this.hasMore && !this.loadingMore) {
+                        this.loadMore();
+                    }
+                }, { threshold: 0.1, rootMargin: '200px' });
+
+                setTimeout(() => {
+                    const el = document.getElementById('infinite-scroll-trigger');
+                    if (el && this._observer) this._observer.observe(el);
+                }, 300);
             }
         },
     }
@@ -74,22 +127,42 @@
                 <p class="mt-8 text-lg text-base-content">
                     <%= isClimbing ? 'A personal record of sends, failures, and hard-fought projects on the rock and in the gym.' : 'Explore recent insights, retrospectives, and stories.' %>
                 </p>
-                <div class="flex justify-center">
+                <form role="search" action="<%= isClimbing ? '/climbing' : '/blog/posts' %>" method="get" @submit.prevent="handleSearch" class="my-6 flex justify-center w-full">
                     <div class="relative w-full max-w-xl">
-                        <input autofocus v-model="searchQuery" ref="searchInput"
-                            class="input w-full border border-gray-600 pr-10" placeholder="<%= isClimbing ? 'Search climbs or locations...' : 'Search blogs...' %>"
-                            @keydown.enter="handleSearch" />
-                        <button v-show="searchQuery" @click="clearSearch"
-                            class="absolute right-3 top-1/2 !-translate-y-1/2 btn btn-ghost btn-sm btn-circle active:!-translate-y-1/2"
-                            type="button" aria-label="Clear search">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
-                                stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M6 18L18 6M6 6l12 12" />
-                            </svg>
-                        </button>
+                        <input 
+                            type="text"
+                            inputmode="search"
+                            role="searchbox"
+                            name="query"
+                            id="site-search-input"
+                            autocomplete="search"
+                            v-model="searchQuery" 
+                            ref="searchInput"
+                            class="input input-bordered w-full rounded-full bg-base-100 border border-base-content/30 pl-5 pr-24 text-base focus:outline-none focus:ring-2 focus:ring-primary shadow-sm [&::-webkit-search-cancel-button]:hidden [&::-webkit-search-decoration]:hidden [&::-webkit-search-results-button]:hidden [&::-webkit-search-results-decoration]:hidden" 
+                            placeholder="<%= isClimbing ? 'Search climbs or locations...' : 'Search blogs...' %>"
+                            aria-label="<%= isClimbing ? 'Search climbing logs' : 'Search blog posts' %>"
+                            @keydown.enter="handleSearch"
+                        />
+                        <div class="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1" style="right: 0.75rem;">
+                            <button v-show="searchQuery" @click="clearSearch"
+                                class="btn btn-ghost btn-xs btn-circle opacity-70 hover:opacity-100 text-base-content"
+                                type="button" aria-label="Clear search">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+                                    stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                            </button>
+                            <button type="submit" @click="handleSearch"
+                                class="btn btn-primary btn-sm btn-circle shrink-0"
+                                aria-label="Submit search">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                </svg>
+                            </button>
+                        </div>
                     </div>
-                </div>
+                </form>
                 <% if (!hasSearchQuery) { %>
                     <!-- Back to Posts Button -->
                     <div class="my-8 w-full">
@@ -293,8 +366,39 @@
                                                           </div>
                                                       </a>
                                                       <% }) %>
-                                         </div>
-                                        <% } %>
+
+                                                       <!-- Dynamically Loaded Posts (Infinite Scroll) -->
+                                                       <a v-for="blog in extraPosts" :key="blog.id" :href="blog.link" class="no-underline group">
+                                                           <div class="card bg-base-300 backdrop-blur-md shadow-xl transition-shadow duration-300 blog-card-transition" :style="'--blog-card-id: blog-card-' + blog.id">
+                                                                <figure v-if="blog.imageUrl" class="h-auto md:h-48 overflow-hidden m-0 rounded-t-lg">
+                                                                    <img :src="blog.imageUrl" :alt="blog.title" class="w-full h-auto md:h-48 object-cover blog-image-transition rounded-t-lg" :style="'--blog-image-id: blog-image-' + blog.id" width="350" height="192" decoding="async" loading="lazy" />
+                                                                </figure>
+                                                                <div class="card-body p-8 gap-0 blog-body-transition">
+                                                                    <div class="flex flex-wrap gap-2 pb-4">
+                                                                        <span v-for="badge in blog.badges" class="badge badge-outline badge-sm text-nowrap h-auto">{{ badge }}</span>
+                                                                    </div>
+                                                                    <h2 class="card-title group-hover:text-primary transition-colors duration-200 mt-0 blog-title-transition" :style="'--blog-title-id: blog-title-' + blog.id">
+                                                                        {{ blog.title }}
+                                                                    </h2>
+                                                                    <div v-if="blog.location" class="flex items-center gap-1 text-xs text-base-content mb-2">
+                                                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor">
+                                                                            <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd" />
+                                                                        </svg>
+                                                                        {{ blog.location }}
+                                                                    </div>
+                                                                    <p class="text-sm text-base-content line-clamp-3">{{ blog.text }}</p>
+                                                                    <span class="text-xs text-base-content mt-2">{{ blog.date }}</span>
+                                                                </div>
+                                                           </div>
+                                                       </a>
+                                          <% if (isHomepage) { %>
+                                              <!-- Infinite Scroll Trigger -->
+                                              <div id="infinite-scroll-trigger" v-show="hasMore" class="py-8 flex justify-center items-center w-full min-h-[4rem]">
+                                                  <span v-show="loadingMore" class="loading loading-spinner loading-lg text-primary"></span>
+                                              </div>
+                                          <% } %>
+                                          </div>
+                                         <% } %>
     </div>
     <% if (!isHomepage && !hasNoSearchResults) { %>
         <!-- Pagination -->

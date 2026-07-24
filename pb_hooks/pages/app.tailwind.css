@@ -17,6 +17,18 @@ img {
     corner-shape: squircle;
 }
 
+/* Suppress native browser search cancel/clear buttons */
+input::-webkit-search-cancel-button,
+input::-webkit-search-decoration,
+input::-webkit-search-results-button,
+input::-webkit-search-results-decoration,
+input::-ms-clear,
+input::-ms-reveal {
+    -webkit-appearance: none !important;
+    appearance: none !important;
+    display: none !important;
+}
+
 /* View Transitions API */
 @view-transition {
     navigation: auto;
