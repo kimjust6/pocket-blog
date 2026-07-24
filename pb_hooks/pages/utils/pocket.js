@@ -101,6 +101,52 @@ const getAllBlogPosts = (sort = "-updated") => {
     ) || []
 }
 
+/**
+ * Helper to determine if a record object is from climbing_posts
+ * @param {Record} record 
+ * @returns {boolean}
+ */
+function isClimbingRecord(record) {
+    if (!record) return false;
+    if (record.collectionName === 'climbing_posts' || record.collection?.name === 'climbing_posts') return true;
+    if (typeof record.getString === 'function' && !!record.getString('climbType')) return true;
+    return false;
+}
+
+/**
+ * Get combined blog posts and climbing logs sorted chronologically for the homepage
+ * @param {number} page 
+ * @param {number} perPage 
+ * @param {string} query 
+ * @returns {object} Object with items array and pagination metadata
+ */
+function getCombinedHomepagePosts(page = 1, perPage = 7, query = '') {
+    const offset = (page - 1) * perPage;
+    const devPostsResult = getBlogPosts(1, 100, query);
+    const climbingPostsResult = getClimbingLogs(1, 100, query);
+
+    const allItems = [...(devPostsResult?.items || []), ...(climbingPostsResult?.items || [])];
+
+    allItems.sort((a, b) => {
+        const aIsClimb = isClimbingRecord(a);
+        const bIsClimb = isClimbingRecord(b);
+        const aDate = new Date(aIsClimb ? (a.getString('date') || a.getString('created')) : (a.getString('manualPublishDate') || a.getString('created')));
+        const bDate = new Date(bIsClimb ? (b.getString('date') || b.getString('created')) : (b.getString('manualPublishDate') || b.getString('created')));
+        return bDate - aDate;
+    });
+
+    const items = allItems.slice(offset, offset + perPage);
+    const totalItems = allItems.length;
+    const totalPages = Math.ceil(totalItems / perPage) || 1;
+
+    return {
+        items,
+        totalItems,
+        totalPages,
+        page
+    };
+}
+
 module.exports = {
     getBlogPostById,
     getBlogPostsByTitlePrefix,
@@ -110,8 +156,11 @@ module.exports = {
     getClimbingLogs,
     getClimbingLogsByTitlePrefix,
     getAllClimbingLogs,
-    POCKET_CLIMBING_POSTS
+    POCKET_CLIMBING_POSTS,
+    isClimbingRecord,
+    getCombinedHomepagePosts
 }
+
 
 /**
  * Get a paginated list of climbing logs using server-side $app

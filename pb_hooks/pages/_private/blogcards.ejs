@@ -1,6 +1,6 @@
 <script server>
     const { formatDateTime, getImageUrl, slugifyTitle, prepareBlogPostsViewData } = resolve('../../utils/common')
-    const { getBlogPosts, getClimbingLogs } = resolve('../../utils/pocket')
+    const { getBlogPosts, getClimbingLogs, getCombinedHomepagePosts, isClimbingRecord } = resolve('../../utils/pocket')
 
     if (typeof isHomepage === 'undefined') {
         var isHomepage = false
@@ -11,9 +11,11 @@
     const currentPage = parseInt(params?.page) || 1
     const perPage = params?.perPage ?? (isHomepage ? 7 : 6)
 
-    const rawBlogPosts = isClimbing
-        ? (getClimbingLogs(currentPage, perPage, params.query, params.climbType) ?? { items: [], totalPages: 1 })
-        : (getBlogPosts(currentPage, perPage, params.query) ?? { items: [], totalPages: 1 })
+    const rawBlogPosts = isHomepage
+        ? (getCombinedHomepagePosts(currentPage, perPage, params?.query) ?? { items: [], totalPages: 1 })
+        : isClimbing
+            ? (getClimbingLogs(currentPage, perPage, params?.query, params?.climbType) ?? { items: [], totalPages: 1 })
+            : (getBlogPosts(currentPage, perPage, params?.query) ?? { items: [], totalPages: 1 })
     const totalPages = rawBlogPosts?.totalPages || 1
 
     const reqObj = typeof request !== 'undefined' ? request : null
@@ -108,14 +110,20 @@
         </div>
 
             <% if (heroPost) { 
-                const heroText = heroPost.getString('content1').replace(/<[^>]*>/g, '');
-                const heroImageUrl = getImageUrl(heroPost) ? `${getImageUrl(heroPost)}?thumb=800x0` : heroPost.getString('coverImageAlt');
+                const heroIsClimbing = isClimbing || isClimbingRecord(heroPost);
+                const heroText = (heroIsClimbing ? heroPost.getString('content') : heroPost.getString('content1')).replace(/<[^>]*>/g, '');
+                const heroImageUrl = heroIsClimbing 
+                    ? ((getImageUrl(heroPost) ? `${getImageUrl(heroPost)}?thumb=800x0` : '/background.webp'))
+                    : (getImageUrl(heroPost) ? `${getImageUrl(heroPost)}?thumb=800x0` : heroPost.getString('coverImageAlt'));
+                const heroLink = heroIsClimbing 
+                    ? `/climbing/${encodeURIComponent(slugifyTitle(heroPost.getString('title')))}` 
+                    : `/blog/posts/${encodeURIComponent(slugifyTitle(heroPost.getString('title')))}`;
             %>
                 <!-- Hero Post -->
                 <div class="mb-24">
-                    <a href="/blog/posts/<%= encodeURIComponent(slugifyTitle(heroPost.getString('title'))) %>"
+                    <a href="<%= heroLink %>"
                         class="no-underline group"
-                        onclick="if(window.gtag) window.gtag('event', 'click', { event_category: 'blog_post', event_label: decodeURIComponent('<%= encodeURIComponent(heroPost.getString(`title`)) %>') })">
+                        onclick="if(window.gtag) window.gtag('event', 'click', { event_category: '<%= heroIsClimbing ? `climbing_log` : `blog_post` %>', event_label: decodeURIComponent('<%= encodeURIComponent(heroPost.getString(`title`)) %>') })">
                         <div class="card w-full lg:card-side backdrop-blur-md shadow-2xl lg:shadow-xl transition-shadow duration-300 blog-card-transition overflow-hidden rounded-xl bg-base-300 relative"
                             style="--blog-card-id: blog-card-<%= heroPost.id %>">
                             <span
@@ -139,21 +147,35 @@
                                             <%= heroPost.getString('title') %>
                                         </h2>
                                         <div class="flex flex-wrap pb-4 gap-2">
-                                            <% const heroTags=heroPost.getString('tags'); if (heroTags &&
-                                                heroTags.length> 0) {
-                                                heroTags.split(';').forEach(tag => { %>
+                                            <% if (heroIsClimbing) { %>
                                                 <span class="badge badge-outline lg:badge-lg text-nowrap">
-                                                    <%= tag %>
+                                                    <%= heroPost.getString('climbType') %>
                                                 </span>
-                                                <% }) %>
-                                                    <% } %>
+                                                <% if (heroPost.getString('grade')) { %>
+                                                    <span class="badge badge-outline lg:badge-lg text-nowrap">
+                                                        <%= heroPost.getString('grade') %>
+                                                    </span>
+                                                <% } %>
+                                                <% if (heroPost.getString('style')) { %>
+                                                    <span class="badge badge-outline lg:badge-lg text-nowrap">
+                                                        <%= heroPost.getString('style') %>
+                                                    </span>
+                                                <% } %>
+                                            <% } else { %>
+                                                <% const heroTags=heroPost.getString('tags'); if (heroTags && heroTags.length> 0) {
+                                                    heroTags.split(';').forEach(tag => { %>
+                                                    <span class="badge badge-outline lg:badge-lg text-nowrap">
+                                                        <%= tag %>
+                                                    </span>
+                                                    <% }) %>
+                                                <% } %>
+                                            <% } %>
                                         </div>
                                         <p class="text-lg text-base-content mt-4 line-clamp-4">
                                             <%= heroText %>
                                         </p>
                                         <span class="text-sm text-base-content block">
-                                            <%= formatDateTime(new Date(heroPost.getString('manualPublishDate') ||
-                                                heroPost.getString('created'))) %>
+                                            <%= formatDateTime(new Date(heroIsClimbing ? (heroPost.getString('date') || heroPost.getString('created')) : (heroPost.getString('manualPublishDate') || heroPost.getString('created')))) %>
                                         </span>
                                     </div>
                         </div>
@@ -190,83 +212,88 @@
 
                                         <div class="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
                                             <% gridPosts.forEach((blog, index) => {
-                                                const text = (isClimbing ? blog.getString('content') : blog.getString('content1')).replace(/<[^>]*>/g, '');
-                                                const myImageUrl = isClimbing 
-                                                    ? ((getImageUrl(blog) ? `${getImageUrl(blog)}?thumb=350x0` : '/background.webp'))
-                                                    : (getImageUrl(blog) ? `${getImageUrl(blog)}?thumb=350x0` : blog.getString('coverImageAlt')); %>
+                                                 const itemIsClimbing = isClimbing || isClimbingRecord(blog);
+                                                 const text = (itemIsClimbing ? blog.getString('content') : blog.getString('content1')).replace(/<[^>]*>/g, '');
+                                                 const myImageUrl = itemIsClimbing 
+                                                     ? ((getImageUrl(blog) ? `${getImageUrl(blog)}?thumb=350x0` : '/background.webp'))
+                                                     : (getImageUrl(blog) ? `${getImageUrl(blog)}?thumb=350x0` : blog.getString('coverImageAlt')); 
+                                                 const itemLink = itemIsClimbing 
+                                                     ? `/climbing/${encodeURIComponent(slugifyTitle(blog.getString('title')))}` 
+                                                     : `/blog/posts/${encodeURIComponent(slugifyTitle(blog.getString('title')))}`;
+                                             %>
 
-                                                     <a href="<%= isClimbing ? '/climbing/' : '/blog/posts/' %><%= encodeURIComponent(slugifyTitle(blog.getString('title'))) %>"
-                                                         class="no-underline group"
-                                                         onclick="if(window.gtag) window.gtag('event', 'click', { event_category: '<%= isClimbing ? `climbing_log` : `blog_post` %>', event_label: decodeURIComponent('<%= encodeURIComponent(blog.getString(`title`)) %>') })">
-                                                         <div class="card bg-base-300 backdrop-blur-md shadow-xl transition-shadow duration-300 blog-card-transition"
-                                                             style="--blog-card-id: blog-card-<%= blog.id %>">
-                                                              <% if (myImageUrl !==null && myImageUrl !=="" ) { %>
-                                                                 <figure
-                                                                     class="h-auto md:h-48 overflow-hidden m-0 rounded-t-lg">
-                                                                     <% const isLcp = (!isHomepage && index === 0); %>
-                                                                     <img src="<%= myImageUrl%>"
-                                                                         alt="<%= blog.getString('title') %>"
-                                                                         class="w-full h-auto md:h-48 object-cover blog-image-transition rounded-t-lg"
-                                                                         style="--blog-image-id: blog-image-<%= blog.id %>"
-                                                                         width="350"
-                                                                         height="192"
-                                                                         decoding="async"
-                                                                         <%= isLcp ? 'fetchpriority="high"' : 'loading="lazy"' %> />
-                                                                 </figure>
-                                                                 <% } %>
-                                                                     <div
-                                                                         class="card-body p-8 gap-0 blog-body-transition">
-                                                                         <div class="flex flex-wrap gap-2 pb-4">
-                                                                             <% if (isClimbing) { %>
-                                                                                 <span class="badge badge-outline badge-sm text-nowrap h-auto">
-                                                                                     <%= blog.getString('climbType') %>
-                                                                                 </span>
-                                                                                 <% if (blog.getString('grade')) { %>
-                                                                                     <span class="badge badge-outline badge-sm text-nowrap h-auto">
-                                                                                         <%= blog.getString('grade') %>
-                                                                                     </span>
-                                                                                 <% } %>
-                                                                                 <% if (blog.getString('style')) { %>
-                                                                                     <span class="badge badge-outline badge-sm text-nowrap h-auto">
-                                                                                         <%= blog.getString('style') %>
-                                                                                     </span>
-                                                                                 <% } %>
-                                                                             <% } else { %>
-                                                                                 <% const blogTags=blog.getString('tags'); if
-                                                                                     (blogTags && blogTags.length> 0) {
-                                                                                     blogTags.split(';').forEach(tag => { %>
-                                                                                     <span
-                                                                                         class="badge badge-outline badge-sm text-nowrap h-auto">
-                                                                                         <%= tag %>
-                                                                                     </span>
-                                                                                     <% }) %>
-                                                                                 <% } %>
-                                                                             <% } %>
-                                                                         </div>
-                                                                         <h2 class="card-title group-hover:text-primary transition-colors duration-200 mt-0 blog-title-transition"
-                                                                             style="--blog-title-id: blog-title-<%= blog.id %>">
-                                                                             <%= blog.getString('title') %>
-                                                                         </h2>
-                                                                         <% if (isClimbing && blog.getString('location')) { %>
-                                                                             <div class="flex items-center gap-1 text-xs text-base-content mb-2">
-                                                                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor">
-                                                                                     <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd" />
-                                                                                 </svg>
-                                                                                 <%= blog.getString('location') %>
-                                                                             </div>
-                                                                         <% } %>
-                                                                         <p
-                                                                             class="text-sm text-base-content line-clamp-3">
-                                                                             <%= text %>
-                                                                         </p>
-                                                                         <span class="text-xs text-base-content mt-2">
-                                                                             <%= formatDateTime(new Date(isClimbing ? blog.getString('date') : (blog.getString('manualPublishDate') || blog.getString('created')))) %>
-                                                                         </span>
-                                                                     </div>
-                                                         </div>
-                                                     </a>
-                                                     <% }) %>
-                                        </div>
+                                                      <a href="<%= itemLink %>"
+                                                          class="no-underline group"
+                                                          onclick="if(window.gtag) window.gtag('event', 'click', { event_category: '<%= itemIsClimbing ? `climbing_log` : `blog_post` %>', event_label: decodeURIComponent('<%= encodeURIComponent(blog.getString(`title`)) %>') })">
+                                                          <div class="card bg-base-300 backdrop-blur-md shadow-xl transition-shadow duration-300 blog-card-transition"
+                                                              style="--blog-card-id: blog-card-<%= blog.id %>">
+                                                               <% if (myImageUrl !==null && myImageUrl !=="" ) { %>
+                                                                  <figure
+                                                                      class="h-auto md:h-48 overflow-hidden m-0 rounded-t-lg">
+                                                                      <% const isLcp = (!isHomepage && index === 0); %>
+                                                                      <img src="<%= myImageUrl%>"
+                                                                          alt="<%= blog.getString('title') %>"
+                                                                          class="w-full h-auto md:h-48 object-cover blog-image-transition rounded-t-lg"
+                                                                          style="--blog-image-id: blog-image-<%= blog.id %>"
+                                                                          width="350"
+                                                                          height="192"
+                                                                          decoding="async"
+                                                                          <%= isLcp ? 'fetchpriority="high"' : 'loading="lazy"' %> />
+                                                                  </figure>
+                                                                  <% } %>
+                                                                      <div
+                                                                          class="card-body p-8 gap-0 blog-body-transition">
+                                                                          <div class="flex flex-wrap gap-2 pb-4">
+                                                                              <% if (itemIsClimbing) { %>
+                                                                                  <span class="badge badge-outline badge-sm text-nowrap h-auto">
+                                                                                      <%= blog.getString('climbType') %>
+                                                                                  </span>
+                                                                                  <% if (blog.getString('grade')) { %>
+                                                                                      <span class="badge badge-outline badge-sm text-nowrap h-auto">
+                                                                                          <%= blog.getString('grade') %>
+                                                                                      </span>
+                                                                                  <% } %>
+                                                                                  <% if (blog.getString('style')) { %>
+                                                                                      <span class="badge badge-outline badge-sm text-nowrap h-auto">
+                                                                                          <%= blog.getString('style') %>
+                                                                                      </span>
+                                                                                  <% } %>
+                                                                              <% } else { %>
+                                                                                  <% const blogTags=blog.getString('tags'); if
+                                                                                      (blogTags && blogTags.length> 0) {
+                                                                                      blogTags.split(';').forEach(tag => { %>
+                                                                                      <span
+                                                                                          class="badge badge-outline badge-sm text-nowrap h-auto">
+                                                                                          <%= tag %>
+                                                                                      </span>
+                                                                                      <% }) %>
+                                                                                  <% } %>
+                                                                              <% } %>
+                                                                          </div>
+                                                                          <h2 class="card-title group-hover:text-primary transition-colors duration-200 mt-0 blog-title-transition"
+                                                                              style="--blog-title-id: blog-title-<%= blog.id %>">
+                                                                              <%= blog.getString('title') %>
+                                                                          </h2>
+                                                                          <% if (itemIsClimbing && blog.getString('location')) { %>
+                                                                              <div class="flex items-center gap-1 text-xs text-base-content mb-2">
+                                                                                  <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor">
+                                                                                      <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd" />
+                                                                                  </svg>
+                                                                                  <%= blog.getString('location') %>
+                                                                              </div>
+                                                                          <% } %>
+                                                                          <p
+                                                                              class="text-sm text-base-content line-clamp-3">
+                                                                              <%= text %>
+                                                                          </p>
+                                                                          <span class="text-xs text-base-content mt-2">
+                                                                              <%= formatDateTime(new Date(itemIsClimbing ? (blog.getString('date') || blog.getString('created')) : (blog.getString('manualPublishDate') || blog.getString('created')))) %>
+                                                                          </span>
+                                                                      </div>
+                                                          </div>
+                                                      </a>
+                                                      <% }) %>
+                                         </div>
                                         <% } %>
     </div>
     <% if (!isHomepage && !hasNoSearchResults) { %>
