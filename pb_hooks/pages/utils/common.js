@@ -832,6 +832,90 @@ function trackGAEvent(eventName, eventParams = {}, req = null) {
 }
 
 /**
+ * Sanitizes iframe video tags in HTML string to use youtube-nocookie and add accessibility attributes
+ * @param {string} s - HTML content
+ * @returns {string}
+ */
+function toNoCookie(s) {
+    if (!s || typeof s !== 'string') return '';
+    return s
+        .replace(/https?:\/\/(www\.)?youtube\.com\/embed\//g, 'https://www.youtube-nocookie.com/embed/')
+        .replace(/<iframe([^>]*?)(?:\s+sandbox="[^"]*")?([^>]*?)>/gi, (match, pre, post) => {
+            const isYT = /youtube(-nocookie)?\.com\/embed\//.test(match);
+            if (!isYT) return match;
+            let stripped = match.replace(/\s+sandbox="[^"]*"/gi, '');
+            if (!/\btitle=/i.test(stripped)) {
+                stripped = stripped.replace(/<iframe/i, '<iframe title="YouTube video player"');
+            }
+            const hasAllow = /\ballow=/i.test(stripped);
+            return hasAllow
+                ? stripped
+                : stripped.replace(/<iframe/i, '<iframe allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen');
+        });
+}
+
+/**
+ * Format a post record into a clean view-model object for cards (hero & grid)
+ */
+function formatPostViewModel(post, isHomepage = false, isClimbing = false) {
+    if (!post) return null;
+    const { isClimbingRecord } = require(`${__hooks}/pages/utils/pocket.js`);
+    const itemIsClimbing = isClimbing || isClimbingRecord(post);
+    const title = post.getString('title') || '';
+    const slug = slugifyTitle(title);
+    const rawText = (itemIsClimbing ? post.getString('content') : post.getString('content1')) || '';
+    const previewText = extractPreviewText(rawText);
+    
+    const rawImg = getImageUrl(post);
+    const heroImageUrl = itemIsClimbing
+        ? (rawImg ? `${rawImg}?thumb=800x0` : '/background.webp')
+        : (rawImg ? `${rawImg}?thumb=800x0` : (post.getString('coverImageAlt') || null));
+        
+    const gridImageUrl = itemIsClimbing
+        ? (rawImg ? `${rawImg}?thumb=350x0` : '/background.webp')
+        : (rawImg ? `${rawImg}?thumb=350x0` : (post.getString('coverImageAlt') || null));
+
+    const link = itemIsClimbing
+        ? `/climbing/${encodeURIComponent(slug)}`
+        : `/blog/posts/${encodeURIComponent(slug)}`;
+
+    const dateRaw = itemIsClimbing
+        ? (post.getString('date') || post.getString('created'))
+        : (post.getString('manualPublishDate') || post.getString('created'));
+    const formattedDate = formatDateTime(new Date(dateRaw));
+
+    let badges = [];
+    if (itemIsClimbing) {
+        if (post.getString('climbType')) badges.push({ text: post.getString('climbType'), query: post.getString('climbType').trim() });
+        if (post.getString('grade')) badges.push({ text: post.getString('grade'), query: post.getString('grade').trim() });
+        if (post.getString('style')) badges.push({ text: post.getString('style'), query: post.getString('style').trim() });
+    } else {
+        const blogTags = post.getString('tags');
+        if (blogTags && blogTags.length > 0) {
+            blogTags.split(';').forEach(tag => {
+                const t = tag.trim();
+                if (t) badges.push({ text: t, query: t });
+            });
+        }
+    }
+
+    return {
+        id: post.id,
+        title,
+        slug,
+        link,
+        previewText,
+        heroImageUrl,
+        gridImageUrl,
+        formattedDate,
+        itemIsClimbing,
+        badges,
+        location: itemIsClimbing ? post.getString('location') : null,
+        rawRecord: post
+    };
+}
+
+/**
  * Prepares blog posts view data on the server, including server-side GA search tracking
  */
 function prepareBlogPostsViewData(blogposts, isHomepage, isClimbing, params = {}, req = null) {
@@ -845,9 +929,11 @@ function prepareBlogPostsViewData(blogposts, isHomepage, isClimbing, params = {}
             search_category: isClimbing ? 'climbing' : 'blog'
         }, req);
     }
+
+    const items = (blogposts?.items || []).map(post => formatPostViewModel(post, isHomepage, isClimbing));
     
     let heroPost = null;
-    let gridPosts = blogposts?.items || [];
+    let gridPosts = items;
     if (isHomepage && gridPosts.length > 0) {
         heroPost = gridPosts[0];
         gridPosts = gridPosts.slice(1);
@@ -893,94 +979,187 @@ function prepareBlogSingleViewData(singleBlog, isClimbing, params = {}, data = {
         }
     }
 
-    if (singleBlog && data?.metadata) {
-        try {
-            const newTitle = isClimbing
-                ? `${singleBlog.getString('title')} | Climbing Blog`
-                : `${singleBlog.getString('title')} | The Justin Blog`;
-                
-            data.metadata
-                .filter((m) => m.name.includes('title'))
-                .forEach((m) => (m.content = newTitle));
+    let viewModel = null;
 
-            data.metadata
-                .filter((m) => m.name === 'og:image' || m.name === 'twitter:image')
-                .forEach((m) => (m.content = getImageUrl(singleBlog)));
+    if (singleBlog) {
+        if (data?.metadata) {
+            try {
+                const newTitle = isClimbing
+                    ? `${singleBlog.getString('title')} | Climbing Blog`
+                    : `${singleBlog.getString('title')} | The Justin Blog`;
+                    
+                data.metadata
+                    .filter((m) => m.name.includes('title'))
+                    .forEach((m) => (m.content = newTitle));
 
-            const description = singleBlog
-                .getString(isClimbing ? 'content' : 'content1')
-                .replace(/<[^>]*>/g, '')
-                .slice(0, 160)
-                .trim();
+                data.metadata
+                    .filter((m) => m.name === 'og:image' || m.name === 'twitter:image')
+                    .forEach((m) => (m.content = getImageUrl(singleBlog)));
 
-            data.metadata
-                .filter(
-                    (m) =>
-                        m.name === 'description' ||
-                        m.name === 'og:description' ||
-                        m.name === 'twitter:description'
-                )
-                .forEach((m) => (m.content = description));
+                const description = extractPreviewText(
+                    singleBlog.getString(isClimbing ? 'content' : 'content1')
+                ).slice(0, 160);
 
-            if (isClimbing) {
-                const climbType = singleBlog.getString('climbType');
-                const grade = singleBlog.getString('grade');
-                const style = singleBlog.getString('style');
-                const location = singleBlog.getString('location');
-                const climbTags = [climbType, grade, style, location].filter(Boolean);
-                climbTags.forEach((tag) => {
-                    data.metadata.push({ name: 'article:tag', content: tag });
-                });
-                data.metadata.push({ name: 'keywords', content: climbTags.join(', ') });
-            } else {
-                const blogTags = singleBlog.getString('tags');
-                if (blogTags && blogTags.length > 0) {
-                    const tags = blogTags.split(';');
-                    tags.forEach((tag) => {
-                        data.metadata.push({ name: 'article:tag', content: tag.trim() });
+                data.metadata
+                    .filter(
+                        (m) =>
+                            m.name === 'description' ||
+                            m.name === 'og:description' ||
+                            m.name === 'twitter:description'
+                    )
+                    .forEach((m) => (m.content = description));
+
+                if (isClimbing) {
+                    const climbType = singleBlog.getString('climbType');
+                    const grade = singleBlog.getString('grade');
+                    const style = singleBlog.getString('style');
+                    const location = singleBlog.getString('location');
+                    const climbTags = [climbType, grade, style, location].filter(Boolean);
+                    climbTags.forEach((tag) => {
+                        data.metadata.push({ name: 'article:tag', content: tag });
                     });
-                    data.metadata.push({ name: 'keywords', content: tags.join(', ') });
+                    data.metadata.push({ name: 'keywords', content: climbTags.join(', ') });
+                } else {
+                    const blogTags = singleBlog.getString('tags');
+                    if (blogTags && blogTags.length > 0) {
+                        const tags = blogTags.split(';');
+                        tags.forEach((tag) => {
+                            data.metadata.push({ name: 'article:tag', content: tag.trim() });
+                        });
+                        data.metadata.push({ name: 'keywords', content: tags.join(', ') });
+                    }
                 }
-            }
 
-            const publishedDate = isClimbing
-                ? singleBlog.getString('date')
-                : singleBlog.getString('manualPublishDate') || singleBlog.getString('created');
-            if (publishedDate) {
-                data.metadata.push({
-                    name: 'article:published_time',
-                    content: new Date(publishedDate).toISOString(),
-                });
-            }
+                const publishedDate = isClimbing
+                    ? singleBlog.getString('date')
+                    : singleBlog.getString('manualPublishDate') || singleBlog.getString('created');
+                if (publishedDate) {
+                    data.metadata.push({
+                        name: 'article:published_time',
+                        content: new Date(publishedDate).toISOString(),
+                    });
+                }
 
-            const updatedDate = singleBlog.getString('updated');
-            if (updatedDate) {
-                data.metadata.push({
-                    name: 'article:modified_time',
-                    content: new Date(updatedDate).toISOString(),
-                });
-            }
+                const updatedDate = singleBlog.getString('updated');
+                if (updatedDate) {
+                    data.metadata.push({
+                        name: 'article:modified_time',
+                        content: new Date(updatedDate).toISOString(),
+                    });
+                }
 
-            const ogType = data.metadata.find((m) => m.name === 'og:type');
-            if (ogType) {
-                ogType.content = 'article';
-            } else {
-                data.metadata.push({ name: 'og:type', content: 'article' });
-            }
+                const ogType = data.metadata.find((m) => m.name === 'og:type');
+                if (ogType) {
+                    ogType.content = 'article';
+                } else {
+                    data.metadata.push({ name: 'og:type', content: 'article' });
+                }
 
-            trackGAEvent('view_item', {
-                event_category: isClimbing ? 'climbing_engagement' : 'blog_engagement',
-                item_id: singleBlog.id,
-                item_name: singleBlog.getString('title') || '',
-                item_category: isClimbing ? (singleBlog.getString('climbType') || '') : (singleBlog.getString('tags') || ''),
-                author: 'Justin K'
-            }, req);
-        } catch (err) {
-            console.error('Error preparing single blog view metadata: ', err);
+                trackGAEvent('view_item', {
+                    event_category: isClimbing ? 'climbing_engagement' : 'blog_engagement',
+                    item_id: singleBlog.id,
+                    item_name: singleBlog.getString('title') || '',
+                    item_category: isClimbing ? (singleBlog.getString('climbType') || '') : (singleBlog.getString('tags') || ''),
+                    author: 'Justin K'
+                }, req);
+            } catch (err) {
+                console.error('Error preparing single blog view metadata: ', err);
+            }
         }
+
+        // Assemble view-model for rendering
+        const coverImageAlt = singleBlog.getString('coverImageAlt');
+        const imageUrl = isClimbing
+            ? (getImageUrl(singleBlog) ? `${getImageUrl(singleBlog)}?thumb=1000x0` : '/background.webp')
+            : (getImageUrl(singleBlog) ? `${getImageUrl(singleBlog)}?thumb=1000x0` : (coverImageAlt || null));
+
+        let badges = [];
+        if (isClimbing) {
+            if (singleBlog.getString('climbType')) badges.push({ text: singleBlog.getString('climbType'), query: singleBlog.getString('climbType').trim() });
+            if (singleBlog.getString('grade')) badges.push({ text: singleBlog.getString('grade'), query: singleBlog.getString('grade').trim() });
+            if (singleBlog.getString('style')) badges.push({ text: singleBlog.getString('style'), query: singleBlog.getString('style').trim() });
+            if (singleBlog.getString('location')) badges.push({ text: singleBlog.getString('location'), query: singleBlog.getString('location').trim(), isLocation: true });
+        } else {
+            const pageTags = singleBlog.getString('tags');
+            if (pageTags && pageTags.length > 0) {
+                pageTags.split(';').forEach(tag => {
+                    const t = tag.trim();
+                    if (t) badges.push({ text: t, query: t });
+                });
+            }
+        }
+
+        const dateRaw = isClimbing
+            ? (singleBlog.getString('date') || singleBlog.getString('created'))
+            : (singleBlog.getString('manualPublishDate') || singleBlog.getString('created'));
+        const formattedDate = formatDateTime(new Date(dateRaw));
+
+        const updatedRaw = singleBlog.getString('updated');
+        const formattedUpdated = updatedRaw ? formatDateTime(new Date(updatedRaw)) : null;
+
+        const cleanContent = toNoCookie(isClimbing ? singleBlog.getString('content') : singleBlog.getString('content1'));
+        const cleanContent2 = !isClimbing && singleBlog.getString('content2') ? toNoCookie(singleBlog.getString('content2')) : null;
+
+        viewModel = {
+            id: singleBlog.id,
+            rawBlog: singleBlog,
+            title: singleBlog.getString('title'),
+            imageUrl,
+            badges,
+            isClimbing,
+            formattedDate,
+            formattedUpdated,
+            cleanContent,
+            cleanContent2,
+            backLink: isClimbing ? '/climbing' : '/blog/posts',
+            backLabel: isClimbing ? 'Back to journal' : 'View all posts',
+            dateLabel: isClimbing ? 'Logged' : 'Posted'
+        };
     }
 
-    return singleBlog;
+    return viewModel;
+}
+
+/**
+ * Clean HTML for card previews and meta descriptions:
+ * - Removes leading bold titles/subheadings (e.g. <strong>Title:</strong> or <b>...</b> or <h1>..<h6>)
+ * - Strips HTML tags
+ * - Decodes HTML entities (&nbsp;, &amp;, &lt;, &gt;, etc.)
+ * - Normalizes whitespace
+ * @param {string} html 
+ * @returns {string}
+ */
+function extractPreviewText(html) {
+    if (!html || typeof html !== 'string') return '';
+
+    let clean = html;
+
+    // Strip multiple leading headers or leading bold elements at the start of content
+    let prev = '';
+    while (clean !== prev) {
+        prev = clean;
+        // Remove leading heading tags (h1-h6) at start
+        clean = clean.replace(/^\s*<h[1-6][^>]*>[\s\S]*?<\/h[1-6]>/gi, '');
+        // Remove leading <strong> or <b> tags (and optional trailing colon) at start, whether standalone or inside a leading <p>
+        clean = clean.replace(/^\s*(?:<p[^>]*>\s*)?(?:<strong[^>]*>[\s\S]*?<\/strong>|<b[^>]*>[\s\S]*?<\/b>)\s*:?\s*/gi, '');
+    }
+
+    // Strip remaining HTML tags
+    clean = clean.replace(/<[^>]*>/g, '');
+
+    // Replace HTML entities
+    clean = clean
+        .replace(/&nbsp;/gi, ' ')
+        .replace(/&#160;/g, ' ')
+        .replace(/&amp;/gi, '&')
+        .replace(/&lt;/gi, '<')
+        .replace(/&gt;/gi, '>')
+        .replace(/&quot;/gi, '"')
+        .replace(/&#39;/g, "'")
+        .replace(/&[a-z0-9#]+;/gi, ' ');
+
+    // Normalize whitespace
+    return clean.replace(/\s+/g, ' ').trim();
 }
 
 module.exports = {
@@ -1016,6 +1195,9 @@ module.exports = {
     trackGAEvent,
     prepareBlogPostsViewData,
     prepareBlogSingleViewData,
-    sanitizeSearchTerm
+    sanitizeSearchTerm,
+    extractPreviewText,
+    toNoCookie,
+    formatPostViewModel
 }
 

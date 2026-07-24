@@ -2,6 +2,11 @@
 @tailwind components;
 @tailwind utilities;
 
+html {
+    scroll-padding-top: 4rem;
+    scroll-behavior: smooth;
+}
+
 /* Global squircle corner shape for all rounded elements */
 *[class*="rounded-"] {
     corner-shape: squircle;

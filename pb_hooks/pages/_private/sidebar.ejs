@@ -5,7 +5,7 @@
             <!-- Sidebar content here -->
             <% data.navigation.forEach(function(item) { %>
                 <li>
-                    <a href="<%= item.url %>">
+                    <a href="<%= item.url %>" onclick="const d = document.getElementById('my-drawer-3'); if (d) d.checked = false;">
                         <%= item.title %>
                     </a>
                 </li>
