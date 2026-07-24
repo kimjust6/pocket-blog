@@ -39,13 +39,16 @@
         loadingMore: false,
         hasMore: parseInt('<%= currentPage %>', 10) < parseInt('<%= totalPages %>', 10),
         extraPosts: [],
+        isDesktop() {
+            return typeof window !== 'undefined' && window.innerWidth >= 1024;
+        },
         handleSearch() {
             // Update query params in URL
             window.location.href = `?query=${encodeURIComponent(this.searchQuery)}`
         },
         clearSearch() {
             this.searchQuery = ''
-            if (this.$refs.searchInput) {
+            if (this.$refs.searchInput && this.isDesktop()) {
                 this.$refs.searchInput.focus()
             }
             if (this.hasQuery) {
@@ -88,7 +91,7 @@
             }
         },
         mounted() {
-            if (this.$refs.searchInput) {
+            if (this.$refs.searchInput && this.isDesktop()) {
                 this.$refs.searchInput.focus()
             }
             if (this.isHomepage && this.hasMore) {

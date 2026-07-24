@@ -33,7 +33,7 @@
     <div class="hero-content max-w-4xl flex flex-col">
         <div class="w-full backdrop-blur-md p-6 rounded-xl mb-8">
             <h1
-                class="md:mb-0 font-extrabold text-2xl md:text-3xl leading-tight blog-title-transition"
+                class="font-extrabold text-2xl md:text-3xl leading-tight blog-title-transition"
                 style="--blog-title-id: blog-title-<%= singleBlog?.id %>"
             >
                 <%= singleBlog?.getString('title') %>
@@ -134,19 +134,18 @@
                             </svg>
                             <%= isClimbing ? 'Back to journal' : 'View all posts' %>
                         </a>
-                        <!-- <span>By: <strong>Justin K</strong></span> -->
                         <div class="text-right">
                             <%= isClimbing ? 'Logged' : 'Posted' %>:
                             <strong>
                                 <%= formatDateTime(new
-                                                                 Date(isClimbing ? singleBlog?.getString('date') : (singleBlog?.getString('manualPublishDate') ||
+                                                                 Date(isClimbing ? (singleBlog?.getString('date') || singleBlog?.getString('created')) : (singleBlog?.getString('manualPublishDate') ||
                                                                  singleBlog?.getString('created')))) %>
                             </strong>
                             <div class="text-right">
                                 Updated:
                                 <strong>
                                     <%= formatDateTime(new
-                                                                     Date(singleBlog?.getString('updated'))) %>
+                                                                      Date(singleBlog?.getString('updated'))) %>
                                 </strong>
                             </div>
                         </div>
@@ -176,12 +175,15 @@
                     <div class="prose max-w-none text-base-content mt-6 min-w-80 font-normal leading-relaxed">
                         <%- toNoCookie(singleBlog?.getString('content1')) %>
                     </div>
+                    <% if (singleBlog?.getString('content2')) { %>
                     <div class="prose max-w-none text-base-content mb-6 min-w-80 font-normal leading-relaxed">
                         <%- toNoCookie(singleBlog?.getString('content2')) %>
                     </div>
+                    <% } %>
                     <% } %>
                 </div>
             </div>
         </div>
     <% } %>
+</div>
 </div>

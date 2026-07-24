@@ -120,8 +120,7 @@ function isClimbingRecord(record) {
  * @param {string} query 
  * @returns {object} Object with items array and pagination metadata
  */
-function getCombinedHomepagePosts(page = 1, perPage = 7, query = '') {
-    const offset = (page - 1) * perPage;
+function getCombinedHomepagePosts(page = 1, perPage = 6, query = '') {
     const devPostsResult = getBlogPosts(1, 100, query);
     const climbingPostsResult = getClimbingLogs(1, 100, query);
 
@@ -135,9 +134,20 @@ function getCombinedHomepagePosts(page = 1, perPage = 7, query = '') {
         return bDate - aDate;
     });
 
-    const items = allItems.slice(offset, offset + perPage);
     const totalItems = allItems.length;
-    const totalPages = Math.ceil(totalItems / perPage) || 1;
+    let offset = 0;
+    let limit = perPage;
+
+    if (page === 1) {
+        offset = 0;
+        limit = 7; // 1 featured/hero post + 6 grid posts
+    } else {
+        offset = 7 + (page - 2) * perPage;
+        limit = perPage;
+    }
+
+    const items = allItems.slice(offset, offset + limit);
+    const totalPages = totalItems <= 7 ? 1 : (1 + Math.ceil((totalItems - 7) / perPage));
 
     return {
         items,
