@@ -129,7 +129,8 @@
                                         style="--blog-image-id: blog-image-<%= heroPost.id %>; anchor-name: --blog-image"
                                         width="610"
                                         height="407"
-                                        fetchpriority="high" />
+                                        fetchpriority="high"
+                                        decoding="async" />
                                 </figure>
                                 <% } %>
                                     <div class="card-body lg:w-1/2 justify-center blog-body-transition p-8 md:p-12">
@@ -209,6 +210,7 @@
                                                                          style="--blog-image-id: blog-image-<%= blog.id %>"
                                                                          width="350"
                                                                          height="192"
+                                                                         decoding="async"
                                                                          <%= isLcp ? 'fetchpriority="high"' : 'loading="lazy"' %> />
                                                                  </figure>
                                                                  <% } %>

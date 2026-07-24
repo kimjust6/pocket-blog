@@ -1,5 +1,18 @@
 /// <reference path="../pb_data/types.d.ts" />
 
+// Middleware to set HTTP Cache-Control headers for images and static media
+routerUse((e) => {
+    try {
+        const path = String(e?.request?.url?.path || e?.request?.url || "");
+        if (
+            path.startsWith("/api/files/") ||
+            /\.(webp|png|jpg|jpeg|gif|svg|ico|woff2)$/i.test(path)
+        ) {
+            e.response.header().set("Cache-Control", "public, max-age=31536000, immutable");
+        }
+    } catch (_) {}
+    return e.next();
+});
 
 routerAdd("GET", "/api/collection-schedule", (e) => {
     const {
