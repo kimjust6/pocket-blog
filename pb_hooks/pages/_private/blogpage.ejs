@@ -33,7 +33,7 @@
     <div class="hero-content max-w-4xl flex flex-col">
         <div class="w-full backdrop-blur-md p-6 rounded-xl mb-8">
             <h1
-                class="md:mb-0 font-extrabold text-3xl leading-tight md:flex hidden blog-title-transition"
+                class="md:mb-0 font-extrabold text-2xl md:text-3xl leading-tight blog-title-transition"
                 style="--blog-title-id: blog-title-<%= singleBlog?.id %>"
             >
                 <%= singleBlog?.getString('title') %>
@@ -48,7 +48,7 @@
                 --blog-image-id: blog-image-<%= singleBlog?.id %>;
                 aspect-ratio: 16/9;
             "
-            alt="<%= singleBlog?.getString('title') %> image"
+            alt="<%= singleBlog?.getString('title') %>"
             width="896"
             height="504"
             fetchpriority="high"
@@ -57,12 +57,6 @@
         <% } %>
         <!-- Blog Content -->
         <div class="w-full self-start backdrop-blur-md p-8 rounded-xl">
-            <h1
-                class="mb-0 font-extrabold sm:text-2xl leading-tight flex md:hidden blog-title-transition"
-                style="--blog-title-id: blog-title-<%= singleBlog?.id %>"
-            >
-                <%= singleBlog?.getString('title') %>
-            </h1>
             <!-- Tags -->
             <div class="flex flex-wrap gap-2">
                 <% if (isClimbing) { %>
@@ -133,6 +127,7 @@
                                 stroke-width="2"
                                 stroke-linecap="round"
                                 stroke-linejoin="round"
+                                aria-hidden="true"
                             >
                                 <path d="m12 19-7-7 7-7" />
                                 <path d="M19 12H5" />
@@ -162,7 +157,10 @@
                         .replace(/<iframe([^>]*?)(?:\s+sandbox="[^"]*")?([^>]*?)>/gi, (match, pre, post) => {
                             const isYT = /youtube(-nocookie)?\.com\/embed\//.test(match);
                             if (!isYT) return match;
-                            const stripped = match.replace(/\s+sandbox="[^"]*"/gi, '');
+                            let stripped = match.replace(/\s+sandbox="[^"]*"/gi, '');
+                            if (!/\btitle=/i.test(stripped)) {
+                                stripped = stripped.replace(/<iframe/i, '<iframe title="YouTube video player"');
+                            }
                             const hasAllow = /\ballow=/i.test(stripped);
                             return hasAllow
                                 ? stripped
@@ -175,12 +173,12 @@
                         <%- toNoCookie(singleBlog?.getString('content')) %>
                     </div>
                     <% } else { %>
-                    <p class="text-base-content min-w-80">
+                    <div class="prose max-w-none text-base-content mt-6 min-w-80 font-normal leading-relaxed">
                         <%- toNoCookie(singleBlog?.getString('content1')) %>
-                    </p>
-                    <p class="text-base-content mb-6 min-w-80">
+                    </div>
+                    <div class="prose max-w-none text-base-content mb-6 min-w-80 font-normal leading-relaxed">
                         <%- toNoCookie(singleBlog?.getString('content2')) %>
-                    </p>
+                    </div>
                     <% } %>
                 </div>
             </div>

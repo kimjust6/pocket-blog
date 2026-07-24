@@ -1,13 +1,15 @@
 <div class="drawer-side z-50">
-    <label for="my-drawer-3" aria-label="close sidebar" class="drawer-overlay"></label>
-    <ul class="menu bg-base-200/80 backdrop-blur-md min-h-full w-80 p-4">
-        <!-- Sidebar content here -->
-        <% data.navigation.forEach(function(item) { %>
-            <li>
-                <a href="<%= item.url %>">
-                    <%= item.title %>
-                </a>
-            </li>
-            <% }); %>
-    </ul>
+    <label for="my-drawer-3" aria-label="Close sidebar navigation" class="drawer-overlay"></label>
+    <nav aria-label="Mobile Navigation" class="min-h-full w-80 bg-base-200/80 backdrop-blur-md p-4">
+        <ul class="menu">
+            <!-- Sidebar content here -->
+            <% data.navigation.forEach(function(item) { %>
+                <li>
+                    <a href="<%= item.url %>">
+                        <%= item.title %>
+                    </a>
+                </li>
+                <% }); %>
+        </ul>
+    </nav>
 </div>

@@ -54,15 +54,18 @@
     <div
         class="py-10 border-base-300 text-center text-sm text-base-content flex flex-col items-center justify-center px-14 gap-4">
         <!-- Social Media -->
-        <ul class="text-base-content text-sm flex gap-4 flex-row flex-wrap justify-center">
-            <% socials.forEach(social=> { %>
-                <li>
-                    <a href="<%= social.url %>" target="_blank" class="hover:text-primary">
-                        <%= social.name %>
-                    </a>
-                </li>
-                <% }) %>
-        </ul>
+        <nav aria-label="Social media links">
+            <ul class="text-base-content text-sm flex gap-4 flex-row flex-wrap justify-center">
+                <% socials.forEach(social=> { %>
+                    <li>
+                        <a href="<%= social.url %>" target="_blank" rel="noopener noreferrer" class="hover:text-primary">
+                            <%= social.name %>
+                            <span class="sr-only">(opens in a new tab)</span>
+                        </a>
+                    </li>
+                    <% }) %>
+            </ul>
+        </nav>
         <p>&copy; <%= new Date().getFullYear() %> Justin K. All rights reserved.</p>
     </div>
 </footer>

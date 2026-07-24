@@ -130,3 +130,11 @@ input::-ms-reveal {
         opacity: 0;
     }
 }
+
+/* Global visible focus styles for keyboard navigation */
+@layer utilities {
+    :focus-visible {
+        outline: 2px solid currentColor;
+        outline-offset: 2px;
+    }
+}

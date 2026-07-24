@@ -129,6 +129,7 @@
                 </p>
                 <form role="search" action="<%= isClimbing ? '/climbing' : '/blog/posts' %>" method="get" @submit.prevent="handleSearch" class="my-6 flex justify-center w-full">
                     <div class="relative w-full max-w-xl">
+                        <label for="site-search-input" class="sr-only"><%= isClimbing ? 'Search climbing logs' : 'Search blog posts' %></label>
                         <input 
                             type="text"
                             inputmode="search"
@@ -148,7 +149,7 @@
                                 class="btn btn-ghost btn-xs btn-circle opacity-70 hover:opacity-100 text-base-content"
                                 type="button" aria-label="Clear search">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
-                                    stroke="currentColor">
+                                    stroke="currentColor" aria-hidden="true">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M6 18L18 6M6 6l12 12" />
                                 </svg>
@@ -170,7 +171,7 @@
                             <a href="/" class="btn btn-outline btn-sm gap-2 transition-all duration-200">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
                                     fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                    stroke-linejoin="round">
+                                    stroke-linejoin="round" aria-hidden="true">
                                     <path d="m12 19-7-7 7-7" />
                                     <path d="M19 12H5" />
                                 </svg>
@@ -275,9 +276,9 @@
                                     <% if (heroPost) { %>
                                         <a href="<%= isClimbing ? '/climbing' : '/blog/posts' %>" class="no-underline">
                                             <div class="mb-12 text-center">
-                                                <h1 class="text-5xl font-bold">
+                                                <h2 class="text-5xl font-bold">
                                                     Older Posts
-                                                </h1>
+                                                </h2>
                                             </div>
                                         </a>
                                     <% } %>
@@ -391,37 +392,37 @@
                                                                 </div>
                                                            </div>
                                                        </a>
-                                          <% if (isHomepage) { %>
-                                              <!-- Infinite Scroll Trigger -->
-                                              <div id="infinite-scroll-trigger" v-show="hasMore" class="py-8 flex justify-center items-center w-full min-h-[4rem]">
-                                                  <span v-show="loadingMore" class="loading loading-spinner loading-lg text-primary"></span>
-                                              </div>
-                                          <% } %>
+                                           <% if (isHomepage) { %>
+                                               <!-- Infinite Scroll Trigger -->
+                                               <div id="infinite-scroll-trigger" v-show="hasMore" class="py-8 flex justify-center items-center w-full min-h-[4rem]" aria-live="polite">
+                                                   <span v-show="loadingMore" class="loading loading-spinner loading-lg text-primary" role="status" aria-label="Loading more posts"></span>
+                                               </div>
+                                           <% } %>
                                           </div>
                                          <% } %>
     </div>
     <% if (!isHomepage && !hasNoSearchResults) { %>
         <!-- Pagination -->
-        <div class="flex justify-center my-12">
+        <nav aria-label="Pagination" class="flex justify-center my-12">
             <div class="join">
                 <% if (currentPage <= 1) { %>
-                    <button class="join-item btn btn-sm btn-disabled" aria-label="Previous page">«</button>
+                    <button class="join-item btn btn-sm btn-disabled" aria-label="Previous page" disabled aria-disabled="true">«</button>
                 <% } else { %>
                     <a href="?page=<%= currentPage - 1 %><%= fullParams %>" class="join-item btn btn-sm" aria-label="Previous page">«</a>
                 <% } %>
 
                 <% for (let i=1; i <=totalPages; i++) { %>
-                    <a href="?page=<%= i %><%= fullParams %>" class="join-item btn btn-sm <%= currentPage === i ? 'btn-active' : '' %>" aria-label="Page <%= i %>">
+                    <a href="?page=<%= i %><%= fullParams %>" class="join-item btn btn-sm <%= currentPage === i ? 'btn-active' : '' %>" <% if (currentPage === i) { %>aria-current="page"<% } %> aria-label="Page <%= i %>">
                         <%= i %>
                     </a>
                 <% } %>
 
                 <% if (currentPage >= totalPages) { %>
-                    <button class="join-item btn btn-sm btn-disabled" aria-label="Next page">»</button>
+                    <button class="join-item btn btn-sm btn-disabled" aria-label="Next page" disabled aria-disabled="true">»</button>
                 <% } else { %>
                     <a href="?page=<%= currentPage + 1 %><%= fullParams %>" class="join-item btn btn-sm" aria-label="Next page">»</a>
                 <% } %>
             </div>
-        </div>
+        </nav>
         <% } %>
 </div>
