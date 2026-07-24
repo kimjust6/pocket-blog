@@ -41,7 +41,7 @@
                 const newTheme = currentTheme === 'dark' ? 'nord' : 'dark'
 
                 html.setAttribute('data-theme', newTheme)
-                document.cookie = `theme=${newTheme}; path=/; max-age=31536000`
+                document.cookie = `theme=${newTheme}; path=/; max-age=31536000; SameSite=Lax`
 
                 if (newTheme === 'dark') {
                     html.classList.add('dark')
@@ -88,7 +88,12 @@
             }
             gtag('js', new Date())
 
-            gtag('config', 'G-6P8M4DJNQL')
+            gtag('config', 'G-6P8M4DJNQL', {
+                anonymize_ip: true,
+                allow_google_signals: false,
+                allow_ad_personalization_signals: false,
+                cookie_flags: 'SameSite=Lax;Secure'
+            })
         </script>
     </head>
 

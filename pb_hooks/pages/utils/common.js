@@ -759,6 +759,20 @@ function isTicketCreated(data) {
 }
 
 /**
+ * Sanitize search terms to prevent tracking sensitive data, credentials, URLs, or malicious payloads
+ * @param {string} term 
+ * @returns {string}
+ */
+function sanitizeSearchTerm(term) {
+    if (!term || typeof term !== 'string') return '';
+    let clean = term.trim().replace(/<[^>]*>/g, '');
+    if (/@|\b(https?|ftp|file):\/\/|password|token|secret/i.test(clean)) {
+        return '';
+    }
+    return clean.slice(0, 100);
+}
+
+/**
  * Send an event to Google Analytics 4 Measurement Protocol from the server
  * @param {string} eventName 
  * @param {Object} eventParams 
@@ -793,7 +807,10 @@ function trackGAEvent(eventName, eventParams = {}, req = null) {
             client_id: clientId,
             events: [{
                 name: eventName,
-                params: eventParams
+                params: Object.assign({}, eventParams, {
+                    anonymize_ip: true,
+                    allow_google_signals: false
+                })
             }]
         };
 
@@ -818,7 +835,8 @@ function trackGAEvent(eventName, eventParams = {}, req = null) {
  * Prepares blog posts view data on the server, including server-side GA search tracking
  */
 function prepareBlogPostsViewData(blogposts, isHomepage, isClimbing, params = {}, req = null) {
-    const query = params?.query || '';
+    const rawQuery = params?.query || '';
+    const query = sanitizeSearchTerm(rawQuery);
     const hasSearchQuery = !isHomepage && !!query;
     
     if (hasSearchQuery) {
@@ -997,6 +1015,7 @@ module.exports = {
     slugifyTitle,
     trackGAEvent,
     prepareBlogPostsViewData,
-    prepareBlogSingleViewData
+    prepareBlogSingleViewData,
+    sanitizeSearchTerm
 }
 
