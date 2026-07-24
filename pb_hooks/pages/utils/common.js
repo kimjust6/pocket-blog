@@ -758,6 +758,213 @@ function isTicketCreated(data) {
     return body?.type === ZENDESK_TICKET_CREATED;
 }
 
+/**
+ * Send an event to Google Analytics 4 Measurement Protocol from the server
+ * @param {string} eventName 
+ * @param {Object} eventParams 
+ * @param {Object|null} req 
+ */
+function trackGAEvent(eventName, eventParams = {}, req = null) {
+    try {
+        const { GA_MEASUREMENT_ID } = require(`${__hooks}/pages/utils/constants.js`);
+        const measurementId = GA_MEASUREMENT_ID || 'G-6P8M4DJNQL';
+        
+        let clientId = 'pb_server_client';
+        if (req) {
+            try {
+                let cookies = null;
+                if (typeof req.cookies === 'function') {
+                    cookies = req.cookies();
+                } else if (req.cookies) {
+                    cookies = req.cookies;
+                }
+                if (cookies && cookies._ga) {
+                    const gaVal = cookies._ga.value || cookies._ga;
+                    const parts = String(gaVal).split('.');
+                    if (parts.length >= 4) {
+                        clientId = parts.slice(2).join('.');
+                    }
+                }
+            } catch (_) {}
+        }
+
+        const url = `https://www.google-analytics.com/mp/collect?measurement_id=${measurementId}`;
+        const payload = {
+            client_id: clientId,
+            events: [{
+                name: eventName,
+                params: eventParams
+            }]
+        };
+
+        if (typeof $http !== 'undefined' && $http.send) {
+            $http.send({
+                url: url,
+                method: 'POST',
+                body: JSON.stringify(payload),
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+        }
+    } catch (err) {
+        if (typeof $app !== 'undefined' && $app.logger) {
+            $app.logger().error('Failed to send GA event from backend', 'error', err);
+        }
+    }
+}
+
+/**
+ * Prepares blog posts view data on the server, including server-side GA search tracking
+ */
+function prepareBlogPostsViewData(blogposts, isHomepage, isClimbing, params = {}, req = null) {
+    const query = params?.query || '';
+    const hasSearchQuery = !isHomepage && !!query;
+    
+    if (hasSearchQuery) {
+        trackGAEvent('search', {
+            search_term: query,
+            search_category: isClimbing ? 'climbing' : 'blog'
+        }, req);
+    }
+    
+    let heroPost = null;
+    let gridPosts = blogposts?.items || [];
+    if (isHomepage && gridPosts.length > 0) {
+        heroPost = gridPosts[0];
+        gridPosts = gridPosts.slice(1);
+    }
+    
+    const hasPosts = !!heroPost || gridPosts.length > 0;
+    const hasNoSearchResults = hasSearchQuery && !hasPosts;
+    
+    let fullParams = hasSearchQuery ? `&query=${encodeURIComponent(query)}` : '';
+    if (isClimbing && params?.climbType) {
+        fullParams += `&climbType=${encodeURIComponent(params.climbType)}`;
+    }
+    
+    return {
+        query,
+        hasSearchQuery,
+        heroPost,
+        gridPosts,
+        hasPosts,
+        hasNoSearchResults,
+        fullParams
+    };
+}
+
+/**
+ * Prepares single blog view data on the server, including metadata updates and GA view_item tracking
+ */
+function prepareBlogSingleViewData(singleBlog, isClimbing, params = {}, data = {}, req = null) {
+    if (!singleBlog && params?.title) {
+        try {
+            const { getBlogPostsByTitlePrefix, getClimbingLogsByTitlePrefix } = require(`${__hooks}/pages/utils/pocket.js`);
+            const firstWord = params.title.split('-')[0].replace(/"/g, '\\"');
+            const possibleBlogs = isClimbing 
+                ? getClimbingLogsByTitlePrefix(firstWord)
+                : getBlogPostsByTitlePrefix(firstWord);
+
+            const targetSlug = params.title.toLowerCase();
+            singleBlog = possibleBlogs.find(
+                (b) => slugifyTitle(b.getString('title')) === targetSlug
+            ) || null;
+        } catch (error) {
+            console.error('Error fetching single blog post: ', error);
+        }
+    }
+
+    if (singleBlog && data?.metadata) {
+        try {
+            const newTitle = isClimbing
+                ? `${singleBlog.getString('title')} | Climbing Blog`
+                : `${singleBlog.getString('title')} | The Justin Blog`;
+                
+            data.metadata
+                .filter((m) => m.name.includes('title'))
+                .forEach((m) => (m.content = newTitle));
+
+            data.metadata
+                .filter((m) => m.name === 'og:image' || m.name === 'twitter:image')
+                .forEach((m) => (m.content = getImageUrl(singleBlog)));
+
+            const description = singleBlog
+                .getString(isClimbing ? 'content' : 'content1')
+                .replace(/<[^>]*>/g, '')
+                .slice(0, 160)
+                .trim();
+
+            data.metadata
+                .filter(
+                    (m) =>
+                        m.name === 'description' ||
+                        m.name === 'og:description' ||
+                        m.name === 'twitter:description'
+                )
+                .forEach((m) => (m.content = description));
+
+            if (isClimbing) {
+                const climbType = singleBlog.getString('climbType');
+                const grade = singleBlog.getString('grade');
+                const style = singleBlog.getString('style');
+                const location = singleBlog.getString('location');
+                const climbTags = [climbType, grade, style, location].filter(Boolean);
+                climbTags.forEach((tag) => {
+                    data.metadata.push({ name: 'article:tag', content: tag });
+                });
+                data.metadata.push({ name: 'keywords', content: climbTags.join(', ') });
+            } else {
+                const blogTags = singleBlog.getString('tags');
+                if (blogTags && blogTags.length > 0) {
+                    const tags = blogTags.split(';');
+                    tags.forEach((tag) => {
+                        data.metadata.push({ name: 'article:tag', content: tag.trim() });
+                    });
+                    data.metadata.push({ name: 'keywords', content: tags.join(', ') });
+                }
+            }
+
+            const publishedDate = isClimbing
+                ? singleBlog.getString('date')
+                : singleBlog.getString('manualPublishDate') || singleBlog.getString('created');
+            if (publishedDate) {
+                data.metadata.push({
+                    name: 'article:published_time',
+                    content: new Date(publishedDate).toISOString(),
+                });
+            }
+
+            const updatedDate = singleBlog.getString('updated');
+            if (updatedDate) {
+                data.metadata.push({
+                    name: 'article:modified_time',
+                    content: new Date(updatedDate).toISOString(),
+                });
+            }
+
+            const ogType = data.metadata.find((m) => m.name === 'og:type');
+            if (ogType) {
+                ogType.content = 'article';
+            } else {
+                data.metadata.push({ name: 'og:type', content: 'article' });
+            }
+
+            trackGAEvent('view_item', {
+                event_category: isClimbing ? 'climbing_engagement' : 'blog_engagement',
+                item_id: singleBlog.id,
+                item_name: singleBlog.getString('title') || '',
+                item_category: isClimbing ? (singleBlog.getString('climbType') || '') : (singleBlog.getString('tags') || ''),
+                author: 'Justin K'
+            }, req);
+        } catch (err) {
+            console.error('Error preparing single blog view metadata: ', err);
+        }
+    }
+
+    return singleBlog;
+}
+
 module.exports = {
     formatDateTime,
     getImageUrl,
@@ -787,5 +994,9 @@ module.exports = {
     isTicketClosed,
     getDiscordIdfromData,
     isTicketCreated,
-    slugifyTitle
+    slugifyTitle,
+    trackGAEvent,
+    prepareBlogPostsViewData,
+    prepareBlogSingleViewData
 }
+

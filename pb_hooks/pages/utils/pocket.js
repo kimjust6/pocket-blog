@@ -127,7 +127,7 @@ function getClimbingLogs(page, perPage, query, climbType) {
     let filterParams = {}
 
     if (query) {
-        filter += " && (title ~ {:query} || location ~ {:query} || content ~ {:query})"
+        filter += " && (title ~ {:query} || location ~ {:query} || content ~ {:query} || climbType ~ {:query} || grade ~ {:query} || style ~ {:query})"
         filterParams.query = query
     }
     if (climbType) {
@@ -157,7 +157,7 @@ function getClimbingLogs(page, perPage, query, climbType) {
     if (query) {
         queryBuilder.andWhere(
             $dbx.exp(
-                "(title LIKE {:query} OR location LIKE {:query} OR content LIKE {:query})",
+                "(title LIKE {:query} OR location LIKE {:query} OR content LIKE {:query} OR climbType LIKE {:query} OR grade LIKE {:query} OR style LIKE {:query})",
                 { query: `%${query}%` }
             )
         )

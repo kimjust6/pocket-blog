@@ -1,5 +1,5 @@
 <script server>
-    const { formatDateTime, getImageUrl, slugifyTitle } = resolve('../../utils/common')
+    const { formatDateTime, getImageUrl, slugifyTitle, prepareBlogPostsViewData } = resolve('../../utils/common')
     const { getBlogPosts, getClimbingLogs } = resolve('../../utils/pocket')
 
     if (typeof isHomepage === 'undefined') {
@@ -11,11 +11,20 @@
     const currentPage = parseInt(params?.page) || 1
     const perPage = params?.perPage ?? (isHomepage ? 7 : 6)
 
-    const blogposts = isClimbing
+    const rawBlogPosts = isClimbing
         ? (getClimbingLogs(currentPage, perPage, params.query, params.climbType) ?? { items: [], totalPages: 1 })
         : (getBlogPosts(currentPage, perPage, params.query) ?? { items: [], totalPages: 1 })
-    const totalPages = blogposts?.totalPages || 1
-    const hasSearchQuery = !isHomepage && !!params?.query
+    const totalPages = rawBlogPosts?.totalPages || 1
+
+    const reqObj = typeof request !== 'undefined' ? request : null
+    const {
+        hasSearchQuery,
+        heroPost,
+        gridPosts,
+        hasPosts,
+        hasNoSearchResults,
+        fullParams
+    } = prepareBlogPostsViewData(rawBlogPosts, isHomepage, isClimbing, params, reqObj)
 </script>
 
 <script>
@@ -97,14 +106,6 @@
                     <% } %>
                         <% } %>
         </div>
-
-        <% let heroPost=null; let gridPosts=blogposts?.items || []; if (isHomepage && gridPosts.length> 0) {
-            heroPost = gridPosts[0];
-            gridPosts = gridPosts.slice(1);
-            }
-            const hasPosts = !!heroPost || gridPosts.length > 0;
-            const hasNoSearchResults = hasSearchQuery && !hasPosts;
-            %>
 
             <% if (heroPost) { 
                 const heroText = heroPost.getString('content1').replace(/<[^>]*>/g, '');
@@ -268,12 +269,6 @@
     </div>
     <% if (!isHomepage && !hasNoSearchResults) { %>
         <!-- Pagination -->
-        <% 
-        let fullParams = hasSearchQuery ? `&query=${encodeURIComponent(params.query)}` : '';
-        if (isClimbing && params.climbType) {
-            fullParams += `&climbType=${encodeURIComponent(params.climbType)}`;
-        }
-        %>
         <div class="flex justify-center my-12">
             <div class="join">
                 <% if (currentPage <= 1) { %>
