@@ -96,7 +96,7 @@
                     if (entries[0] && entries[0].isIntersecting && this.hasMore && !this.loadingMore) {
                         this.loadMore();
                     }
-                }, { threshold: 0.1, rootMargin: '200px' });
+                }, { threshold: 0.1, rootMargin: '0px' });
 
                 setTimeout(() => {
                     const el = document.getElementById('infinite-scroll-trigger');
@@ -394,7 +394,7 @@
                                                        </a>
                                            <% if (isHomepage) { %>
                                                <!-- Infinite Scroll Trigger -->
-                                               <div id="infinite-scroll-trigger" v-show="hasMore" class="py-8 flex justify-center items-center w-full min-h-[4rem]" aria-live="polite">
+                                               <div id="infinite-scroll-trigger" v-show="hasMore" class="col-span-full py-8 flex justify-center items-center w-full min-h-[4rem]" aria-live="polite">
                                                    <span v-show="loadingMore" class="loading loading-spinner loading-lg text-primary" role="status" aria-label="Loading more posts"></span>
                                                </div>
                                            <% } %>
