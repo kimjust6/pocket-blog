@@ -916,19 +916,12 @@ function formatPostViewModel(post, isHomepage = false, isClimbing = false) {
 }
 
 /**
- * Prepares blog posts view data on the server, including server-side GA search tracking
+ * Prepares blog posts view data on the server
  */
 function prepareBlogPostsViewData(blogposts, isHomepage, isClimbing, params = {}, req = null) {
     const rawQuery = params?.query || '';
     const query = sanitizeSearchTerm(rawQuery);
     const hasSearchQuery = !isHomepage && !!query;
-    
-    if (hasSearchQuery) {
-        trackGAEvent('search', {
-            search_term: query,
-            search_category: isClimbing ? 'climbing' : 'blog'
-        }, req);
-    }
 
     const items = (blogposts?.items || []).map(post => formatPostViewModel(post, isHomepage, isClimbing));
     
