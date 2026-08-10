@@ -8,27 +8,27 @@ export default {
     daisyui: {
         themes: [
             {
-                // "Mint Garden" green pastel light theme
+                // "Glacier Mist" blue pastel light theme
                 nord: {
-                    'primary': '#3D8B5E',           // deep sage green
+                    'primary': '#2D6392',           // rich slate blue
                     'primary-content': '#ffffff',
-                    'secondary': '#8BC4A8',          // soft medium mint
+                    'secondary': '#7DA1C8',          // soft periwinkle blue
                     'secondary-content': '#ffffff',
-                    'accent': '#D4A85C',             // warm gold (earthy complement)
+                    'accent': '#D97746',             // warm amber / coral pop
                     'accent-content': '#ffffff',
-                    'neutral': '#2d4a36',
+                    'neutral': '#1C2938',
                     'neutral-content': '#ffffff',
-                    'base-100': '#E2F2E7',           // fresh mint pastel — page bg
-                    'base-200': '#C4E5CE',           // medium mint
-                    'base-300': '#9ACCA4',           // deeper sage mint — cards, navbar, footer
-                    'base-content': '#163824',       // dark forest green
-                    'info': '#8BC4A8',
+                    'base-100': '#EBF2FA',           // fresh sky pastel — page bg
+                    'base-200': '#D8E5F3',           // medium sky pastel
+                    'base-300': '#ADC7E3',           // deeper mist blue — cards, navbar, footer
+                    'base-content': '#13253A',       // dark slate navy
+                    'info': '#7DA1C8',
                     'info-content': '#ffffff',
-                    'success': '#3D8B5E',
+                    'success': '#358A60',
                     'success-content': '#ffffff',
-                    'warning': '#D4A85C',
+                    'warning': '#D97746',
                     'warning-content': '#ffffff',
-                    'error': '#c05c5c',
+                    'error': '#C05050',
                     'error-content': '#ffffff',
                 },
             },
@@ -58,6 +58,31 @@ export default {
                     'error-content': '#250a0a',
                 },
             },
+            {
+                // "Mint Garden" green pastel light theme
+                mintGarden: {
+                    'primary': '#3D8B5E',           // deep sage green
+                    'primary-content': '#ffffff',
+                    'secondary': '#8BC4A8',          // soft medium mint
+                    'secondary-content': '#ffffff',
+                    'accent': '#D4A85C',             // warm gold (earthy complement)
+                    'accent-content': '#ffffff',
+                    'neutral': '#2d4a36',
+                    'neutral-content': '#ffffff',
+                    'base-100': '#E2F2E7',           // fresh mint pastel — page bg
+                    'base-200': '#C4E5CE',           // medium mint
+                    'base-300': '#9ACCA4',           // deeper sage mint — cards, navbar, footer
+                    'base-content': '#163824',       // dark forest green
+                    'info': '#8BC4A8',
+                    'info-content': '#ffffff',
+                    'success': '#3D8B5E',
+                    'success-content': '#ffffff',
+                    'warning': '#D4A85C',
+                    'warning-content': '#ffffff',
+                    'error': '#c05c5c',
+                    'error-content': '#ffffff',
+                },
+            }
         ],
         darkTheme: 'dark',
         base: true,
