@@ -127,20 +127,21 @@ input::-ms-reveal {
 }
 
 /* Card Hover Effects */
-.blog-card-transition:hover {
-    transition: transform 0.2s cubic-bezier(0.2, 0, 0, 1);
+.blog-card-transition {
+    transition: filter 0.2s ease, box-shadow 0.2s ease;
+}
+
+.group:hover .blog-card-transition {
+    filter: brightness(0.88);
+    box-shadow: 0 8px 24px -4px rgba(0, 0, 0, 0.18), 0 4px 8px -2px rgba(0, 0, 0, 0.1);
 }
 
 .group:hover .blog-image-transition {
-    opacity: 0.92;
+    opacity: 1;
 }
 
 .blog-body-transition {
-    transition: opacity 0.25s ease;
-}
-
-.group:hover .blog-body-transition {
-    opacity: 0.92;
+    transition: opacity 0.2s ease;
 }
 
 /* Latest Post Badge Transition */

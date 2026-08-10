@@ -6,11 +6,63 @@ export default {
         extend: {},
     },
     daisyui: {
-        themes: ['nord', 'dark'],
+        themes: [
+            {
+                // "Mint Garden" green pastel light theme
+                nord: {
+                    'primary': '#3D8B5E',           // deep sage green
+                    'primary-content': '#ffffff',
+                    'secondary': '#8BC4A8',          // soft medium mint
+                    'secondary-content': '#ffffff',
+                    'accent': '#D4A85C',             // warm gold (earthy complement)
+                    'accent-content': '#ffffff',
+                    'neutral': '#2d4a36',
+                    'neutral-content': '#ffffff',
+                    'base-100': '#F4FAF6',           // white with mint tint — page bg
+                    'base-200': '#E6F4EA',           // soft mint
+                    'base-300': '#C8E6D0',           // light sage — cards, navbar
+                    'base-content': '#1c2e22',       // dark forest near-black
+                    'info': '#8BC4A8',
+                    'info-content': '#ffffff',
+                    'success': '#3D8B5E',
+                    'success-content': '#ffffff',
+                    'warning': '#D4A85C',
+                    'warning-content': '#ffffff',
+                    'error': '#c05c5c',
+                    'error-content': '#ffffff',
+                },
+            },
+            {
+                // "Dusk Blue" — dark pastel blue (DaisyUI dark bases, pastel accents)
+                dark: {
+                    'color-scheme': 'dark',
+                    'primary': '#7BA5D4',           // soft cornflower blue
+                    'primary-content': '#0a1525',
+                    'secondary': '#89B4DA',          // sky blue pastel
+                    'secondary-content': '#0a1525',
+                    'accent': '#A89BD4',             // soft lavender
+                    'accent-content': '#0f0a25',
+                    'neutral': '#2a3240',
+                    'neutral-content': '#a6adbb',
+                    'base-100': '#0f141c',           // deep navy — main bg
+                    'base-200': '#0b0f16',           // darker navy
+                    'base-300': '#070a11',           // near-black navy — cards, navbar
+                    'base-content': '#b0bdd4',       // soft blue-grey text
+                    'info': '#7BA5D4',
+                    'info-content': '#0a1525',
+                    'success': '#6abf8f',
+                    'success-content': '#0a1f12',
+                    'warning': '#c4a45e',
+                    'warning-content': '#251800',
+                    'error': '#d47878',
+                    'error-content': '#250a0a',
+                },
+            },
+        ],
         darkTheme: 'dark',
-        base: true, // applies background color and foreground color
-        styled: true, // include daisyUI colors and design decisions
-        utils: true, // adds responsive and modifier utility classes
+        base: true,
+        styled: true,
+        utils: true,
     },
     plugins: [require('@tailwindcss/typography'), require('daisyui')],
 }

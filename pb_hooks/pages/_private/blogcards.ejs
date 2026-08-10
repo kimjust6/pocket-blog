@@ -171,7 +171,7 @@
                     <!-- Back to Posts Button -->
                     <div class="my-8 w-full">
                         <div class="flex justify-end w-full">
-                            <a href="/" class="btn btn-outline btn-sm gap-2 transition-all duration-200">
+                            <a href="/" class="btn btn-outline btn-sm gap-2 transition-all duration-200 rounded-xl">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
                                     fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                                     stroke-linejoin="round" aria-hidden="true">
@@ -294,7 +294,7 @@
                                                                               <% }); %>
                                                                           </div>
                                                                           <% if (blog.location) { %>
-                                                                              <div class="flex items-center gap-1 text-xs text-base-content mb-2">
+                                                                              <div class="flex items-center gap-1 text-xs text-base-content/60 mb-2">
                                                                                   <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor">
                                                                                       <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd" />
                                                                                   </svg>
@@ -304,7 +304,7 @@
                                                                           <p class="text-sm text-base-content line-clamp-3">
                                                                               <%= blog.previewText %>
                                                                           </p>
-                                                                          <span class="text-xs text-base-content mt-2">
+                                                                          <span class="text-xs text-base-content/60 mt-2">
                                                                               <%= blog.formattedDate %>
                                                                           </span>
                                                                       </div>
@@ -318,21 +318,21 @@
                                                                 <figure v-if="blog.imageUrl" class="h-auto md:h-48 overflow-hidden m-0 rounded-t-lg">
                                                                     <img :src="blog.imageUrl" :alt="blog.title" class="w-full h-auto md:h-48 object-cover blog-image-transition rounded-t-lg" :style="'--blog-image-id: blog-image-' + blog.id" width="350" height="192" decoding="async" loading="lazy" />
                                                                 </figure>
-                                                                <div class="card-body p-8 gap-0 blog-body-transition">
+                                                                <div class="card-body blog-body-transition p-6">
+                                                                    <h2 class="card-title text-xl font-bold group-hover:text-primary transition-colors duration-200 mt-0 blog-title-transition" :style="'--blog-title-id: blog-title-' + blog.id">
+                                                                        {{ blog.title }}
+                                                                    </h2>
                                                                     <div class="flex flex-wrap gap-2 pb-4">
                                                                         <span v-for="badge in blog.badges" class="badge badge-outline badge-sm text-nowrap h-auto">{{ badge }}</span>
                                                                     </div>
-                                                                    <h2 class="card-title group-hover:text-primary transition-colors duration-200 mt-0 blog-title-transition" :style="'--blog-title-id: blog-title-' + blog.id">
-                                                                        {{ blog.title }}
-                                                                    </h2>
-                                                                    <div v-if="blog.location" class="flex items-center gap-1 text-xs text-base-content mb-2">
+                                                                    <div v-if="blog.location" class="flex items-center gap-1 text-xs text-base-content/60 mb-2">
                                                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor">
                                                                             <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd" />
                                                                         </svg>
                                                                         {{ blog.location }}
                                                                     </div>
                                                                     <p class="text-sm text-base-content line-clamp-3">{{ blog.text }}</p>
-                                                                    <span class="text-xs text-base-content mt-2">{{ blog.date }}</span>
+                                                                    <span class="text-xs text-base-content/60 mt-2">{{ blog.date }}</span>
                                                                 </div>
                                                            </div>
                                                        </a>
