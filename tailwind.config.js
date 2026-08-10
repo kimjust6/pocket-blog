@@ -18,10 +18,10 @@ export default {
                     'accent-content': '#ffffff',
                     'neutral': '#2d4a36',
                     'neutral-content': '#ffffff',
-                    'base-100': '#F4FAF6',           // white with mint tint — page bg
-                    'base-200': '#E6F4EA',           // soft mint
-                    'base-300': '#C8E6D0',           // light sage — cards, navbar
-                    'base-content': '#1c2e22',       // dark forest near-black
+                    'base-100': '#E2F2E7',           // fresh mint pastel — page bg
+                    'base-200': '#CCE8D5',           // medium mint
+                    'base-300': '#B4DDC0',           // light sage — cards, navbar
+                    'base-content': '#163824',       // dark forest green
                     'info': '#8BC4A8',
                     'info-content': '#ffffff',
                     'success': '#3D8B5E',

@@ -7,6 +7,16 @@ html {
     scroll-behavior: smooth;
 }
 
+/* Dark forest green h1 titles preserving pastel aesthetic */
+h1 {
+    color: #133d25;
+}
+
+[data-theme="dark"] h1,
+.dark h1 {
+    color: inherit;
+}
+
 /* Global squircle corner shape for all rounded elements */
 *[class*="rounded-"] {
     corner-shape: squircle;
