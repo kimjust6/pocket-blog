@@ -19,8 +19,8 @@ export default {
                     'neutral': '#2d4a36',
                     'neutral-content': '#ffffff',
                     'base-100': '#E2F2E7',           // fresh mint pastel — page bg
-                    'base-200': '#CCE8D5',           // medium mint
-                    'base-300': '#B4DDC0',           // light sage — cards, navbar
+                    'base-200': '#C4E5CE',           // medium mint
+                    'base-300': '#9ACCA4',           // deeper sage mint — cards, navbar, footer
                     'base-content': '#163824',       // dark forest green
                     'info': '#8BC4A8',
                     'info-content': '#ffffff',
