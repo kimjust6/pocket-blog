@@ -190,7 +190,7 @@
             <div class="mb-24">
                 <a href="<%= heroPost.link %>" class="no-underline group"
                     onclick="if(window.gtag) window.gtag('event', 'click', { event_category: '<%= heroPost.itemIsClimbing ? `climbing_log` : `blog_post` %>', event_label: decodeURIComponent('<%= encodeURIComponent(heroPost.title) %>') })">
-                    <div class="card w-full lg:card-side backdrop-blur-md shadow-2xl lg:shadow-xl transition-shadow duration-300 blog-card-transition overflow-hidden rounded-xl bg-base-300 relative"
+                    <div class="card w-full lg:card-side dark:bg-base-300/70 bg-base-300/60 hover:bg-base-300/80 dark:hover:bg-base-300/90 backdrop-blur-xl shadow-2xl lg:shadow-xl transition-all duration-300 blog-card-transition overflow-hidden rounded-xl border border-base-content/10 relative"
                         style="--blog-card-id: blog-card-<%= heroPost.id %>">
                         <span
                             class="absolute py-1 px-2 sm:py-2 sm:px-4 bg-base-100/60 backdrop-blur-md border border-white/20 shadow-lg text-base-content text-xs md:text-sm lg:text-base font-semibold uppercase tracking-wide z-10 rounded-full"
@@ -205,7 +205,7 @@
                             </figure>
                             <% } %>
                                 <div class="card-body lg:w-1/2 justify-center blog-body-transition p-8 md:p-12">
-                                    <h2 class="card-title text-3xl md:text-4xl font-bold group-hover:text-primary transition-colors duration-200 mt-0 blog-title-transition"
+                                    <h2 class="card-title text-3xl md:text-4xl font-bold dark:group-hover:text-primary transition-colors duration-200 mt-0 blog-title-transition"
                                         style="--blog-title-id: blog-title-<%= heroPost.id %>">
                                         <%= heroPost.title %>
                                     </h2>
@@ -261,7 +261,7 @@
                                                 <% gridPosts.forEach((blog, index)=> { %>
                                                     <a href="<%= blog.link %>" class="no-underline group"
                                                         onclick="if(window.gtag) window.gtag('event', 'click', { event_category: '<%= blog.itemIsClimbing ? `climbing_log` : `blog_post` %>', event_label: decodeURIComponent('<%= encodeURIComponent(blog.title) %>') })">
-                                                        <div class="card bg-base-300 backdrop-blur-md shadow-xl transition-shadow duration-300 blog-card-transition"
+                                                        <div class="card dark:bg-base-300/70 bg-base-300/60 hover:bg-base-300/80 dark:hover:bg-base-300/90 backdrop-blur-xl shadow-xl hover:shadow-2xl transition-all duration-300 blog-card-transition overflow-hidden rounded-xl border border-base-content/10"
                                                             style="--blog-card-id: blog-card-<%= blog.id %>">
                                                             <% if (blog.gridImageUrl) { %>
                                                                 <figure
@@ -291,7 +291,7 @@
                                                                 </figure>
                                                                 <% } %>
                                                                     <div class="card-body blog-body-transition p-6">
-                                                                        <h2 class="card-title text-xl font-bold group-hover:text-primary transition-colors duration-200 my-0 blog-title-transition"
+                                                                        <h2 class="card-title text-xl font-bold dark:group-hover:text-primary transition-colors duration-200 my-0 blog-title-transition"
                                                                             style="--blog-title-id: blog-title-<%= blog.id %>">
                                                                             <%= blog.title %>
                                                                         </h2>
@@ -318,7 +318,7 @@
                                                         <!-- Dynamically Loaded Posts (Infinite Scroll) -->
                                                         <a v-for="blog in extraPosts" :key="blog.id" :href="blog.link"
                                                             class="no-underline group">
-                                                            <div class="card bg-base-300 backdrop-blur-md shadow-xl transition-shadow duration-300 blog-card-transition"
+                                                            <div class="card dark:bg-base-300/70 bg-base-300/60 hover:bg-base-300/80 dark:hover:bg-base-300/90 backdrop-blur-xl shadow-xl hover:shadow-2xl transition-all duration-300 blog-card-transition overflow-hidden rounded-xl border border-base-content/10"
                                                                 :style="'--blog-card-id: blog-card-' + blog.id">
                                                                 <figure v-if="blog.imageUrl"
                                                                     class="h-auto md:h-48 overflow-hidden m-0 rounded-t-lg relative">
@@ -340,7 +340,7 @@
                                                                     </div>
                                                                 </figure>
                                                                 <div class="card-body blog-body-transition p-6">
-                                                                    <h2 class="card-title text-xl font-bold group-hover:text-primary transition-colors duration-200 my-0 blog-title-transition"
+                                                                    <h2 class="card-title text-xl font-bold dark:group-hover:text-primary transition-colors duration-200 my-0 blog-title-transition"
                                                                         :style="'--blog-title-id: blog-title-' + blog.id">
                                                                         {{ blog.title }}
                                                                     </h2>

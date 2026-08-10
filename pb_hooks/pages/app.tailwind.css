@@ -17,6 +17,26 @@ h1 {
     color: inherit;
 }
 
+/* Soft pastel green disabled buttons in light theme */
+.btn:disabled,
+.btn[disabled],
+.btn-disabled {
+    background-color: #D3EADC;
+    color: #6C9479;
+    border-color: rgba(61, 139, 94, 0.15);
+}
+
+[data-theme="dark"] .btn:disabled,
+[data-theme="dark"] .btn[disabled],
+[data-theme="dark"] .btn-disabled,
+.dark .btn:disabled,
+.dark .btn[disabled],
+.dark .btn-disabled {
+    background-color: rgba(123, 165, 212, 0.1);
+    color: rgba(176, 189, 212, 0.35);
+    border-color: transparent;
+}
+
 /* Global squircle corner shape for all rounded elements */
 *[class*="rounded-"] {
     corner-shape: squircle;
