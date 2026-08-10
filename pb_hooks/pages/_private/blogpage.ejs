@@ -12,110 +12,95 @@
     const reqObj = typeof request !== 'undefined' ? request : null
     const blogView = prepareBlogSingleViewData(singleBlog, isClimbing, params, data, reqObj)
 </script>
-<% if (blogView == null) { %>
-<%- include('pagenotfound.ejs') %>
-<% } else { %>
-<div
-    class="hero bg-base-100 py-12 min-h-[calc(100vh-12.54rem)] flex flex-col items-center justify-start blog-card-transition"
-    style="--blog-card-id: blog-card-<%= blogView.id %>"
->
-    <div class="hero-content max-w-4xl flex flex-col">
-        <div class="w-full backdrop-blur-md p-6 rounded-xl mb-8">
-            <h1
-                class="font-extrabold text-2xl md:text-3xl leading-tight blog-title-transition"
-                style="--blog-title-id: blog-title-<%= blogView.id %>"
-            >
-                <%= blogView.title %>
-            </h1>
-        </div>
-        <!-- Blog Image -->
-        <% if (blogView.imageUrl) { %>
-        <img
-            src="<%= blogView.imageUrl %>"
-            class="rounded-xl shadow-lg w-full h-auto max-h-96 object-cover m-0 blog-image-transition"
-            style="
+<% if (blogView==null) { %>
+    <%- include('pagenotfound.ejs') %>
+        <% } else { %>
+            <div class="hero bg-base-200 py-12 min-h-[calc(100vh-12.54rem)] flex flex-col items-center justify-start blog-card-transition"
+                style="--blog-card-id: blog-card-<%= blogView.id %>">
+                <div class="hero-content max-w-4xl flex flex-col">
+                    <div class="w-full backdrop-blur-md p-6 rounded-xl mb-8">
+                        <h1 class="font-extrabold text-2xl md:text-3xl leading-tight blog-title-transition"
+                            style="--blog-title-id: blog-title-<%= blogView.id %>">
+                            <%= blogView.title %>
+                        </h1>
+                    </div>
+                    <!-- Blog Image -->
+                    <% if (blogView.imageUrl) { %>
+                        <img src="<%= blogView.imageUrl %>"
+                            class="rounded-xl shadow-lg w-full h-auto max-h-96 object-cover m-0 blog-image-transition"
+                            style="
                 --blog-image-id: blog-image-<%= blogView.id %>;
                 aspect-ratio: 16/9;
-            "
-            alt="<%= blogView.title %>"
-            width="896"
-            height="504"
-            fetchpriority="high"
-            decoding="async"
-        />
-        <% } %>
-        <!-- Blog Content -->
-        <div class="w-full self-start backdrop-blur-md p-8 rounded-xl">
-            <!-- Tags -->
-            <div class="flex flex-wrap gap-2">
-                <% (blogView.badges || []).forEach(function(badge) { %>
-                <a href="<%= blogView.isClimbing ? '/climbing' : '/blog/posts' %>?query=<%= encodeURIComponent(badge.query) %>" class="no-underline">
-                    <span class="badge badge-outline badge-lg text-nowrap hover:bg-base-content hover:text-base-100 transition-all duration-200 cursor-pointer">
-                        <% if (badge.isLocation) { %>
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 mr-1 inline-block" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                            <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd" />
-                        </svg>
+            " alt="<%= blogView.title %>" width="896" height="504" fetchpriority="high" decoding="async" />
                         <% } %>
-                        <%= badge.text %>
-                    </span>
-                </a>
-                <% }); %>
-            </div>
+                            <!-- Blog Content -->
+                            <div class="w-full self-start backdrop-blur-md p-8 rounded-xl">
+                                <!-- Tags -->
+                                <div class="flex flex-wrap gap-2">
+                                    <% (blogView.badges || []).forEach(function(badge) { %>
+                                        <a href="<%= blogView.isClimbing ? '/climbing' : '/blog/posts' %>?query=<%= encodeURIComponent(badge.query) %>"
+                                            class="no-underline">
+                                            <span
+                                                class="badge bg-base-100/60 backdrop-blur-md border border-white/20 shadow-md text-base-content badge-lg text-nowrap hover:bg-base-100/90 transition-all duration-200 cursor-pointer">
+                                                <% if (badge.isLocation) { %>
+                                                    <svg xmlns="http://www.w3.org/2000/svg"
+                                                        class="h-3.5 w-3.5 mr-1 inline-block" viewBox="0 0 20 20"
+                                                        fill="currentColor" aria-hidden="true">
+                                                        <path fill-rule="evenodd"
+                                                            d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z"
+                                                            clip-rule="evenodd" />
+                                                    </svg>
+                                                    <% } %>
+                                                        <%= badge.text %>
+                                            </span>
+                                        </a>
+                                        <% }); %>
+                                </div>
 
-            <div class="text-sm text-base-content">
-                <!-- Back to Posts Button -->
-                <div class="mt-6">
-                    <div class="flex justify-between items-center w-full">
-                        <a
-                            href="<%= blogView.backLink %>"
-                            class="btn btn-outline btn-sm gap-2 transition-all duration-200"
-                        >
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                width="16"
-                                height="16"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                stroke="currentColor"
-                                stroke-width="2"
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                aria-hidden="true"
-                            >
-                                <path d="m12 19-7-7 7-7" />
-                                <path d="M19 12H5" />
-                            </svg>
-                            <%= blogView.backLabel %>
-                        </a>
-                        <div class="text-right">
-                            <%= blogView.dateLabel %>:
-                            <strong>
-                                <%= blogView.formattedDate %>
-                            </strong>
-                            <% if (blogView.formattedUpdated) { %>
-                            <div class="text-right">
-                                Updated:
-                                <strong>
-                                    <%= blogView.formattedUpdated %>
-                                </strong>
+                                <div class="text-sm text-base-content">
+                                    <!-- Back to Posts Button -->
+                                    <div class="mt-6">
+                                        <div class="flex justify-between items-center w-full">
+                                            <a href="<%= blogView.backLink %>"
+                                                class="btn btn-primary btn-sm gap-2 transition-all duration-200 rounded-xl">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                                    viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                                                    aria-hidden="true">
+                                                    <path d="m12 19-7-7 7-7" />
+                                                    <path d="M19 12H5" />
+                                                </svg>
+                                                <%= blogView.backLabel %>
+                                            </a>
+                                            <div class="text-right">
+                                                <%= blogView.dateLabel %>:
+                                                    <strong>
+                                                        <%= blogView.formattedDate %>
+                                                    </strong>
+                                                    <% if (blogView.formattedUpdated) { %>
+                                                        <div class="text-right">
+                                                            Updated:
+                                                            <strong>
+                                                                <%= blogView.formattedUpdated %>
+                                                            </strong>
+                                                        </div>
+                                                        <% } %>
+                                            </div>
+                                        </div>
+
+                                        <div
+                                            class="prose max-w-none text-base-content mt-6 min-w-80 font-normal leading-relaxed">
+                                            <%- blogView.cleanContent %>
+                                        </div>
+                                        <% if (blogView.cleanContent2) { %>
+                                            <div
+                                                class="prose max-w-none text-base-content mb-6 min-w-80 font-normal leading-relaxed">
+                                                <%- blogView.cleanContent2 %>
+                                            </div>
+                                            <% } %>
+                                    </div>
+                                </div>
                             </div>
-                            <% } %>
-                        </div>
-                    </div>
-
-                    <div
-                        class="prose max-w-none text-base-content mt-6 min-w-80 font-normal leading-relaxed"
-                    >
-                        <%- blogView.cleanContent %>
-                    </div>
-                    <% if (blogView.cleanContent2) { %>
-                    <div class="prose max-w-none text-base-content mb-6 min-w-80 font-normal leading-relaxed">
-                        <%- blogView.cleanContent2 %>
-                    </div>
-                    <% } %>
                 </div>
             </div>
-        </div>
-    </div>
-</div>
-<% } %>
+            <% } %>

@@ -34,6 +34,7 @@
     "concurrently": "^9.2.1",
     "daisyui": "^4.12.23",
     "dotenv": "^17.2.3",
+    "esbuild": "^0.28.2",
     "patch-package": "^8.0.1",
     "phio": "^0.4.0",
     "prettier": "^3.6.2",
