@@ -76,15 +76,6 @@ body,
     background: transparent !important;
 }
 
-/* Dark slate navy h1 titles preserving pastel aesthetic */
-h1 {
-    color: #13253A;
-}
-
-[data-theme="dark"] h1,
-.dark h1 {
-    color: inherit;
-}
 
 /* Soft pastel blue disabled buttons in light theme */
 .btn:disabled,
@@ -176,14 +167,11 @@ input::-ms-reveal {
     mix-blend-mode: normal;
 }
 
-/* Image Morphing Optimizations */
-::view-transition-old(blog-image),
-::view-transition-new(blog-image) {
-    object-fit: cover;
-    width: 100%;
-    height: 100%;
-    border-radius: 0.75rem;
-    overflow: hidden;
+/* Image Morphing Optimizations — names are dynamic (blog-image-{id}) so this
+   rule targets the ::view-transition-image-pair to set object-fit globally */
+::view-transition-old(root),
+::view-transition-new(root) {
+    animation-fill-mode: both;
 }
 
 /* Crisp & Fast Root Page Transitions (No Vertical Shift) */
@@ -221,9 +209,12 @@ input::-ms-reveal {
 
 .blog-image-transition {
     view-transition-name: var(--blog-image-id);
-    contain: layout paint;
-    will-change: filter, opacity;
+    contain: layout;
     transition: filter 0.25s ease, opacity 0.25s ease;
+}
+
+.group:hover .blog-image-transition {
+    will-change: filter, opacity;
 }
 
 .blog-title-transition {

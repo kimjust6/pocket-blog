@@ -27,7 +27,7 @@
     <div class="hero-content pt-24 lg:pt-36 text-center text-base-content">
         <div class="max-w-4xl bg-base-100/60 backdrop-blur-lg md:p-8 rounded-xl">
             <a href="/" class="no-underline" aria-label="Go to Homepage">
-                <h1 class="text-5xl font-bold">
+                <h1 class="text-5xl font-bold text-accent">
                     <%= (data.metadata.find(meta=> meta.name ===
                         "og:site_name"))?.content || "The Justin Blog" %>
                 </h1>
@@ -46,7 +46,7 @@
                 <li>
                     <div class="tooltip tooltip-bottom" data-tip="<%= social.name %>">
                         <a href="<%= social.url %>" target="_blank" rel="noopener noreferrer"
-                            class="w-12 h-12 flex items-center justify-center rounded-full border border-base-content/30 hover:border-primary hover:text-primary transition-all duration-150 group"
+                            class="w-12 h-12 flex items-center justify-center rounded-full border border-base-content/30 hover:border-primary hover:text-primary transition-all duration-200 group"
                             aria-label="<%= social.name %>">
                             <%- iconSvgs[social.name] %>
                             <span class="sr-only">
@@ -64,7 +64,7 @@
                         class="mockup-code text-left group transition-all dark:bg-base-300/70 bg-base-300/60 hover:bg-base-300/80 dark:hover:bg-base-300/90 backdrop-blur-xl px-4 sm:px-12 py-8 text-primary flex-1 flex flex-col justify-center border border-base-content/10">
                         <div
                             class="flex py-4 text-base transition-all text-base-content font-mono">
-                            <span class="mr-4 select-none opacity-50">$</span>
+                            <span class="mr-4 select-none text-accent font-bold">$</span>
                             <span class="text-wrap break-words">read about the lessons I have learned (from the mistakes I
                                 have made).</span>
                         </div>
@@ -77,7 +77,7 @@
                     <div
                         class="card text-left group transition-all dark:bg-base-300/70 bg-base-300/60 hover:bg-base-300/80 dark:hover:bg-base-300/90 backdrop-blur-xl px-4 sm:px-12 py-8 text-primary flex-1 flex flex-col justify-center border border-base-content/10">
                         <div class="flex py-4 text-base transition-all text-base-content font-mono">
-                            <span class="mr-4 select-none opacity-50">⛰</span>
+                            <span class="mr-4 select-none text-accent">⛰</span>
                             <span class="text-wrap break-words">read about my climbing progression, projects, and (hopefully) sends</span>
                         </div>
                     </div>

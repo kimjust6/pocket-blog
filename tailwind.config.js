@@ -14,7 +14,7 @@ export default {
                     'primary-content': '#ffffff',
                     'secondary': '#7DA1C8',          // soft periwinkle blue
                     'secondary-content': '#ffffff',
-                    'accent': '#D97746',             // warm amber / coral pop
+                    'accent': '#D94F68',             // coral rose — warm complement to slate blue
                     'accent-content': '#ffffff',
                     'neutral': '#1C2938',
                     'neutral-content': '#ffffff',
@@ -26,7 +26,7 @@ export default {
                     'info-content': '#ffffff',
                     'success': '#358A60',
                     'success-content': '#ffffff',
-                    'warning': '#D97746',
+                    'warning': '#C4923A',            // warm golden amber
                     'warning-content': '#ffffff',
                     'error': '#C05050',
                     'error-content': '#ffffff',
