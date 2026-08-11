@@ -116,6 +116,8 @@ body,
 .badge,
 .input,
 .mockup-code,
+code,
+pre,
 figure,
 img {
     corner-shape: squircle;
@@ -290,4 +292,34 @@ input::-ms-reveal {
         outline: 2px solid currentColor;
         outline-offset: 2px;
     }
+}
+
+/* Enhanced Tag Pill Heights & Vertical Padding */
+.badge {
+    height: auto;
+    min-height: 1.75rem;
+    padding-top: 0.25rem;
+    padding-bottom: 0.25rem;
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+}
+
+.badge-sm {
+    height: auto;
+    min-height: 1.5rem;
+    font-size: 0.8125rem;
+    padding-top: 0.2rem;
+    padding-bottom: 0.2rem;
+    padding-left: 0.625rem;
+    padding-right: 0.625rem;
+}
+
+.badge-lg {
+    height: auto;
+    min-height: 2.125rem;
+    font-size: 0.9375rem;
+    padding-top: 0.35rem;
+    padding-bottom: 0.35rem;
+    padding-left: 0.875rem;
+    padding-right: 0.875rem;
 }

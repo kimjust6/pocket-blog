@@ -211,8 +211,10 @@
                                     </h2>
                                     <div class="flex flex-wrap pb-4 gap-2">
                                         <% (heroPost.badges || []).forEach(badge=> { %>
+                                            <% const heroBadgeUrl = (heroPost.itemIsClimbing ? '/climbing' : '/blog/posts') + '?query=' + encodeURIComponent(badge.query || badge.text); %>
                                             <span
-                                                class="badge bg-base-100/60 backdrop-blur-md border border-accent/30 shadow-md text-base-content lg:badge-lg text-nowrap">
+                                                onclick="event.preventDefault(); event.stopPropagation(); window.location.href='<%= heroBadgeUrl %>';"
+                                                class="badge bg-base-100/60 backdrop-blur-md border border-accent/30 shadow-md text-base-content lg:badge-lg text-nowrap hover:bg-accent hover:text-accent-content hover:border-accent hover:shadow-lg hover:shadow-accent/30 hover:-translate-y-0.5 hover:scale-105 active:scale-95 transition-all duration-200 cursor-pointer z-10 relative">
                                                 <%= badge.text %>
                                             </span>
                                             <% }); %>
@@ -275,8 +277,9 @@
                                                                             <%=isLcp ? 'fetchpriority="high"'
                                                                             : 'loading="lazy"' %> />
                                                                         <% if (blog.location) { %>
-                                                                            <div
-                                                                                class="absolute bottom-3 left-3 flex items-center gap-1.5 py-1 px-2.5 bg-base-100/60 backdrop-blur-md border border-white/20 shadow-md text-base-content text-xs font-medium rounded-full z-10">
+                                                                            <% const gridLocationUrl = (blog.itemIsClimbing ? '/climbing' : '/blog/posts') + '?query=' + encodeURIComponent(blog.location); %>
+                                                                            <div onclick="event.preventDefault(); event.stopPropagation(); window.location.href='<%= gridLocationUrl %>';"
+                                                                                class="absolute bottom-3 left-3 flex items-center gap-1.5 py-1 px-2.5 bg-base-100/60 backdrop-blur-md border border-white/20 shadow-md text-base-content text-xs font-medium rounded-full z-10 hover:bg-accent hover:text-accent-content hover:border-accent hover:shadow-lg hover:shadow-accent/30 hover:-translate-y-0.5 hover:scale-105 active:scale-95 transition-all duration-200 cursor-pointer">
                                                                                 <svg xmlns="http://www.w3.org/2000/svg"
                                                                                     class="h-3.5 w-3.5"
                                                                                     viewBox="0 0 20 20"
@@ -297,8 +300,10 @@
                                                                         </h2>
                                                                         <div class="flex flex-wrap gap-2">
                                                                             <% (blog.badges || []).forEach(badge=> { %>
+                                                                                <% const gridBadgeUrl = (blog.itemIsClimbing ? '/climbing' : '/blog/posts') + '?query=' + encodeURIComponent(badge.query || badge.text); %>
                                                                                 <span
-                                                                                    class="badge bg-base-100/60 backdrop-blur-md border border-accent/30 shadow-md text-base-content badge-sm text-nowrap h-auto">
+                                                                                    onclick="event.preventDefault(); event.stopPropagation(); window.location.href='<%= gridBadgeUrl %>';"
+                                                                                    class="badge bg-base-100/60 backdrop-blur-md border border-accent/30 shadow-md text-base-content badge-sm text-nowrap h-auto hover:bg-accent hover:text-accent-content hover:border-accent hover:shadow-lg hover:shadow-accent/30 hover:-translate-y-0.5 hover:scale-105 active:scale-95 transition-all duration-200 cursor-pointer z-10 relative">
                                                                                     <%= badge.text %>
                                                                                 </span>
                                                                                 <% }); %>
@@ -328,7 +333,8 @@
                                                                         width="350" height="192" decoding="async"
                                                                         loading="lazy" />
                                                                     <div v-if="blog.location"
-                                                                        class="absolute bottom-3 left-3 flex items-center gap-1.5 py-1 px-2.5 bg-base-100/60 backdrop-blur-md border border-white/20 shadow-md text-base-content text-xs font-medium rounded-full z-10">
+                                                                        @click.prevent.stop="window.location.href = (blog.itemIsClimbing ? '/climbing' : '/blog/posts') + '?query=' + encodeURIComponent(blog.location)"
+                                                                        class="absolute bottom-3 left-3 flex items-center gap-1.5 py-1 px-2.5 bg-base-100/60 backdrop-blur-md border border-white/20 shadow-md text-base-content text-xs font-medium rounded-full z-10 hover:bg-accent hover:text-accent-content hover:border-accent hover:shadow-lg hover:shadow-accent/30 hover:-translate-y-0.5 hover:scale-105 active:scale-95 transition-all duration-200 cursor-pointer">
                                                                         <svg xmlns="http://www.w3.org/2000/svg"
                                                                             class="h-3.5 w-3.5" viewBox="0 0 20 20"
                                                                             fill="currentColor">
@@ -345,13 +351,15 @@
                                                                         {{ blog.title }}
                                                                     </h2>
                                                                     <div class="flex flex-wrap gap-2 pb-4">
-                                                                        <span v-for="badge in blog.badges"
-                                                                            class="badge bg-base-100/60 backdrop-blur-md border border-accent/30 shadow-md text-base-content badge-sm text-nowrap h-auto">{{
+                                                                        <span v-for="badge in blog.badges" :key="badge"
+                                                                            @click.prevent.stop="window.location.href = (blog.itemIsClimbing ? '/climbing' : '/blog/posts') + '?query=' + encodeURIComponent(badge)"
+                                                                            class="badge bg-base-100/60 backdrop-blur-md border border-accent/30 shadow-md text-base-content badge-sm text-nowrap h-auto hover:bg-accent hover:text-accent-content hover:border-accent hover:shadow-lg hover:shadow-accent/30 hover:-translate-y-0.5 hover:scale-105 active:scale-95 transition-all duration-200 cursor-pointer z-10 relative">{{
                                                                             badge }}</span>
                                                                     </div>
                                                                     <p class="text-sm text-base-content line-clamp-3">{{
                                                                         blog.text }}</p>
-                                                                    <span class="text-xs text-base-content/60 mt-2">{{ blog.date }}</span>
+                                                                    <span class="text-xs text-base-content/60 mt-2">{{
+                                                                        blog.date }}</span>
                                                                 </div>
                                                             </div>
                                                         </a>
