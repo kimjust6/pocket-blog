@@ -9,8 +9,10 @@
         var singleBlog = null
     }
 
-    const reqObj = typeof request !== 'undefined' ? request : null
-    const blogView = prepareBlogSingleViewData(singleBlog, isClimbing, params, data, reqObj)
+    if (typeof blogView === 'undefined' || blogView === null) {
+        const reqObj = typeof request !== 'undefined' ? request : null
+        var blogView = prepareBlogSingleViewData(singleBlog, isClimbing, params, data, reqObj)
+    }
 </script>
 <% if (blogView==null) { %>
     <%- include('pagenotfound.ejs') %>

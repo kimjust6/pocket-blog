@@ -1,7 +1,7 @@
 {
     "description": "DO NOT DELETE THIS FILE. This file is used to keep track of which files have been synced in the most recent deployment. If you delete this file a resync will need to be done (which can take a while) - read more: https://github.com/SamKirkland/FTP-Deploy-Action",
     "version": "1.0.0",
-    "generatedTime": 1786476059991,
+    "generatedTime": 1786477189458,
     "data": [
         {
             "type": "folder",
@@ -17,15 +17,27 @@
         },
         {
             "type": "file",
+            "name": "pb_public/sw.js",
+            "size": 4507,
+            "hash": "b14bb4faf5bb8513875fbcfc0be74a9baba1b71f358282cf5f9be15ff1f500ce"
+        },
+        {
+            "type": "file",
+            "name": "pb_public/site.webmanifest",
+            "size": 840,
+            "hash": "f0445a4a55029786a26d8d6d4d51b284d872944b79d9588f437af852becfc8d1"
+        },
+        {
+            "type": "file",
             "name": "pb_public/og-image.webp",
-            "size": 16450,
-            "hash": "b6052d7fe6a130911327ea90c412901fa557d2548602cfd5986004ea6c06131e"
+            "size": 34406,
+            "hash": "9291a686e164b8a1c84a59d244694041a43dfda547e2641d86781b74caec4a95"
         },
         {
             "type": "file",
             "name": "pb_public/og-image.png",
-            "size": 97898,
-            "hash": "62372f6ca94928ce68bc7321b2185e493b979d074b87a9e078a27f3c8a8b9f14"
+            "size": 94577,
+            "hash": "0c75eae93974828816719687042c268d424f94fe8309fa17366d9834f3571f10"
         },
         {
             "type": "folder",
@@ -33,9 +45,33 @@
         },
         {
             "type": "file",
+            "name": "pb_public/icon-192.png",
+            "size": 38241,
+            "hash": "bbd8341141925cc89971b146837d05d7d3fd9282d3a3cd98704684acf1967bfb"
+        },
+        {
+            "type": "file",
+            "name": "pb_public/favicon.svg",
+            "size": 45184,
+            "hash": "4fd08ec5e2f1c80b657bf8818c19da1a1d8ec538f36184e2af0419c1375906c4"
+        },
+        {
+            "type": "file",
             "name": "pb_public/favicon.ico",
             "size": 131070,
             "hash": "eade4d177060fc5f49cee53a4a1cc1d3e757de60ba8178c568465cd2b4436ebe"
+        },
+        {
+            "type": "file",
+            "name": "pb_public/favicon-32x32.png",
+            "size": 2679,
+            "hash": "32c6f90b7b2029773145ecf176b3317ff76261b7bb8b5f9f1fcd5eca69aaebc6"
+        },
+        {
+            "type": "file",
+            "name": "pb_public/favicon-16x16.png",
+            "size": 891,
+            "hash": "c20e83daaaa70c22ff7e81b89431f88bbc75b7686ad9ed941da0c16279ebb830"
         },
         {
             "type": "file",
@@ -48,6 +84,12 @@
             "name": "pb_public/background.jpg",
             "size": 793396,
             "hash": "f58e77bdc72c6e8de8e1697310410d0b3ecc7c6018d20f2e08c1952c056071ff"
+        },
+        {
+            "type": "file",
+            "name": "pb_public/apple-touch-icon.png",
+            "size": 33653,
+            "hash": "21234d0d6b14f4eb48603437a630e51cf320effdd5ea621b271306558a2a65b1"
         },
         {
             "type": "file",
@@ -230,8 +272,8 @@
         {
             "type": "file",
             "name": "pb_hooks/pages/app.css",
-            "size": 88936,
-            "hash": "dd83253a0a188d28b364c0ed78d77657f88edea311ebb1a730f3abd01d7e230a"
+            "size": 89565,
+            "hash": "fb274209068965397d27ba8fb666883a61b5abfb2bd232dd3e4924fd968b6026"
         },
         {
             "type": "folder",
@@ -244,8 +286,8 @@
         {
             "type": "file",
             "name": "pb_hooks/pages/+middleware.js",
-            "size": 3388,
-            "hash": "3033294bad657e4931e13de7f64bfc6aad0efca8e03b3b9872da132b47d59cf2"
+            "size": 4159,
+            "hash": "09dc4d6fd3b22f6cd71af8a21abe07712f02c7e9dde05f69c9bd432b333fa4cc"
         },
         {
             "type": "file",
@@ -278,8 +320,8 @@
         {
             "type": "file",
             "name": "pb_hooks/pages/utils/common.js",
-            "size": 44544,
-            "hash": "fa0104577b7d2d2180f81ce89a79bca35bdace6f18eace45be227388b89f6970"
+            "size": 45664,
+            "hash": "0064aae3805f607e559082eb8095b7e40f0873511bb7bb9189b9ebdd0e89253f"
         },
         {
             "type": "file",
@@ -384,8 +426,8 @@
         {
             "type": "file",
             "name": "pb_hooks/pages/_private/blogpage.ejs",
-            "size": 6672,
-            "hash": "13d3b832206062fba481ecba928a376f7d0a8025ac28db3e24f54b14b0c0da61"
+            "size": 6748,
+            "hash": "58cc2ee6f335f0c78c6de7b3ecfa520e78274f42086776972bd9f0320b0a7eb0"
         },
         {
             "type": "file",
@@ -432,8 +474,8 @@
         {
             "type": "file",
             "name": "pb_hooks/pages/(navbarLayout)/+layout.ejs",
-            "size": 5099,
-            "hash": "64964c8d551c6ae980e915657c6e36ee498d800f0bc10b2a8b97dea9711c594b"
+            "size": 9970,
+            "hash": "a5b7f25f82fb4d45344c168bceef99aece8f19ac80b066bdfae2614b11a63a6f"
         },
         {
             "type": "file",
@@ -448,8 +490,8 @@
         {
             "type": "file",
             "name": "pb_hooks/pages/(navbarLayout)/climbing/[title]/[id].ejs",
-            "size": 1494,
-            "hash": "7d119b82844f70962a8c43cbe0095106620e074099c24dfb7ed3aece8d678230"
+            "size": 1520,
+            "hash": "4225c16644df4bb62f3b8e403c2dd77e2932dfddf1c4a8b8844c0c5feecbc0c1"
         },
         {
             "type": "folder",
@@ -468,8 +510,8 @@
         {
             "type": "file",
             "name": "pb_hooks/pages/(navbarLayout)/blog/posts/[title]/[id].ejs",
-            "size": 1483,
-            "hash": "1b29610db50ebc00d3e9b479ef165b3d215449ecae2ce72f22038ffd25c653ae"
+            "size": 1509,
+            "hash": "2e64ffe65e461f9e7cd83b1fcd737048a2a2e94a909e8dda12fc916466712bc2"
         },
         {
             "type": "file",

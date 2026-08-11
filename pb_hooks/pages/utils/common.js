@@ -814,19 +814,33 @@ function trackGAEvent(eventName, eventParams = {}, req = null) {
             }]
         };
 
-        if (typeof $http !== 'undefined' && $http.send) {
-            $http.send({
-                url: url,
-                method: 'POST',
-                body: JSON.stringify(payload),
-                headers: {
-                    'Content-Type': 'application/json'
+        const sendRequest = () => {
+            try {
+                if (typeof $http !== 'undefined' && $http.send) {
+                    $http.send({
+                        url: url,
+                        method: 'POST',
+                        body: JSON.stringify(payload),
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    });
                 }
-            });
+            } catch (err) {
+                if (typeof $app !== 'undefined' && $app.logger) {
+                    $app.logger().error('Failed to send GA event from backend', 'error', err);
+                }
+            }
+        };
+
+        if (typeof setTimeout === 'function') {
+            setTimeout(sendRequest, 0);
+        } else {
+            sendRequest();
         }
     } catch (err) {
         if (typeof $app !== 'undefined' && $app.logger) {
-            $app.logger().error('Failed to send GA event from backend', 'error', err);
+            $app.logger().error('Failed to prepare GA event tracking', 'error', err);
         }
     }
 }
@@ -1089,14 +1103,22 @@ function prepareBlogSingleViewData(singleBlog, isClimbing, params = {}, data = {
 
                 // Image handling
                 const rawImgUrl = getImageUrl(singleBlog);
-                const ogImageUrl = rawImgUrl || `${getBaseUrl()}/og-image.png`;
+                const ogImageUrl = rawImgUrl ? `${rawImgUrl}?thumb=1200x630` : `${getBaseUrl()}/og-image.png`;
                 const coverAlt = singleBlog.getString('coverImageAlt') || postTitle || 'Blog post cover image';
+                const isWebp = ogImageUrl.includes('.webp');
+                const isJpg = ogImageUrl.includes('.jpg') || ogImageUrl.includes('.jpeg');
+                const mimeType = isWebp ? 'image/webp' : (isJpg ? 'image/jpeg' : 'image/png');
 
                 setOrUpdateMeta(data.metadata, 'og:image', ogImageUrl);
+                setOrUpdateMeta(data.metadata, 'og:image:secure_url', ogImageUrl);
+                setOrUpdateMeta(data.metadata, 'og:image:type', mimeType);
                 setOrUpdateMeta(data.metadata, 'twitter:image', ogImageUrl);
                 setOrUpdateMeta(data.metadata, 'og:image:alt', coverAlt);
                 setOrUpdateMeta(data.metadata, 'og:image:width', '1200');
                 setOrUpdateMeta(data.metadata, 'og:image:height', '630');
+
+                // Robots & Crawlers
+                setOrUpdateMeta(data.metadata, 'robots', 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1');
 
                 // Twitter Card
                 setOrUpdateMeta(data.metadata, 'twitter:card', 'summary_large_image');

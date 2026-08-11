@@ -15,7 +15,24 @@ module.exports = function (api) {
         console.log("Error reading cookies:", e);
     }
 
+    let pathname = '/';
+    try {
+        if (api.request?.url?.pathname) {
+            pathname = api.request.url.pathname;
+        }
+    } catch (_) {}
+
+    try {
+        if (api.response?.header) {
+            api.response.header('Cache-Control', 'public, max-age=60, s-maxage=300, stale-while-revalidate=600');
+        }
+    } catch (_) {}
+
+    const baseUrl = 'https://www.jkim.win';
+    const pageUrl = pathname === '/' ? `${baseUrl}/` : `${baseUrl}${pathname}`;
+
     return {
+        currentPath: pathname,
         metadata: [
             // Basic metadata
             {
@@ -28,7 +45,8 @@ module.exports = function (api) {
                 content:
                     'Keeping a personal record of my mistakes and lessons learned as a developer.',
             },
-            { name: 'url', content: 'https://www.jkim.win/' },
+            { name: 'url', content: pageUrl },
+            { name: 'robots', content: 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1' },
 
             // Open Graph metadata
             {
@@ -37,11 +55,16 @@ module.exports = function (api) {
                     "The Justin Blog",
             },
             { name: 'og:type', content: 'website' },
-            { name: 'og:url', content: 'https://www.jkim.win/' },
+            { name: 'og:url', content: pageUrl },
             {
                 name: 'og:image',
                 content: 'https://www.jkim.win/og-image.png',
             },
+            {
+                name: 'og:image:secure_url',
+                content: 'https://www.jkim.win/og-image.png',
+            },
+            { name: 'og:image:type', content: 'image/png' },
             { name: 'og:image:alt', content: 'The Justin Blog Cover' },
             { name: 'og:image:width', content: '1200' },
             { name: 'og:image:height', content: '630' },
@@ -82,7 +105,7 @@ module.exports = function (api) {
             },
             {
                 name: 'twitter:url',
-                content: 'https://www.jkim.win/',
+                content: pageUrl,
             },
         ],
         theme: cookieValue,

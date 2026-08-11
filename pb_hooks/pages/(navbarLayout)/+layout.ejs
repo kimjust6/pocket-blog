@@ -37,10 +37,95 @@
         <% if (canonicalUrl) { %>
         <link rel="canonical" href="<%= canonicalUrl %>" />
         <% } %>
+
+        <!-- Mobile & Browser Theme Color -->
+        <meta name="theme-color" content="#2D6392" media="(prefers-color-scheme: light)" />
+        <meta name="theme-color" content="#0f141c" media="(prefers-color-scheme: dark)" />
+        <meta name="theme-color" content="#0f141c" />
+
+        <!-- Favicons & App Icons -->
+        <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+        <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+        <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png" />
+        <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+        <link rel="manifest" href="/site.webmanifest" />
+
+        <!-- Styles & Preconnects -->
         <link href="<%=asset('/app.css')%>" rel="stylesheet" />
         <link rel="preconnect" href="https://unpkg.com" crossorigin />
         <link rel="preconnect" href="https://www.googletagmanager.com" crossorigin />
-        <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+
+        <!-- Structured Data (JSON-LD) -->
+        <%
+            const metaGet = (key) => (data.metadata || []).find(m => m.name === key)?.content;
+            const isArticle = metaGet('og:type') === 'article';
+            const pageCanonical = metaGet('og:url') || metaGet('url') || 'https://www.jkim.win/';
+            const pageTitle = metaGet('og:title') || metaGet('title') || 'The Justin Blog';
+            const pageDesc = metaGet('og:description') || metaGet('description') || 'Keeping a personal record of my mistakes and lessons learned as a developer.';
+            const pageImg = metaGet('og:image') || 'https://www.jkim.win/og-image.png';
+
+            let jsonLd;
+            if (isArticle) {
+                jsonLd = {
+                    "@context": "https://schema.org",
+                    "@type": "BlogPosting",
+                    "mainEntityOfPage": {
+                        "@type": "WebPage",
+                        "@id": pageCanonical
+                    },
+                    "headline": pageTitle,
+                    "description": pageDesc,
+                    "image": [pageImg],
+                    "author": {
+                        "@type": "Person",
+                        "name": metaGet('author') || "Justin Kim",
+                        "url": metaGet('article:author') || "https://www.justink.dev"
+                    },
+                    "publisher": {
+                        "@type": "Person",
+                        "name": "Justin Kim",
+                        "url": "https://www.justink.dev"
+                    }
+                };
+                const pubTime = metaGet('article:published_time');
+                if (pubTime) jsonLd.datePublished = pubTime;
+                const modTime = metaGet('article:modified_time') || pubTime;
+                if (modTime) jsonLd.dateModified = modTime;
+                const keywords = metaGet('keywords');
+                if (keywords) jsonLd.keywords = keywords;
+                const section = metaGet('article:section');
+                if (section) jsonLd.articleSection = section;
+            } else {
+                jsonLd = {
+                    "@context": "https://schema.org",
+                    "@type": "WebSite",
+                    "name": "The Justin Blog",
+                    "url": pageCanonical,
+                    "description": pageDesc,
+                    "author": {
+                        "@type": "Person",
+                        "name": "Justin Kim",
+                        "url": "https://www.justink.dev"
+                    }
+                };
+            }
+        %>
+        <script type="application/ld+json">
+<%- JSON.stringify(jsonLd, null, 2) %>
+        </script>
+        <!-- Speculation Rules API for instant navigation prefetching -->
+        <script type="speculationrules">
+        {
+            "prefetch": [
+                {
+                    "where": { "href_matches": "/*" },
+                    "eagerness": "moderate"
+                }
+            ]
+        }
+        </script>
         <script src="https://unpkg.com/petite-vue" defer init></script>
         <script type="module">
             function toggleTheme() {
@@ -64,8 +149,29 @@
             }
             window.toggleTheme = toggleTheme
 
-            // View transitions are handled by @view-transition { navigation: auto }
-            // in app.css for all same-origin navigations automatically.
+            // Register Service Worker for local caching and offline support
+            if ('serviceWorker' in navigator) {
+                window.addEventListener('load', () => {
+                    navigator.serviceWorker.register('/sw.js').catch((err) => {
+                        console.debug('SW registration skipped:', err);
+                    });
+                });
+            }
+
+            // Link hover prefetching for instant page navigation
+            const prefetchedUrls = new Set();
+            document.addEventListener('pointerenter', (e) => {
+                const a = e.target && e.target.closest ? e.target.closest('a') : null;
+                if (a && a.href && a.origin === location.origin && !a.hasAttribute('download')) {
+                    if (!prefetchedUrls.has(a.href)) {
+                        prefetchedUrls.add(a.href);
+                        const link = document.createElement('link');
+                        link.rel = 'prefetch';
+                        link.href = a.href;
+                        document.head.appendChild(link);
+                    }
+                }
+            }, { passive: true, capture: true });
         </script>
         <!-- Google tag (gtag.js) -->
         <script

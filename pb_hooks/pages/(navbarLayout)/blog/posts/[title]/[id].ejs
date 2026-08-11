@@ -29,7 +29,7 @@
     <% if (singleBlogView == null) { %>
         <%- include('pagenotfound.ejs') %>
     <% } else { %>
-        <%- include('blogpage.ejs', { isClimbing: false, singleBlog: singleBlogView.rawBlog }) %>
+        <%- include('blogpage.ejs', { isClimbing: false, singleBlog: singleBlogView.rawBlog, blogView: singleBlogView }) %>
     <% } %>
 <% } else { %>
     <%- include('pagenotfound.ejs') %>
