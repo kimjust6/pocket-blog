@@ -128,8 +128,7 @@
                     </div>
                 </a>
                 <p class="mt-8 text-lg text-base-content">
-                    <%= isClimbing
-                        ? 'A personal record of sends, failures, and hard-fought projects on the rock and in the gym.'
+                    <%= isClimbing ? 'A personal record of sends, falls, and projects on the rock and in the gym.'
                         : 'Explore recent insights, retrospectives, and stories.' %>
                 </p>
                 <form role="search" action="<%= isClimbing ? '/climbing' : '/blog/posts' %>" method="get"
@@ -211,13 +210,14 @@
                                     </h2>
                                     <div class="flex flex-wrap pb-4 gap-2">
                                         <% (heroPost.badges || []).forEach(badge=> { %>
-                                            <% const heroBadgeUrl = (heroPost.itemIsClimbing ? '/climbing' : '/blog/posts') + '?query=' + encodeURIComponent(badge.query || badge.text); %>
-                                            <span
-                                                onclick="event.preventDefault(); event.stopPropagation(); window.location.href='<%= heroBadgeUrl %>';"
-                                                class="badge bg-base-100/60 backdrop-blur-md border border-accent/30 shadow-md text-base-content lg:badge-lg text-nowrap hover:bg-accent hover:text-accent-content hover:border-accent hover:shadow-lg hover:shadow-accent/30 hover:-translate-y-0.5 hover:scale-105 active:scale-95 transition-all duration-200 cursor-pointer z-10 relative">
-                                                <%= badge.text %>
-                                            </span>
-                                            <% }); %>
+                                            <% const heroBadgeUrl=(heroPost.itemIsClimbing ? '/climbing' : '/blog/posts'
+                                                ) + '?query=' + encodeURIComponent(badge.query || badge.text); %>
+                                                <span
+                                                    onclick="event.preventDefault(); event.stopPropagation(); window.location.href='<%= heroBadgeUrl %>';"
+                                                    class="badge bg-base-100/60 backdrop-blur-md border border-accent/30 shadow-md text-base-content lg:badge-lg text-nowrap hover:bg-accent hover:text-accent-content hover:border-accent hover:shadow-lg hover:shadow-accent/30 hover:-translate-y-0.5 hover:scale-105 active:scale-95 transition-all duration-200 cursor-pointer z-10 relative">
+                                                    <%= badge.text %>
+                                                </span>
+                                                <% }); %>
                                     </div>
                                     <p class="text-lg text-base-content mt-4 line-clamp-4">
                                         <%= heroPost.previewText %>
@@ -277,20 +277,24 @@
                                                                             <%=isLcp ? 'fetchpriority="high"'
                                                                             : 'loading="lazy"' %> />
                                                                         <% if (blog.location) { %>
-                                                                            <% const gridLocationUrl = (blog.itemIsClimbing ? '/climbing' : '/blog/posts') + '?query=' + encodeURIComponent(blog.location); %>
-                                                                            <div onclick="event.preventDefault(); event.stopPropagation(); window.location.href='<%= gridLocationUrl %>';"
-                                                                                class="absolute bottom-3 left-3 flex items-center gap-1.5 py-1 px-2.5 bg-base-100/60 backdrop-blur-md border border-white/20 shadow-md text-base-content text-xs font-medium rounded-full z-10 hover:bg-accent hover:text-accent-content hover:border-accent hover:shadow-lg hover:shadow-accent/30 hover:-translate-y-0.5 hover:scale-105 active:scale-95 transition-all duration-200 cursor-pointer">
-                                                                                <svg xmlns="http://www.w3.org/2000/svg"
-                                                                                    class="h-3.5 w-3.5"
-                                                                                    viewBox="0 0 20 20"
-                                                                                    fill="currentColor">
-                                                                                    <path fill-rule="evenodd"
-                                                                                        d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z"
-                                                                                        clip-rule="evenodd" />
-                                                                                </svg>
-                                                                                <%= blog.location %>
-                                                                            </div>
-                                                                            <% } %>
+                                                                            <% const
+                                                                                gridLocationUrl=(blog.itemIsClimbing
+                                                                                ? '/climbing' : '/blog/posts' )
+                                                                                + '?query=' +
+                                                                                encodeURIComponent(blog.location); %>
+                                                                                <div onclick="event.preventDefault(); event.stopPropagation(); window.location.href='<%= gridLocationUrl %>';"
+                                                                                    class="absolute bottom-3 left-3 flex items-center gap-1.5 py-1 px-2.5 bg-base-100/60 backdrop-blur-md border border-white/20 shadow-md text-base-content text-xs font-medium rounded-full z-10 hover:bg-accent hover:text-accent-content hover:border-accent hover:shadow-lg hover:shadow-accent/30 hover:-translate-y-0.5 hover:scale-105 active:scale-95 transition-all duration-200 cursor-pointer">
+                                                                                    <svg xmlns="http://www.w3.org/2000/svg"
+                                                                                        class="h-3.5 w-3.5"
+                                                                                        viewBox="0 0 20 20"
+                                                                                        fill="currentColor">
+                                                                                        <path fill-rule="evenodd"
+                                                                                            d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z"
+                                                                                            clip-rule="evenodd" />
+                                                                                    </svg>
+                                                                                    <%= blog.location %>
+                                                                                </div>
+                                                                                <% } %>
                                                                 </figure>
                                                                 <% } %>
                                                                     <div class="card-body blog-body-transition p-6">
@@ -300,13 +304,18 @@
                                                                         </h2>
                                                                         <div class="flex flex-wrap gap-2">
                                                                             <% (blog.badges || []).forEach(badge=> { %>
-                                                                                <% const gridBadgeUrl = (blog.itemIsClimbing ? '/climbing' : '/blog/posts') + '?query=' + encodeURIComponent(badge.query || badge.text); %>
-                                                                                <span
-                                                                                    onclick="event.preventDefault(); event.stopPropagation(); window.location.href='<%= gridBadgeUrl %>';"
-                                                                                    class="badge bg-base-100/60 backdrop-blur-md border border-accent/30 shadow-md text-base-content badge-sm text-nowrap h-auto hover:bg-accent hover:text-accent-content hover:border-accent hover:shadow-lg hover:shadow-accent/30 hover:-translate-y-0.5 hover:scale-105 active:scale-95 transition-all duration-200 cursor-pointer z-10 relative">
-                                                                                    <%= badge.text %>
-                                                                                </span>
-                                                                                <% }); %>
+                                                                                <% const
+                                                                                    gridBadgeUrl=(blog.itemIsClimbing
+                                                                                    ? '/climbing' : '/blog/posts' )
+                                                                                    + '?query=' +
+                                                                                    encodeURIComponent(badge.query ||
+                                                                                    badge.text); %>
+                                                                                    <span
+                                                                                        onclick="event.preventDefault(); event.stopPropagation(); window.location.href='<%= gridBadgeUrl %>';"
+                                                                                        class="badge bg-base-100/60 backdrop-blur-md border border-accent/30 shadow-md text-base-content badge-sm text-nowrap h-auto hover:bg-accent hover:text-accent-content hover:border-accent hover:shadow-lg hover:shadow-accent/30 hover:-translate-y-0.5 hover:scale-105 active:scale-95 transition-all duration-200 cursor-pointer z-10 relative">
+                                                                                        <%= badge.text %>
+                                                                                    </span>
+                                                                                    <% }); %>
                                                                         </div>
                                                                         <p
                                                                             class="text-sm text-base-content line-clamp-3">

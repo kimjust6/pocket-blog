@@ -782,7 +782,7 @@ function trackGAEvent(eventName, eventParams = {}, req = null) {
     try {
         const { GA_MEASUREMENT_ID } = require(`${__hooks}/pages/utils/constants.js`);
         const measurementId = GA_MEASUREMENT_ID || 'G-6P8M4DJNQL';
-        
+
         let clientId = 'pb_server_client';
         if (req) {
             try {
@@ -799,7 +799,7 @@ function trackGAEvent(eventName, eventParams = {}, req = null) {
                         clientId = parts.slice(2).join('.');
                     }
                 }
-            } catch (_) {}
+            } catch (_) { }
         }
 
         const url = `https://www.google-analytics.com/mp/collect?measurement_id=${measurementId}`;
@@ -879,12 +879,12 @@ function formatPostViewModel(post, isHomepage = false, isClimbing = false) {
     const slug = slugifyTitle(title);
     const rawText = (itemIsClimbing ? post.getString('content') : post.getString('content1')) || '';
     const previewText = extractPreviewText(rawText);
-    
+
     const rawImg = getImageUrl(post);
     const heroImageUrl = itemIsClimbing
         ? (rawImg ? `${rawImg}?thumb=800x0` : '/background.webp')
         : (rawImg ? `${rawImg}?thumb=800x0` : (post.getString('coverImageAlt') || null));
-        
+
     const gridImageUrl = itemIsClimbing
         ? (rawImg ? `${rawImg}?thumb=350x0` : '/background.webp')
         : (rawImg ? `${rawImg}?thumb=350x0` : (post.getString('coverImageAlt') || null));
@@ -952,17 +952,17 @@ function prepareBlogPostsViewData(blogposts, isHomepage, isClimbing, params = {}
     const hasSearchQuery = !isHomepage && !!query;
 
     const items = (blogposts?.items || []).map(post => formatPostViewModel(post, isHomepage, isClimbing));
-    
+
     let heroPost = null;
     let gridPosts = items;
     if (isHomepage && gridPosts.length > 0) {
         heroPost = gridPosts[0];
         gridPosts = gridPosts.slice(1);
     }
-    
+
     const hasPosts = !!heroPost || gridPosts.length > 0;
     const hasNoSearchResults = hasSearchQuery && !hasPosts;
-    
+
     let fullParams = hasSearchQuery ? `&query=${encodeURIComponent(query)}` : '';
     if (isClimbing && params?.climbType) {
         fullParams += `&climbType=${encodeURIComponent(params.climbType)}`;
@@ -972,7 +972,7 @@ function prepareBlogPostsViewData(blogposts, isHomepage, isClimbing, params = {}
         try {
             if (isClimbing) {
                 const title = 'The Climbing Blog | Justin Kim';
-                const description = 'A personal record of sends, failures, and hard-fought projects on the rock and in the gym.';
+                const description = 'A personal record of sends, falls, and projects on the rock and in the gym.';
                 const url = `${getBaseUrl()}/climbing`;
                 const ogImg = `${getBaseUrl()}/og-image.png`;
 
@@ -1013,7 +1013,7 @@ function prepareBlogPostsViewData(blogposts, isHomepage, isClimbing, params = {}
             console.error('Error preparing blog posts view metadata: ', err);
         }
     }
-    
+
     return {
         query,
         hasSearchQuery,
