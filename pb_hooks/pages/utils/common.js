@@ -972,7 +972,7 @@ function prepareBlogPostsViewData(blogposts, isHomepage, isClimbing, params = {}
         try {
             if (isClimbing) {
                 const title = 'The Climbing Blog | Justin Kim';
-                const description = 'A personal record of sends, falls, and projects on the rock and in the gym.';
+                const description = 'A personal record of my falls, projects, and sends (on rock and in the gym).';
                 const url = `${getBaseUrl()}/climbing`;
                 const ogImg = `${getBaseUrl()}/og-image.png`;
 
