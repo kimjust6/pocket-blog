@@ -1,6 +1,6 @@
 <script server>
-  const { slugifyTitle } = resolve('../utils/common')
-  const { getAllBlogPosts, getAllClimbingLogs } = resolve('../utils/pocket')
+  const { slugifyTitle } = require(`${__hooks}/pages/utils/common.js`)
+  const { getAllBlogPosts, getAllClimbingLogs } = require(`${__hooks}/pages/utils/pocket.js`)
   const blogposts = getAllBlogPosts("-updated")
   const climbingposts = getAllClimbingLogs("-date")
 </script>

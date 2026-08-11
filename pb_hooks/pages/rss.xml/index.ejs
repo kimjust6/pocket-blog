@@ -1,6 +1,6 @@
 <script server>
-  const { slugifyTitle } = resolve('../utils/common')
-  const { getAllBlogPosts } = resolve('../utils/pocket')
+  const { slugifyTitle } = require(`${__hooks}/pages/utils/common.js`)
+  const { getAllBlogPosts } = require(`${__hooks}/pages/utils/pocket.js`)
   const blogposts = getAllBlogPosts("-manualPublishDate,-updated")
 
   const buildDate = new Date().toUTCString()

@@ -1,5 +1,5 @@
 <script server>
-    const { prepareBlogSingleViewData } = resolve('../../utils/common')
+    const { prepareBlogSingleViewData } = require(`${__hooks}/pages/utils/common.js`)
 
     if (typeof isClimbing === 'undefined') {
         var isClimbing = false

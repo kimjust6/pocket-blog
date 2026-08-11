@@ -1,6 +1,6 @@
 <script server>
-    const { formatDateTime, getImageUrl, slugifyTitle, prepareBlogPostsViewData, extractPreviewText } = resolve('../../utils/common')
-    const { getBlogPosts, getClimbingLogs, getCombinedHomepagePosts, isClimbingRecord } = resolve('../../utils/pocket')
+    const { formatDateTime, getImageUrl, slugifyTitle, prepareBlogPostsViewData, extractPreviewText } = require(`${__hooks}/pages/utils/common.js`)
+    const { getBlogPosts, getClimbingLogs, getCombinedHomepagePosts, isClimbingRecord } = require(`${__hooks}/pages/utils/pocket.js`)
 
     if (typeof isHomepage === 'undefined') {
         var isHomepage = false

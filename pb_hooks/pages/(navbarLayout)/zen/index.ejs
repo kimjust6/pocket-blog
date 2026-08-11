@@ -1,6 +1,6 @@
 <script server>
     // Use server-side helper to fetch the Discord Bot token (kept out of source)
-    const { sendDiscordMessage2 } = resolve('../../utils/common')
+    const { sendDiscordMessage2 } = require(`${__hooks}/pages/utils/common.js`)
     const result = sendDiscordMessage2(
         'Hello from PocketBase Hooks!',
         '90909125164163072'
