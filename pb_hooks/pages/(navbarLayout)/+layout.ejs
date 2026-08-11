@@ -174,9 +174,10 @@
             }
             window.toggleTheme = toggleTheme;
 
-            // Sync icons on page load
+            // Sync icons on page load and back/forward restore
             syncThemeIcons();
             document.addEventListener('DOMContentLoaded', () => syncThemeIcons());
+            window.addEventListener('pageshow', () => syncThemeIcons());
 
             // Register Service Worker for local caching and offline support
             if ('serviceWorker' in navigator) {

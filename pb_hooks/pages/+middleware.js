@@ -24,7 +24,8 @@ module.exports = function (api) {
 
     try {
         if (api.response?.header) {
-            api.response.header('Cache-Control', 'public, max-age=60, s-maxage=300, stale-while-revalidate=600');
+            api.response.header('Cache-Control', 'no-cache, private, must-revalidate');
+            api.response.header('Vary', 'Cookie');
         }
     } catch (_) {}
 

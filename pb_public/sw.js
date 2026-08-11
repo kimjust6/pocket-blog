@@ -1,7 +1,6 @@
-// Justin Blog Service Worker - Local Browser Caching & Offline Support
-const CACHE_VERSION = 'v2';
+// Justin Blog Service Worker - Static Asset & Image Caching Only (HTML/Theme is never cached)
+const CACHE_VERSION = 'v3';
 const STATIC_CACHE = `justin-static-${CACHE_VERSION}`;
-const PAGES_CACHE = `justin-pages-${CACHE_VERSION}`;
 const IMAGES_CACHE = `justin-images-${CACHE_VERSION}`;
 
 const PRECACHE_ASSETS = [
@@ -26,9 +25,9 @@ self.addEventListener('install', (event) => {
     );
 });
 
-// Activate: Clean up previous cache versions
+// Activate: Clean up all previous cache versions (including any old page caches)
 self.addEventListener('activate', (event) => {
-    const currentCaches = [STATIC_CACHE, PAGES_CACHE, IMAGES_CACHE];
+    const currentCaches = [STATIC_CACHE, IMAGES_CACHE];
     event.waitUntil(
         caches.keys().then((keys) => {
             return Promise.all(
@@ -42,7 +41,7 @@ self.addEventListener('activate', (event) => {
     );
 });
 
-// Fetch: Apply optimal caching strategies
+// Fetch: Only cache immutable static assets and images. Never intercept or cache HTML pages.
 self.addEventListener('fetch', (event) => {
     const request = event.request;
     const url = new URL(request.url);
@@ -50,6 +49,11 @@ self.addEventListener('fetch', (event) => {
     // Only handle same-origin GET requests
     if (request.method !== 'GET' || url.origin !== self.location.origin) {
         return;
+    }
+
+    // Never cache or intercept HTML documents, navigations, or server-rendered pages
+    if (request.mode === 'navigate' || request.headers.get('accept')?.includes('text/html')) {
+        return; // Pass through directly to network
     }
 
     // Bypass analytics, auth and admin routes
@@ -98,24 +102,6 @@ self.addEventListener('fetch', (event) => {
                         caches.open(IMAGES_CACHE).then((cache) => cache.put(request, responseClone));
                     }
                     return networkResponse;
-                });
-            })
-        );
-        return;
-    }
-
-    // 3. HTML Pages (Navigation requests) -> Network-First with Cache Fallback
-    if (request.mode === 'navigate' || request.headers.get('accept')?.includes('text/html')) {
-        event.respondWith(
-            fetch(request).then((networkResponse) => {
-                if (networkResponse && networkResponse.status === 200) {
-                    const responseClone = networkResponse.clone();
-                    caches.open(PAGES_CACHE).then((cache) => cache.put(request, responseClone));
-                }
-                return networkResponse;
-            }).catch(() => {
-                return caches.match(request).then((cachedResponse) => {
-                    return cachedResponse || caches.match('/');
                 });
             })
         );
