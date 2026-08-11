@@ -37,12 +37,12 @@ module.exports = function (api) {
                     "The Justin Blog",
             },
             { name: 'og:type', content: 'website' },
-            { name: 'og:url', content: 'https://www.justink.dev/' },
+            { name: 'og:url', content: 'https://www.jkim.win/' },
             {
                 name: 'og:image',
                 content: 'https://www.jkim.win/og-image.png',
             },
-            { name: 'og:image:alt', content: 'Blog Page Photo' },
+            { name: 'og:image:alt', content: 'The Justin Blog Cover' },
             { name: 'og:image:width', content: '1200' },
             { name: 'og:image:height', content: '630' },
             {
@@ -65,6 +65,7 @@ module.exports = function (api) {
             // Twitter Card metadata (optional, but helpful)
             { name: 'twitter:card', content: 'summary_large_image' },
             { name: 'twitter:site', content: '@MatchaLatteTea' },
+            { name: 'twitter:creator', content: '@MatchaLatteTea' },
             {
                 name: 'twitter:title',
                 content:
@@ -78,6 +79,10 @@ module.exports = function (api) {
             {
                 name: 'twitter:image',
                 content: 'https://www.jkim.win/og-image.png',
+            },
+            {
+                name: 'twitter:url',
+                content: 'https://www.jkim.win/',
             },
         ],
         theme: cookieValue,

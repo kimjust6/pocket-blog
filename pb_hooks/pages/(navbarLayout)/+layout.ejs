@@ -23,12 +23,20 @@
         />
 
         <% data.metadata.forEach(function(ogTag) { %>
+            <% if (ogTag && ogTag.content) { %>
+                <% if (ogTag.name.startsWith('og:') || ogTag.name.startsWith('article:')) { %>
+        <meta property="<%= ogTag.name %>" content="<%= ogTag.content %>" />
+                <% } else { %>
         <meta name="<%= ogTag.name %>" content="<%= ogTag.content %>" />
+                <% } %>
+            <% } %>
         <% }); %>
 
-        <title>
-            <%= data.metadata.find(x=> x.name === 'title')?.content %>
-        </title>
+        <title><%= data.metadata.find(x => x.name === 'title')?.content || 'The Justin Blog' %></title>
+        <% const canonicalUrl = data.metadata.find(x => x.name === 'og:url' || x.name === 'url')?.content; %>
+        <% if (canonicalUrl) { %>
+        <link rel="canonical" href="<%= canonicalUrl %>" />
+        <% } %>
         <link href="<%=asset('/app.css')%>" rel="stylesheet" />
         <link rel="preconnect" href="https://unpkg.com" crossorigin />
         <link rel="preconnect" href="https://www.googletagmanager.com" crossorigin />

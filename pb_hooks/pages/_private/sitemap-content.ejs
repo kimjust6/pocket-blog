@@ -2,17 +2,26 @@
   // Data is passed in as locals: blogposts, climbingposts, slugifyTitle
   response.header('Content-Type', 'application/xml; charset=utf-8')
 
+  const latestBlogUpdate = (blogposts && blogposts.length > 0)
+    ? (new Date(blogposts[0].getString('updated')).toISOString().split('.')[0] + 'Z')
+    : (new Date().toISOString().split('.')[0] + 'Z')
+
+  const latestClimbingUpdate = (climbingposts && climbingposts.length > 0)
+    ? (new Date(climbingposts[0].getString('updated') || climbingposts[0].getString('date')).toISOString().split('.')[0] + 'Z')
+    : (new Date().toISOString().split('.')[0] + 'Z')
+
   const staticPages = [
-    { loc: 'https://www.jkim.win/',           priority: '1.00', changefreq: 'weekly' },
-    { loc: 'https://www.jkim.win/blog/posts', priority: '0.90', changefreq: 'daily'  },
-    { loc: 'https://www.jkim.win/climbing',   priority: '0.90', changefreq: 'daily'  },
+    { loc: 'https://www.jkim.win/',           lastmod: latestBlogUpdate,     priority: '1.00', changefreq: 'weekly' },
+    { loc: 'https://www.jkim.win/blog/posts', lastmod: latestBlogUpdate,     priority: '0.90', changefreq: 'daily'  },
+    { loc: 'https://www.jkim.win/climbing',   lastmod: latestClimbingUpdate, priority: '0.90', changefreq: 'daily'  },
   ]
 
-  const xmlStaticPages = staticPages.map(({ loc, priority, changefreq }) =>
+  const xmlStaticPages = staticPages.map(({ loc, lastmod, priority, changefreq }) =>
     `<url>
     <loc>${loc}</loc>
-    <priority>${priority}</priority>
+    <lastmod>${lastmod}</lastmod>
     <changefreq>${changefreq}</changefreq>
+    <priority>${priority}</priority>
   </url>`
   ).join('\n  ')
 
