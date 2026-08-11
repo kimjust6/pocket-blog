@@ -18,12 +18,6 @@
             <div class="hero bg-base-200 py-12 min-h-[calc(100vh-12.54rem)] flex flex-col items-center justify-start blog-card-transition"
                 style="--blog-card-id: blog-card-<%= blogView.id %>">
                 <div class="hero-content max-w-4xl flex flex-col">
-                    <div class="w-full backdrop-blur-md p-6 rounded-xl mb-8 border-b border-base-content/10 pb-6">
-                        <h1 class="font-extrabold text-2xl md:text-3xl leading-tight blog-title-transition"
-                            style="--blog-title-id: blog-title-<%= blogView.id %>">
-                            <%= blogView.title %>
-                        </h1>
-                    </div>
                     <!-- Blog Image -->
                     <% if (blogView.imageUrl) { %>
                         <img src="<%= blogView.imageUrl %>"
@@ -33,6 +27,13 @@
                 aspect-ratio: 16/9;
             " alt="<%= blogView.title %>" width="896" height="504" fetchpriority="high" decoding="async" />
                         <% } %>
+                    <!-- Blog Title -->
+                    <div class="w-full pt-6 pb-2 border-b border-base-content/10">
+                        <h1 class="text-4xl md:text-5xl font-bold text-accent leading-tight blog-title-transition"
+                            style="--blog-title-id: blog-title-<%= blogView.id %>">
+                            <%= blogView.title %>
+                        </h1>
+                    </div>
                             <!-- Blog Content -->
                             <div class="w-full self-start backdrop-blur-md p-8 rounded-xl">
                                 <!-- Tags -->
@@ -62,7 +63,7 @@
                                     <div class="mt-6">
                                         <div class="flex justify-between items-center w-full">
                                             <a href="<%= blogView.backLink %>"
-                                                class="btn btn-primary btn-sm gap-2 transition-all duration-200 rounded-xl">
+                                                class="btn btn-accent btn-sm gap-2 transition-all duration-200 rounded-xl">
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
                                                     viewBox="0 0 24 24" fill="none" stroke="currentColor"
                                                     stroke-width="2" stroke-linecap="round" stroke-linejoin="round"

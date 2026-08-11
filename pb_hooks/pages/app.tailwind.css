@@ -97,6 +97,9 @@ body,
     border-color: transparent;
 }
 
+
+
+
 /* Tooltips appear instantly on hover */
 .tooltip:before,
 .tooltip:after {
@@ -223,10 +226,15 @@ input::-ms-reveal {
     -moz-osx-font-smoothing: grayscale;
 }
 
+/* Light theme: card titles use primary (deep blue) instead of secondary (sky blue) */
+[data-theme="nord"] .blog-title-transition {
+    color: oklch(var(--p) / 1);
+}
+
 /* Card Hover Effects */
 .group:hover .blog-card-transition {
-    filter: brightness(0.88);
-    box-shadow: 0 8px 24px -4px oklch(var(--bc) / 0.12), 0 4px 8px -2px oklch(var(--bc) / 0.07);
+    filter: brightness(0.82);
+    box-shadow: 0 4px 10px -4px oklch(var(--bc) / 0.08);
 }
 
 .group:hover .blog-image-transition {

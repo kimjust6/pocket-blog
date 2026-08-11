@@ -8,13 +8,13 @@ export default {
     daisyui: {
         themes: [
             {
-                // "Glacier Mist" blue pastel light theme
+                // "Glacier Mist" — blue pastel light theme
                 nord: {
-                    'primary': '#2D6392',           // rich slate blue
+                    'primary': '#2D6392',           // rich ocean blue
                     'primary-content': '#ffffff',
-                    'secondary': '#7DA1C8',          // soft periwinkle blue
+                    'secondary': '#5B9ED4',          // sky blue — hover/interactive highlight
                     'secondary-content': '#ffffff',
-                    'accent': '#D94F68',             // coral rose — warm complement to slate blue
+                    'accent': '#D94F68',             // coral rose — warm focal point
                     'accent-content': '#ffffff',
                     'neutral': '#1C2938',
                     'neutral-content': '#ffffff',
@@ -22,7 +22,7 @@ export default {
                     'base-200': '#D8E5F3',           // medium sky pastel
                     'base-300': '#ADC7E3',           // deeper mist blue — cards, navbar, footer
                     'base-content': '#13253A',       // dark slate navy
-                    'info': '#7DA1C8',
+                    'info': '#4A8FC2',
                     'info-content': '#ffffff',
                     'success': '#358A60',
                     'success-content': '#ffffff',
@@ -33,29 +33,29 @@ export default {
                 },
             },
             {
-                // "Dusk Blue" — dark pastel blue (DaisyUI dark bases, pastel accents)
+                // "Midnight Studio" — deep navy dark theme
                 dark: {
                     'color-scheme': 'dark',
-                    'primary': '#7BA5D4',           // soft cornflower blue
-                    'primary-content': '#0a1525',
-                    'secondary': '#89B4DA',          // sky blue pastel
-                    'secondary-content': '#0a1525',
-                    'accent': '#A89BD4',             // soft lavender
-                    'accent-content': '#0f0a25',
-                    'neutral': '#2a3240',
+                    'primary': '#5B9BD5',           // vivid electric blue — buttons, links
+                    'primary-content': '#06111f',
+                    'secondary': '#90C3E8',          // pale sky blue — lighter than primary, clear hover target
+                    'secondary-content': '#071624',
+                    'accent': '#E8A833',             // saffron-amber — warm focal point against cool bg
+                    'accent-content': '#1a1000',
+                    'neutral': '#1e2535',
                     'neutral-content': '#a6adbb',
                     'base-100': '#0f141c',           // deep navy — main bg
                     'base-200': '#0b0f16',           // darker navy
                     'base-300': '#070a11',           // near-black navy — cards, navbar
                     'base-content': '#b0bdd4',       // soft blue-grey text
-                    'info': '#7BA5D4',
-                    'info-content': '#0a1525',
-                    'success': '#6abf8f',
-                    'success-content': '#0a1f12',
-                    'warning': '#c4a45e',
-                    'warning-content': '#251800',
-                    'error': '#d47878',
-                    'error-content': '#250a0a',
+                    'info': '#5B9BD5',
+                    'info-content': '#06111f',
+                    'success': '#5cb88a',
+                    'success-content': '#061a0f',
+                    'warning': '#E8A833',
+                    'warning-content': '#1a1000',
+                    'error': '#d46b6b',
+                    'error-content': '#200808',
                 },
             },
             {

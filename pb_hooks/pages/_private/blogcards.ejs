@@ -170,7 +170,7 @@
                     <!-- Back to Posts Button -->
                     <div class="my-8 w-full">
                         <div class="flex justify-end w-full">
-                            <a href="/" class="btn btn-primary btn-sm gap-2 transition-all duration-200 rounded-xl">
+                            <a href="/" class="btn btn-accent btn-sm gap-2 transition-all duration-200 rounded-xl">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
                                     fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                                     stroke-linejoin="round" aria-hidden="true">
@@ -205,7 +205,7 @@
                             </figure>
                             <% } %>
                                 <div class="card-body lg:w-1/2 justify-center blog-body-transition p-8 md:p-12">
-                                    <h2 class="card-title text-3xl md:text-4xl font-bold transition-colors duration-200 mt-0 group-hover:text-primary blog-title-transition"
+                                    <h2 class="card-title text-3xl md:text-4xl font-bold text-secondary mt-0 blog-title-transition"
                                         style="--blog-title-id: blog-title-<%= heroPost.id %>">
                                         <%= heroPost.title %>
                                     </h2>
@@ -242,7 +242,7 @@
                         <% if (hasSearchQuery) { %>
                             <div class="mb-12 pt-8 text-center">
                                 <p class="mb-4 text-lg text-base-content">Results for
-                                    <span class="text-lg text-accent font-semibold">"<%= params.query %>"</span>
+                                    <span class="text-lg text-secondary font-semibold">"<%= params.query %>"</span>
                                 </p>
                             </div>
                             <% } else { %>
@@ -261,7 +261,7 @@
                                                 <% gridPosts.forEach((blog, index)=> { %>
                                                     <a href="<%= blog.link %>" class="no-underline group"
                                                         onclick="if(window.gtag) window.gtag('event', 'click', { event_category: '<%= blog.itemIsClimbing ? `climbing_log` : `blog_post` %>', event_label: decodeURIComponent('<%= encodeURIComponent(blog.title) %>') })">
-                                                        <div class="card dark:bg-base-300/70 bg-base-300/60 hover:bg-base-300/80 dark:hover:bg-base-300/90 backdrop-blur-xl shadow-xl hover:shadow-2xl transition-all duration-300 blog-card-transition overflow-hidden rounded-xl border border-base-content/10"
+                                                        <div class="card dark:bg-base-300/70 bg-base-300/60 hover:bg-base-300/80 dark:hover:bg-base-300/90 backdrop-blur-xl shadow-xl transition-all duration-300 blog-card-transition overflow-hidden rounded-xl border border-base-content/10"
                                                             style="--blog-card-id: blog-card-<%= blog.id %>">
                                                             <% if (blog.gridImageUrl) { %>
                                                                 <figure
@@ -291,7 +291,7 @@
                                                                 </figure>
                                                                 <% } %>
                                                                     <div class="card-body blog-body-transition p-6">
-                                                                        <h2 class="card-title text-xl font-bold transition-colors duration-200 my-0 group-hover:text-primary blog-title-transition"
+                                                                        <h2 class="card-title text-xl font-bold text-secondary my-0 blog-title-transition"
                                                                             style="--blog-title-id: blog-title-<%= blog.id %>">
                                                                             <%= blog.title %>
                                                                         </h2>
@@ -318,7 +318,7 @@
                                                         <!-- Dynamically Loaded Posts (Infinite Scroll) -->
                                                         <a v-for="blog in extraPosts" :key="blog.id" :href="blog.link"
                                                             class="no-underline group">
-                                                            <div class="card dark:bg-base-300/70 bg-base-300/60 hover:bg-base-300/80 dark:hover:bg-base-300/90 backdrop-blur-xl shadow-xl hover:shadow-2xl transition-all duration-300 blog-card-transition overflow-hidden rounded-xl border border-base-content/10"
+                                                            <div class="card dark:bg-base-300/70 bg-base-300/60 hover:bg-base-300/80 dark:hover:bg-base-300/90 backdrop-blur-xl shadow-xl transition-all duration-300 blog-card-transition overflow-hidden rounded-xl border border-base-content/10"
                                                                 :style="'--blog-card-id: blog-card-' + blog.id">
                                                                 <figure v-if="blog.imageUrl"
                                                                     class="h-auto md:h-48 overflow-hidden m-0 rounded-t-lg relative">
@@ -340,7 +340,7 @@
                                                                     </div>
                                                                 </figure>
                                                                 <div class="card-body blog-body-transition p-6">
-                                                                    <h2 class="card-title text-xl font-bold transition-colors duration-200 my-0 group-hover:text-primary blog-title-transition"
+                                                                    <h2 class="card-title text-xl font-bold text-secondary my-0 blog-title-transition"
                                                                         :style="'--blog-title-id: blog-title-' + blog.id">
                                                                         {{ blog.title }}
                                                                     </h2>
