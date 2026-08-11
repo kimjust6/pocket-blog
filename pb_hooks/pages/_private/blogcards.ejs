@@ -190,7 +190,7 @@
             <div class="mb-24">
                 <a href="<%= heroPost.link %>" class="no-underline group"
                     onclick="if(window.gtag) window.gtag('event', 'click', { event_category: '<%= heroPost.itemIsClimbing ? `climbing_log` : `blog_post` %>', event_label: decodeURIComponent('<%= encodeURIComponent(heroPost.title) %>') })">
-                    <div class="card w-full lg:card-side dark:bg-base-300/70 bg-base-300/60 hover:bg-base-300/80 dark:hover:bg-base-300/90 backdrop-blur-xl shadow-2xl lg:shadow-xl transition-all duration-300 blog-card-transition overflow-hidden rounded-xl border border-secondary/20 hover:border-secondary/50 relative"
+                    <div class="card w-full lg:card-side dark:bg-base-300/70 bg-base-300/60 hover:bg-base-300/70 dark:hover:bg-base-300/90 backdrop-blur-xl shadow-2xl lg:shadow-xl transition-all duration-300 blog-card-transition overflow-hidden rounded-xl border border-secondary/20 hover:border-secondary/50 relative"
                         style="--blog-card-id: blog-card-<%= heroPost.id %>">
                         <span
                             class="absolute py-1 px-2 sm:py-2 sm:px-4 bg-accent/90 backdrop-blur-md border border-accent-content/20 shadow-lg text-accent-content text-xs md:text-sm lg:text-base font-semibold uppercase tracking-wide z-10 rounded-full"
@@ -263,7 +263,7 @@
                                                 <% gridPosts.forEach((blog, index)=> { %>
                                                     <a href="<%= blog.link %>" class="no-underline group"
                                                         onclick="if(window.gtag) window.gtag('event', 'click', { event_category: '<%= blog.itemIsClimbing ? `climbing_log` : `blog_post` %>', event_label: decodeURIComponent('<%= encodeURIComponent(blog.title) %>') })">
-                                                        <div class="card dark:bg-base-300/70 bg-base-300/60 hover:bg-base-300/80 dark:hover:bg-base-300/90 backdrop-blur-xl shadow-xl transition-all duration-300 blog-card-transition overflow-hidden rounded-xl border border-secondary/20 hover:border-secondary/50"
+                                                        <div class="card dark:bg-base-300/70 bg-base-300/60 hover:bg-base-300/70 dark:hover:bg-base-300/90 backdrop-blur-xl shadow-xl transition-all duration-300 blog-card-transition overflow-hidden rounded-xl border border-secondary/20 hover:border-secondary/50"
                                                             style="--blog-card-id: blog-card-<%= blog.id %>">
                                                             <% if (blog.gridImageUrl) { %>
                                                                 <figure
@@ -323,7 +323,7 @@
                                                         <!-- Dynamically Loaded Posts (Infinite Scroll) -->
                                                         <a v-for="blog in extraPosts" :key="blog.id" :href="blog.link"
                                                             class="no-underline group">
-                                                            <div class="card dark:bg-base-300/70 bg-base-300/60 hover:bg-base-300/80 dark:hover:bg-base-300/90 backdrop-blur-xl shadow-xl transition-all duration-300 blog-card-transition overflow-hidden rounded-xl border border-secondary/20 hover:border-secondary/50"
+                                                            <div class="card dark:bg-base-300/70 bg-base-300/60 hover:bg-base-300/70 dark:hover:bg-base-300/90 backdrop-blur-xl shadow-xl transition-all duration-300 blog-card-transition overflow-hidden rounded-xl border border-secondary/20 hover:border-secondary/50"
                                                                 :style="'--blog-card-id: blog-card-' + blog.id">
                                                                 <figure v-if="blog.imageUrl"
                                                                     class="h-auto md:h-48 overflow-hidden m-0 rounded-t-lg relative">

@@ -111,6 +111,7 @@ body,
     corner-shape: squircle;
 }
 
+.squircle,
 .card,
 .btn,
 .badge,
@@ -218,8 +219,16 @@ input::-ms-reveal {
     transition: filter 0.25s ease, opacity 0.25s ease;
 }
 
+.card .blog-image-transition {
+    filter: brightness(0.85);
+}
+
 .group:hover .blog-image-transition {
     will-change: filter, opacity;
+}
+
+.group:hover .card .blog-image-transition {
+    filter: brightness(0.92);
 }
 
 .blog-title-transition {
@@ -235,8 +244,13 @@ input::-ms-reveal {
 
 /* Card Hover Effects */
 .group:hover .blog-card-transition {
-    filter: brightness(0.82);
-    box-shadow: 0 4px 10px -4px oklch(var(--bc) / 0.08);
+    filter: brightness(0.98);
+    box-shadow: 0 10px 25px -5px oklch(var(--bc) / 0.1), 0 4px 10px -2px oklch(var(--bc) / 0.05);
+}
+
+[data-theme="dark"] .group:hover .blog-card-transition,
+.dark .group:hover .blog-card-transition {
+    filter: brightness(0.92);
 }
 
 .group:hover .blog-image-transition {
