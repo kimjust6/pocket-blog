@@ -1,5 +1,5 @@
 <script server>
-    response.header('Content-Type', 'text/plain')
+    response.header('Content-Type', 'text/plain; charset=utf-8')
     response.write(`User-agent: *
 Allow: /
 
@@ -9,6 +9,7 @@ Disallow: /_/
 
 # Sitemaps (all canonical aliases)
 Sitemap: https://www.jkim.win/sitemap.xml
+Sitemap: https://www.jkim.win/sitemap
 Sitemap: https://www.jkim.win/sitemap_index.xml
 Sitemap: https://www.jkim.win/sitemap-index.xml`)
 </script>

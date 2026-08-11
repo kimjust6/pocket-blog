@@ -1,6 +1,6 @@
 <script server>
   // Data is passed in as locals: blogposts, climbingposts, slugifyTitle
-  response.header('Content-Type', 'application/xml')
+  response.header('Content-Type', 'application/xml; charset=utf-8')
 
   const staticPages = [
     { loc: 'https://www.jkim.win/',           priority: '1.00', changefreq: 'weekly' },
