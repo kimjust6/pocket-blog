@@ -1,0 +1,51 @@
+<script server>
+  // Data is passed in as locals: blogposts, climbingposts, slugifyTitle
+  response.header('Content-Type', 'application/xml')
+
+  const staticPages = [
+    { loc: 'https://www.jkim.win/',           priority: '1.00', changefreq: 'weekly' },
+    { loc: 'https://www.jkim.win/blog/posts', priority: '0.90', changefreq: 'daily'  },
+    { loc: 'https://www.jkim.win/climbing',   priority: '0.90', changefreq: 'daily'  },
+  ]
+
+  const xmlStaticPages = staticPages.map(({ loc, priority, changefreq }) =>
+    `<url>
+    <loc>${loc}</loc>
+    <priority>${priority}</priority>
+    <changefreq>${changefreq}</changefreq>
+  </url>`
+  ).join('\n  ')
+
+  const xmlBlogposts = (blogposts || [])
+    .map(
+      (post) =>
+        `<url>
+    <loc>https://www.jkim.win/blog/posts/${encodeURIComponent(slugifyTitle(post?.getString('title')))}/${post?.id}</loc>
+    <lastmod>${new Date(post?.getString('updated')).toISOString().split('.')[0] + 'Z'}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.80</priority>
+  </url>`
+    )
+    .join('\n  ')
+
+  const xmlClimbingposts = (climbingposts || [])
+    .map(
+      (post) =>
+        `<url>
+    <loc>https://www.jkim.win/climbing/${encodeURIComponent(slugifyTitle(post?.getString('title')))}/${post?.id}</loc>
+    <lastmod>${new Date(post?.getString('updated') || post?.getString('date')).toISOString().split('.')[0] + 'Z'}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.70</priority>
+  </url>`
+    )
+    .join('\n  ')
+
+  const xmlSnippet = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  ${xmlStaticPages}
+  ${xmlBlogposts}
+  ${xmlClimbingposts}
+</urlset>`
+
+  response.write(xmlSnippet)
+</script>

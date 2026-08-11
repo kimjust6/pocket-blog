@@ -1,0 +1,14 @@
+<script server>
+    const { prepareBlogSingleViewData } = resolve('../../../../utils/common')
+    const reqObj = typeof request !== 'undefined' ? request : null
+
+    // params.id is the PocketBase record ID (direct lookup — fast & unambiguous)
+    // params.title is the slug (for display/SEO only; not used for lookup here)
+    const singleBlogView = prepareBlogSingleViewData(null, false, params, data, reqObj)
+</script>
+
+<% if (singleBlogView == null) { %>
+    <%- include('../../../../_private/pagenotfound.ejs') %>
+<% } else { %>
+    <%- include('../../../../_private/blogpage.ejs', { isClimbing: false, singleBlog: singleBlogView.rawBlog }) %>
+<% } %>

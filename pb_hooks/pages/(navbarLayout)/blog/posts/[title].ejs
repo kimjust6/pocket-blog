@@ -1,7 +1,19 @@
-<script server></script>
+<script server>
+    const { prepareBlogSingleViewData, slugifyTitle } = resolve('../../../../utils/common')
+    const reqObj = typeof request !== 'undefined' ? request : null
+
+    // When params.title is set, this is an old-format URL: /blog/posts/:slug
+    // Redirect to new canonical format: /blog/posts/:slug/:id
+    if (params?.title) {
+        const viewForRedirect = prepareBlogSingleViewData(null, false, params, data, reqObj)
+        if (viewForRedirect && viewForRedirect.rawBlog) {
+            const rawBlog = viewForRedirect.rawBlog
+            const newSlug = slugifyTitle(rawBlog.getString('title'))
+            redirect(`/blog/posts/${encodeURIComponent(newSlug)}/${rawBlog.id}`, 301)
+        }
+    }
+</script>
 
 <% if (typeof(params.title) === "undefined") { %>
-<%- include('blogcards.ejs') %>
-<% } else { %>
-<%- include('blogpage.ejs') %>
+<%- include('../../../../_private/blogcards.ejs') %>
 <% } %>

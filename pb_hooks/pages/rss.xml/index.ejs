@@ -8,7 +8,7 @@
 
   const items = blogposts.map(post => {
     const pubDate = new Date(post.getString('manualPublishDate') || post.getString('created')).toUTCString()
-    const postLink = `https://www.jkim.win/blog/posts/${encodeURIComponent(slugifyTitle(post.getString('title')))}`
+    const postLink = `https://www.jkim.win/blog/posts/${encodeURIComponent(slugifyTitle(post.getString('title')))}/${post.id}`
     const content1 = post.getString('content1') || ''
     const content2 = post.getString('content2') || ''
     const postDesc = content1

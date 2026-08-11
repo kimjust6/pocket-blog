@@ -875,9 +875,10 @@ function formatPostViewModel(post, isHomepage = false, isClimbing = false) {
         ? (rawImg ? `${rawImg}?thumb=350x0` : '/background.webp')
         : (rawImg ? `${rawImg}?thumb=350x0` : (post.getString('coverImageAlt') || null));
 
+    const postId = post.id;
     const link = itemIsClimbing
-        ? `/climbing/${encodeURIComponent(slug)}`
-        : `/blog/posts/${encodeURIComponent(slug)}`;
+        ? `/climbing/${encodeURIComponent(slug)}/${postId}`
+        : `/blog/posts/${encodeURIComponent(slug)}/${postId}`;
 
     const dateRaw = itemIsClimbing
         ? (post.getString('date') || post.getString('created'))
@@ -955,18 +956,35 @@ function prepareBlogPostsViewData(blogposts, isHomepage, isClimbing, params = {}
  * Prepares single blog view data on the server, including metadata updates and GA view_item tracking
  */
 function prepareBlogSingleViewData(singleBlog, isClimbing, params = {}, data = {}, req = null) {
-    if (!singleBlog && params?.title) {
+    if (!singleBlog && (params?.title || params?.id)) {
         try {
-            const { getBlogPostsByTitlePrefix, getClimbingLogsByTitlePrefix } = require(`${__hooks}/pages/utils/pocket.js`);
-            const firstWord = params.title.split('-')[0].replace(/"/g, '\\"');
-            const possibleBlogs = isClimbing 
-                ? getClimbingLogsByTitlePrefix(firstWord)
-                : getBlogPostsByTitlePrefix(firstWord);
+            const { getBlogPostById, getBlogPostsByTitlePrefix, getClimbingPostById, getClimbingLogsByTitlePrefix } = require(`${__hooks}/pages/utils/pocket.js`);
 
-            const targetSlug = params.title.toLowerCase();
-            singleBlog = possibleBlogs.find(
-                (b) => slugifyTitle(b.getString('title')) === targetSlug
-            ) || null;
+            // New URL format: /climbing/:title/:id or /blog/posts/:title/:id
+            // params.id is the PocketBase record ID (direct lookup — fastest path)
+            if (params.id) {
+                try {
+                    singleBlog = isClimbing
+                        ? getClimbingPostById(params.id)
+                        : getBlogPostById(params.id);
+                } catch (_) {
+                    singleBlog = null;
+                }
+            }
+
+            // Fallback: old-format URL — resolve by slug match (for redirect pages)
+            if (!singleBlog && params.title) {
+                const titleParam = params.title;
+                const firstWord = titleParam.split('-')[0].replace(/"/g, '\\"');
+                const possibleBlogs = isClimbing
+                    ? getClimbingLogsByTitlePrefix(firstWord)
+                    : getBlogPostsByTitlePrefix(firstWord);
+
+                const targetSlug = titleParam.toLowerCase();
+                singleBlog = possibleBlogs.find(
+                    (b) => slugifyTitle(b.getString('title')) === targetSlug
+                ) || null;
+            }
         } catch (error) {
             console.error('Error fetching single blog post: ', error);
         }

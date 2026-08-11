@@ -14,6 +14,19 @@ const getBlogPostById = (id) => {
 }
 
 /**
+ * Get a single climbing post by ID using server-side $app
+ * @param {string} id - The climbing post ID
+ * @returns {Record} The climbing post Record object
+ */
+const getClimbingPostById = (id) => {
+    return $app.findFirstRecordByFilter(
+        POCKET_CLIMBING_POSTS,
+        "id = {:id} && isDeleted = false",
+        { id }
+    )
+}
+
+/**
  * Get blog posts by title prefix using server-side $app
  * @param {string} titlePrefix - The prefix of the title to search for
  * @returns {array} Array of blog post Record objects
@@ -159,6 +172,7 @@ function getCombinedHomepagePosts(page = 1, perPage = 6, query = '') {
 
 module.exports = {
     getBlogPostById,
+    getClimbingPostById,
     getBlogPostsByTitlePrefix,
     getBlogPosts,
     getAllBlogPosts,

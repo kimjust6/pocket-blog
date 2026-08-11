@@ -1,16 +1,19 @@
 <script server>
-    const { prepareBlogSingleViewData } = resolve('../../utils/common')
+    const { prepareBlogSingleViewData, slugifyTitle } = resolve('../../utils/common')
     const reqObj = typeof request !== 'undefined' ? request : null
-    const singleBlogView = prepareBlogSingleViewData(null, true, params, data, reqObj)
+
+    // When params.title is set, this is an old-format URL: /climbing/:slug
+    // Redirect to new canonical format: /climbing/:slug/:id
+    if (params?.title) {
+        const viewForRedirect = prepareBlogSingleViewData(null, true, params, data, reqObj)
+        if (viewForRedirect && viewForRedirect.rawBlog) {
+            const rawBlog = viewForRedirect.rawBlog
+            const newSlug = slugifyTitle(rawBlog.getString('title'))
+            redirect(`/climbing/${encodeURIComponent(newSlug)}/${rawBlog.id}`, 301)
+        }
+    }
 </script>
 
 <% if (typeof(params.title) === "undefined") { %>
     <%- include('../../_private/blogcards.ejs', { isClimbing: true }) %>
-<% } else { %>
-    <% if (singleBlogView == null) { %>
-        <%- include('../../_private/pagenotfound.ejs') %>
-    <% } else { %>
-        <%- include('../../_private/blogpage.ejs', { isClimbing: true, singleBlog: singleBlogView.rawBlog }) %>
-    <% } %>
 <% } %>
-

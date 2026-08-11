@@ -2,5 +2,13 @@
     response.header('Content-Type', 'text/plain')
     response.write(`User-agent: *
 Allow: /
-Sitemap: https://www.jkim.win/sitemap.xml`)
+
+# Block private/API paths
+Disallow: /api/
+Disallow: /_/
+
+# Sitemaps (all canonical aliases)
+Sitemap: https://www.jkim.win/sitemap.xml
+Sitemap: https://www.jkim.win/sitemap_index.xml
+Sitemap: https://www.jkim.win/sitemap-index.xml`)
 </script>
