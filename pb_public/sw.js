@@ -1,5 +1,5 @@
 // Justin Blog Service Worker - Local Browser Caching & Offline Support
-const CACHE_VERSION = 'v1';
+const CACHE_VERSION = 'v2';
 const STATIC_CACHE = `justin-static-${CACHE_VERSION}`;
 const PAGES_CACHE = `justin-pages-${CACHE_VERSION}`;
 const IMAGES_CACHE = `justin-images-${CACHE_VERSION}`;
@@ -104,19 +104,18 @@ self.addEventListener('fetch', (event) => {
         return;
     }
 
-    // 3. HTML Pages (Navigation requests) -> Stale-While-Revalidate (Instant 0ms loads + background refresh)
+    // 3. HTML Pages (Navigation requests) -> Network-First with Cache Fallback
     if (request.mode === 'navigate' || request.headers.get('accept')?.includes('text/html')) {
         event.respondWith(
-            caches.open(PAGES_CACHE).then((cache) => {
-                return cache.match(request).then((cachedResponse) => {
-                    const fetchPromise = fetch(request).then((networkResponse) => {
-                        if (networkResponse && networkResponse.status === 200) {
-                            cache.put(request, networkResponse.clone());
-                        }
-                        return networkResponse;
-                    }).catch(() => cachedResponse);
-
-                    return cachedResponse || fetchPromise;
+            fetch(request).then((networkResponse) => {
+                if (networkResponse && networkResponse.status === 200) {
+                    const responseClone = networkResponse.clone();
+                    caches.open(PAGES_CACHE).then((cache) => cache.put(request, responseClone));
+                }
+                return networkResponse;
+            }).catch(() => {
+                return caches.match(request).then((cachedResponse) => {
+                    return cachedResponse || caches.match('/');
                 });
             })
         );

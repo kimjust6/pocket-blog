@@ -5,6 +5,23 @@
     class="<%= data.theme === 'dark' ? 'dark' : '' %>"
 >
     <head>
+        <script>
+            (function () {
+                try {
+                    var match = document.cookie.match(/(^|;)\s*theme=([^;]+)/);
+                    var saved = match ? match[2] : null;
+                    if (!saved) saved = localStorage.getItem('theme');
+                    if (saved === 'nord' || saved === 'dark') {
+                        document.documentElement.setAttribute('data-theme', saved);
+                        if (saved === 'dark') {
+                            document.documentElement.classList.add('dark');
+                        } else {
+                            document.documentElement.classList.remove('dark');
+                        }
+                    }
+                } catch (_) {}
+            })();
+        </script>
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta
@@ -128,26 +145,38 @@
         </script>
         <script src="https://unpkg.com/petite-vue" defer init></script>
         <script type="module">
-            function toggleTheme() {
-                const html = document.documentElement
-                const currentTheme = html.getAttribute('data-theme')
-                const newTheme = currentTheme === 'dark' ? 'nord' : 'dark'
+            function syncThemeIcons(theme) {
+                const currentTheme = theme || document.documentElement.getAttribute('data-theme') || 'dark';
+                const sun = document.getElementById('theme-icon-sun');
+                const moon = document.getElementById('theme-icon-moon');
+                if (sun) sun.style.display = currentTheme === 'dark' ? 'inline-block' : 'none';
+                if (moon) moon.style.display = currentTheme === 'nord' ? 'inline-block' : 'none';
+            }
 
-                html.setAttribute('data-theme', newTheme)
-                document.cookie = `theme=${newTheme}; path=/; max-age=31536000; SameSite=Lax`
+            function toggleTheme() {
+                const html = document.documentElement;
+                const currentTheme = html.getAttribute('data-theme') === 'nord' ? 'nord' : 'dark';
+                const newTheme = currentTheme === 'dark' ? 'nord' : 'dark';
+
+                html.setAttribute('data-theme', newTheme);
+                try {
+                    localStorage.setItem('theme', newTheme);
+                } catch (_) {}
+                document.cookie = `theme=${newTheme}; path=/; max-age=31536000; SameSite=Lax`;
 
                 if (newTheme === 'dark') {
-                    html.classList.add('dark')
+                    html.classList.add('dark');
                 } else {
-                    html.classList.remove('dark')
+                    html.classList.remove('dark');
                 }
 
-                document.getElementById('theme-icon-sun').style.display =
-                    newTheme === 'dark' ? 'inline-block' : 'none'
-                document.getElementById('theme-icon-moon').style.display =
-                    newTheme === 'nord' ? 'inline-block' : 'none'
+                syncThemeIcons(newTheme);
             }
-            window.toggleTheme = toggleTheme
+            window.toggleTheme = toggleTheme;
+
+            // Sync icons on page load
+            syncThemeIcons();
+            document.addEventListener('DOMContentLoaded', () => syncThemeIcons());
 
             // Register Service Worker for local caching and offline support
             if ('serviceWorker' in navigator) {
