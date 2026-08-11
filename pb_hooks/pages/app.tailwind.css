@@ -5,6 +5,7 @@
 html {
     scroll-padding-top: 4rem;
     scroll-behavior: smooth;
+    scrollbar-gutter: stable;
 }
 
 /* Modern Sleek Scrollbar — pure bar without arrows */
