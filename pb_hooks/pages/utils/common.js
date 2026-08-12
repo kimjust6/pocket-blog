@@ -846,7 +846,8 @@ function trackGAEvent(eventName, eventParams = {}, req = null) {
 }
 
 /**
- * Sanitizes iframe video tags in HTML string to use youtube-nocookie and add accessibility attributes
+ * Sanitizes iframe video tags in HTML string to use youtube-nocookie, preserve aspect ratios,
+ * and ensure responsive scaling on mobile viewports.
  * @param {string} s - HTML content
  * @returns {string}
  */
@@ -854,17 +855,68 @@ function toNoCookie(s) {
     if (!s || typeof s !== 'string') return '';
     return s
         .replace(/https?:\/\/(www\.)?youtube\.com\/embed\//g, 'https://www.youtube-nocookie.com/embed/')
-        .replace(/<iframe([^>]*?)(?:\s+sandbox="[^"]*")?([^>]*?)>/gi, (match, pre, post) => {
+        .replace(/<iframe([^>]*?)>/gi, (match, attrs) => {
             const isYT = /youtube(-nocookie)?\.com\/embed\//.test(match);
             if (!isYT) return match;
-            let stripped = match.replace(/\s+sandbox="[^"]*"/gi, '');
-            if (!/\btitle=/i.test(stripped)) {
-                stripped = stripped.replace(/<iframe/i, '<iframe title="YouTube video player"');
+
+            let cleanAttrs = attrs.replace(/\s+sandbox="[^"]*"/gi, '');
+
+            const wMatch = cleanAttrs.match(/\bwidth=["']?(\d+)/i);
+            const hMatch = cleanAttrs.match(/\bheight=["']?(\d+)/i);
+            const width = wMatch ? parseInt(wMatch[1], 10) : null;
+            const height = hMatch ? parseInt(hMatch[1], 10) : null;
+
+            let isVertical = false;
+            let aspectRatio = '16 / 9';
+            if (width && height && height > width) {
+                isVertical = true;
+                aspectRatio = `${width} / ${height}`;
+            } else if (width && height) {
+                aspectRatio = `${width} / ${height}`;
             }
-            const hasAllow = /\ballow=/i.test(stripped);
-            return hasAllow
-                ? stripped
-                : stripped.replace(/<iframe/i, '<iframe allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen');
+
+            if (!/\btitle=/i.test(cleanAttrs)) {
+                cleanAttrs = ' title="YouTube video player"' + cleanAttrs;
+            }
+            if (!/\ballow=/i.test(cleanAttrs)) {
+                cleanAttrs += ' allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"';
+            }
+            if (!/\ballowfullscreen\b/i.test(cleanAttrs)) {
+                cleanAttrs += ' allowfullscreen';
+            }
+            if (!/\bloading=/i.test(cleanAttrs)) {
+                cleanAttrs += ' loading="lazy"';
+            }
+
+            // Extract existing style
+            const styleMatch = cleanAttrs.match(/\bstyle=["']([^"']*)["']/i);
+            let styleContent = styleMatch ? styleMatch[1].trim() : '';
+            if (styleContent && !styleContent.endsWith(';')) styleContent += ';';
+
+            // Strip conflicting width/height/max-width/display/aspect-ratio/margin from existing inline style
+            styleContent = styleContent
+                .replace(/(?:^|;)\s*display:[^;]+;?/gi, ';')
+                .replace(/(?:^|;)\s*margin-left:[^;]+;?/gi, ';')
+                .replace(/(?:^|;)\s*margin-right:[^;]+;?/gi, ';')
+                .replace(/(?:^|;)\s*max-width:[^;]+;?/gi, ';')
+                .replace(/(?:^|;)\s*width:[^;]+;?/gi, ';')
+                .replace(/(?:^|;)\s*height:[^;]+;?/gi, ';')
+                .replace(/(?:^|;)\s*aspect-ratio:[^;]+;?/gi, ';')
+                .replace(/;+/g, ';')
+                .trim();
+            if (styleContent.startsWith(';')) styleContent = styleContent.slice(1).trim();
+
+            const maxWidthVal = isVertical ? `min(100%, ${width || 400}px)` : '100%';
+            const responsiveStyles = `max-width: ${maxWidthVal}; width: 100%; height: auto; aspect-ratio: ${aspectRatio}; display: block; margin-left: auto; margin-right: auto;`;
+            const finalStyle = styleContent ? `${styleContent} ${responsiveStyles}` : responsiveStyles;
+
+            if (styleMatch) {
+                cleanAttrs = cleanAttrs.replace(/\bstyle=["'][^"']*["']/i, `style="${finalStyle}"`);
+            } else {
+                cleanAttrs += ` style="${finalStyle}"`;
+            }
+
+            return `<iframe${cleanAttrs}>`;
         });
 }
 

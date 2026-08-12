@@ -338,3 +338,14 @@ input::-ms-reveal {
     padding-left: 0.875rem;
     padding-right: 0.875rem;
 }
+
+/* Responsive iframes and media embeds */
+iframe {
+    max-width: 100%;
+}
+
+.prose iframe {
+    max-width: 100%;
+    border-radius: 0.75rem;
+}
+
