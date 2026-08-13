@@ -1,0 +1,32 @@
+{
+    "name": "The Justin Blog",
+    "short_name": "Justin Blog",
+    "description": "Keeping a personal record of my mistakes and lessons learned as a developer.",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#0f141c",
+    "theme_color": "#2D6392",
+    "icons": [
+        {
+            "src": "/favicon-16x16.png",
+            "sizes": "16x16",
+            "type": "image/png"
+        },
+        {
+            "src": "/favicon-32x32.png",
+            "sizes": "32x32",
+            "type": "image/png"
+        },
+        {
+            "src": "/apple-touch-icon.png",
+            "sizes": "180x180",
+            "type": "image/png"
+        },
+        {
+            "src": "/icon-192.png",
+            "sizes": "192x192",
+            "type": "image/png",
+            "purpose": "any maskable"
+        }
+    ]
+}

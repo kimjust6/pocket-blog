@@ -1,0 +1,36 @@
+<script server>
+    const { prepareBlogSingleViewData, slugifyTitle } = require(`${__hooks}/pages/utils/common.js`)
+    const reqObj = typeof request !== 'undefined' ? request : null
+
+    const isListView = !params.id && (!params.title || params.title === 'index')
+    const isLegacyPost = !params.id && params.title && params.title !== 'index'
+    const isCanonicalPost = Boolean(params.id)
+
+    let viewForRedirect = null
+    let singleBlogView = null
+
+    if (isLegacyPost) {
+        // Old-format URL: /climbing/:slug → 301 redirect to /climbing/:slug/:id
+        viewForRedirect = prepareBlogSingleViewData(null, true, params, data, reqObj)
+        if (viewForRedirect && viewForRedirect.rawBlog) {
+            const rawBlog = viewForRedirect.rawBlog
+            const newSlug = slugifyTitle(rawBlog.getString('title'))
+            redirect(`/climbing/${encodeURIComponent(newSlug)}/${rawBlog.id}`, 301)
+        }
+    } else if (isCanonicalPost) {
+        // Canonical URL: /climbing/:slug/:id
+        singleBlogView = prepareBlogSingleViewData(null, true, params, data, reqObj)
+    }
+</script>
+
+<% if (isListView) { %>
+    <%- include('blogcards.ejs', { isClimbing: true }) %>
+<% } else if (isCanonicalPost) { %>
+    <% if (singleBlogView == null) { %>
+        <%- include('pagenotfound.ejs') %>
+    <% } else { %>
+        <%- include('blogpage.ejs', { isClimbing: true, singleBlog: singleBlogView.rawBlog, blogView: singleBlogView }) %>
+    <% } %>
+<% } else { %>
+    <%- include('pagenotfound.ejs') %>
+<% } %>

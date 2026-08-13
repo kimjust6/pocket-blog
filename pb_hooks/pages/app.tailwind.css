@@ -5,6 +5,7 @@
 html {
     scroll-padding-top: 4rem;
     scroll-behavior: smooth;
+    scrollbar-gutter: stable;
 }
 
 /* Modern Sleek Scrollbar — pure bar without arrows */
@@ -111,11 +112,14 @@ body,
     corner-shape: squircle;
 }
 
+.squircle,
 .card,
 .btn,
 .badge,
 .input,
 .mockup-code,
+code,
+pre,
 figure,
 img {
     corner-shape: squircle;
@@ -216,8 +220,16 @@ input::-ms-reveal {
     transition: filter 0.25s ease, opacity 0.25s ease;
 }
 
+.card .blog-image-transition {
+    filter: brightness(0.85);
+}
+
 .group:hover .blog-image-transition {
     will-change: filter, opacity;
+}
+
+.group:hover .card .blog-image-transition {
+    filter: brightness(0.92);
 }
 
 .blog-title-transition {
@@ -233,8 +245,13 @@ input::-ms-reveal {
 
 /* Card Hover Effects */
 .group:hover .blog-card-transition {
-    filter: brightness(0.82);
-    box-shadow: 0 4px 10px -4px oklch(var(--bc) / 0.08);
+    filter: brightness(0.98);
+    box-shadow: 0 10px 25px -5px oklch(var(--bc) / 0.1), 0 4px 10px -2px oklch(var(--bc) / 0.05);
+}
+
+[data-theme="dark"] .group:hover .blog-card-transition,
+.dark .group:hover .blog-card-transition {
+    filter: brightness(0.92);
 }
 
 .group:hover .blog-image-transition {
@@ -291,3 +308,44 @@ input::-ms-reveal {
         outline-offset: 2px;
     }
 }
+
+/* Enhanced Tag Pill Heights & Vertical Padding */
+.badge {
+    height: auto;
+    min-height: 1.75rem;
+    padding-top: 0.25rem;
+    padding-bottom: 0.25rem;
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+}
+
+.badge-sm {
+    height: auto;
+    min-height: 1.5rem;
+    font-size: 0.8125rem;
+    padding-top: 0.2rem;
+    padding-bottom: 0.2rem;
+    padding-left: 0.625rem;
+    padding-right: 0.625rem;
+}
+
+.badge-lg {
+    height: auto;
+    min-height: 2.125rem;
+    font-size: 0.9375rem;
+    padding-top: 0.35rem;
+    padding-bottom: 0.35rem;
+    padding-left: 0.875rem;
+    padding-right: 0.875rem;
+}
+
+/* Responsive iframes and media embeds */
+iframe {
+    max-width: 100%;
+}
+
+.prose iframe {
+    max-width: 100%;
+    border-radius: 0.75rem;
+}
+

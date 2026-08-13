@@ -1,33 +1,7 @@
 <script server>
-  const { slugifyTitle } = resolve('../utils/common')
-  const { getAllBlogPosts } = resolve('../utils/pocket')
+  const { slugifyTitle } = require(`${__hooks}/pages/utils/common.js`)
+  const { getAllBlogPosts, getAllClimbingLogs } = require(`${__hooks}/pages/utils/pocket.js`)
   const blogposts = getAllBlogPosts("-updated")
-
-  response.header('Content-Type', 'application/xml')
-
-  const rootpage = `<url>
-    <loc>https://www.jkim.win/</loc>
-    <priority>1.00</priority>
-    <changefreq>weekly</changefreq>
-  </url>`
-
-  const xmlBlogposts = blogposts
-    ?.map(
-      (post) =>
-        `<url>
-    <loc>https://www.jkim.win/blog/posts/${encodeURIComponent(slugifyTitle(post?.getString('title')))}</loc>
-    <lastmod>${new Date(post?.getString('updated')).toISOString().split('.')[0] + 'Z'}</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.80</priority>
-  </url>`
-    )
-    .join('\n  ')
-
-  const xmlSnippet = `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  ${rootpage}
-  ${xmlBlogposts}
-</urlset>`
-
-  response.write(xmlSnippet)
+  const climbingposts = getAllClimbingLogs("-date")
 </script>
+<%- include('../_private/sitemap-content.ejs', { blogposts, climbingposts, slugifyTitle }) %>

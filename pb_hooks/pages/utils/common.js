@@ -782,7 +782,7 @@ function trackGAEvent(eventName, eventParams = {}, req = null) {
     try {
         const { GA_MEASUREMENT_ID } = require(`${__hooks}/pages/utils/constants.js`);
         const measurementId = GA_MEASUREMENT_ID || 'G-6P8M4DJNQL';
-        
+
         let clientId = 'pb_server_client';
         if (req) {
             try {
@@ -799,7 +799,7 @@ function trackGAEvent(eventName, eventParams = {}, req = null) {
                         clientId = parts.slice(2).join('.');
                     }
                 }
-            } catch (_) {}
+            } catch (_) { }
         }
 
         const url = `https://www.google-analytics.com/mp/collect?measurement_id=${measurementId}`;
@@ -814,25 +814,40 @@ function trackGAEvent(eventName, eventParams = {}, req = null) {
             }]
         };
 
-        if (typeof $http !== 'undefined' && $http.send) {
-            $http.send({
-                url: url,
-                method: 'POST',
-                body: JSON.stringify(payload),
-                headers: {
-                    'Content-Type': 'application/json'
+        const sendRequest = () => {
+            try {
+                if (typeof $http !== 'undefined' && $http.send) {
+                    $http.send({
+                        url: url,
+                        method: 'POST',
+                        body: JSON.stringify(payload),
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    });
                 }
-            });
+            } catch (err) {
+                if (typeof $app !== 'undefined' && $app.logger) {
+                    $app.logger().error('Failed to send GA event from backend', 'error', err);
+                }
+            }
+        };
+
+        if (typeof setTimeout === 'function') {
+            setTimeout(sendRequest, 0);
+        } else {
+            sendRequest();
         }
     } catch (err) {
         if (typeof $app !== 'undefined' && $app.logger) {
-            $app.logger().error('Failed to send GA event from backend', 'error', err);
+            $app.logger().error('Failed to prepare GA event tracking', 'error', err);
         }
     }
 }
 
 /**
- * Sanitizes iframe video tags in HTML string to use youtube-nocookie and add accessibility attributes
+ * Sanitizes iframe video tags in HTML string to use youtube-nocookie, preserve aspect ratios,
+ * and ensure responsive scaling on mobile viewports.
  * @param {string} s - HTML content
  * @returns {string}
  */
@@ -840,17 +855,68 @@ function toNoCookie(s) {
     if (!s || typeof s !== 'string') return '';
     return s
         .replace(/https?:\/\/(www\.)?youtube\.com\/embed\//g, 'https://www.youtube-nocookie.com/embed/')
-        .replace(/<iframe([^>]*?)(?:\s+sandbox="[^"]*")?([^>]*?)>/gi, (match, pre, post) => {
+        .replace(/<iframe([^>]*?)>/gi, (match, attrs) => {
             const isYT = /youtube(-nocookie)?\.com\/embed\//.test(match);
             if (!isYT) return match;
-            let stripped = match.replace(/\s+sandbox="[^"]*"/gi, '');
-            if (!/\btitle=/i.test(stripped)) {
-                stripped = stripped.replace(/<iframe/i, '<iframe title="YouTube video player"');
+
+            let cleanAttrs = attrs.replace(/\s+sandbox="[^"]*"/gi, '');
+
+            const wMatch = cleanAttrs.match(/\bwidth=["']?(\d+)/i);
+            const hMatch = cleanAttrs.match(/\bheight=["']?(\d+)/i);
+            const width = wMatch ? parseInt(wMatch[1], 10) : null;
+            const height = hMatch ? parseInt(hMatch[1], 10) : null;
+
+            let isVertical = false;
+            let aspectRatio = '16 / 9';
+            if (width && height && height > width) {
+                isVertical = true;
+                aspectRatio = `${width} / ${height}`;
+            } else if (width && height) {
+                aspectRatio = `${width} / ${height}`;
             }
-            const hasAllow = /\ballow=/i.test(stripped);
-            return hasAllow
-                ? stripped
-                : stripped.replace(/<iframe/i, '<iframe allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen');
+
+            if (!/\btitle=/i.test(cleanAttrs)) {
+                cleanAttrs = ' title="YouTube video player"' + cleanAttrs;
+            }
+            if (!/\ballow=/i.test(cleanAttrs)) {
+                cleanAttrs += ' allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"';
+            }
+            if (!/\ballowfullscreen\b/i.test(cleanAttrs)) {
+                cleanAttrs += ' allowfullscreen';
+            }
+            if (!/\bloading=/i.test(cleanAttrs)) {
+                cleanAttrs += ' loading="lazy"';
+            }
+
+            // Extract existing style
+            const styleMatch = cleanAttrs.match(/\bstyle=["']([^"']*)["']/i);
+            let styleContent = styleMatch ? styleMatch[1].trim() : '';
+            if (styleContent && !styleContent.endsWith(';')) styleContent += ';';
+
+            // Strip conflicting width/height/max-width/display/aspect-ratio/margin from existing inline style
+            styleContent = styleContent
+                .replace(/(?:^|;)\s*display:[^;]+;?/gi, ';')
+                .replace(/(?:^|;)\s*margin-left:[^;]+;?/gi, ';')
+                .replace(/(?:^|;)\s*margin-right:[^;]+;?/gi, ';')
+                .replace(/(?:^|;)\s*max-width:[^;]+;?/gi, ';')
+                .replace(/(?:^|;)\s*width:[^;]+;?/gi, ';')
+                .replace(/(?:^|;)\s*height:[^;]+;?/gi, ';')
+                .replace(/(?:^|;)\s*aspect-ratio:[^;]+;?/gi, ';')
+                .replace(/;+/g, ';')
+                .trim();
+            if (styleContent.startsWith(';')) styleContent = styleContent.slice(1).trim();
+
+            const maxWidthVal = isVertical ? `min(100%, ${width || 400}px)` : '100%';
+            const responsiveStyles = `max-width: ${maxWidthVal}; width: 100%; height: auto; aspect-ratio: ${aspectRatio}; display: block; margin-left: auto; margin-right: auto;`;
+            const finalStyle = styleContent ? `${styleContent} ${responsiveStyles}` : responsiveStyles;
+
+            if (styleMatch) {
+                cleanAttrs = cleanAttrs.replace(/\bstyle=["'][^"']*["']/i, `style="${finalStyle}"`);
+            } else {
+                cleanAttrs += ` style="${finalStyle}"`;
+            }
+
+            return `<iframe${cleanAttrs}>`;
         });
 }
 
@@ -865,19 +931,20 @@ function formatPostViewModel(post, isHomepage = false, isClimbing = false) {
     const slug = slugifyTitle(title);
     const rawText = (itemIsClimbing ? post.getString('content') : post.getString('content1')) || '';
     const previewText = extractPreviewText(rawText);
-    
+
     const rawImg = getImageUrl(post);
     const heroImageUrl = itemIsClimbing
         ? (rawImg ? `${rawImg}?thumb=800x0` : '/background.webp')
         : (rawImg ? `${rawImg}?thumb=800x0` : (post.getString('coverImageAlt') || null));
-        
+
     const gridImageUrl = itemIsClimbing
         ? (rawImg ? `${rawImg}?thumb=350x0` : '/background.webp')
         : (rawImg ? `${rawImg}?thumb=350x0` : (post.getString('coverImageAlt') || null));
 
+    const postId = post.id;
     const link = itemIsClimbing
-        ? `/climbing/${encodeURIComponent(slug)}`
-        : `/blog/posts/${encodeURIComponent(slug)}`;
+        ? `/climbing/${encodeURIComponent(slug)}/${postId}`
+        : `/blog/posts/${encodeURIComponent(slug)}/${postId}`;
 
     const dateRaw = itemIsClimbing
         ? (post.getString('date') || post.getString('created'))
@@ -916,30 +983,89 @@ function formatPostViewModel(post, isHomepage = false, isClimbing = false) {
 }
 
 /**
+ * Helper to update an existing metadata entry or append a new one
+ */
+function setOrUpdateMeta(metadata, name, content) {
+    if (!metadata || !Array.isArray(metadata) || content === undefined || content === null) return;
+    const existing = metadata.find((m) => m.name === name);
+    if (existing) {
+        existing.content = String(content);
+    } else {
+        metadata.push({ name, content: String(content) });
+    }
+}
+
+/**
  * Prepares blog posts view data on the server
  */
-function prepareBlogPostsViewData(blogposts, isHomepage, isClimbing, params = {}, req = null) {
+function prepareBlogPostsViewData(blogposts, isHomepage, isClimbing, params = {}, req = null, data = {}) {
     const rawQuery = params?.query || '';
     const query = sanitizeSearchTerm(rawQuery);
     const hasSearchQuery = !isHomepage && !!query;
 
     const items = (blogposts?.items || []).map(post => formatPostViewModel(post, isHomepage, isClimbing));
-    
+
     let heroPost = null;
     let gridPosts = items;
     if (isHomepage && gridPosts.length > 0) {
         heroPost = gridPosts[0];
         gridPosts = gridPosts.slice(1);
     }
-    
+
     const hasPosts = !!heroPost || gridPosts.length > 0;
     const hasNoSearchResults = hasSearchQuery && !hasPosts;
-    
+
     let fullParams = hasSearchQuery ? `&query=${encodeURIComponent(query)}` : '';
     if (isClimbing && params?.climbType) {
         fullParams += `&climbType=${encodeURIComponent(params.climbType)}`;
     }
-    
+
+    if (data?.metadata) {
+        try {
+            if (isClimbing) {
+                const title = 'The Climbing Blog | Justin Kim';
+                const description = 'A personal record of my falls, projects, and sends (on rock and in the gym).';
+                const url = `${getBaseUrl()}/climbing`;
+                const ogImg = `${getBaseUrl()}/og-image.png`;
+
+                setOrUpdateMeta(data.metadata, 'title', title);
+                setOrUpdateMeta(data.metadata, 'og:title', 'The Climbing Blog');
+                setOrUpdateMeta(data.metadata, 'twitter:title', 'The Climbing Blog');
+                setOrUpdateMeta(data.metadata, 'description', description);
+                setOrUpdateMeta(data.metadata, 'og:description', description);
+                setOrUpdateMeta(data.metadata, 'twitter:description', description);
+                setOrUpdateMeta(data.metadata, 'url', url);
+                setOrUpdateMeta(data.metadata, 'og:url', url);
+                setOrUpdateMeta(data.metadata, 'twitter:url', url);
+                setOrUpdateMeta(data.metadata, 'og:image', ogImg);
+                setOrUpdateMeta(data.metadata, 'twitter:image', ogImg);
+                setOrUpdateMeta(data.metadata, 'og:site_name', 'The Climbing Blog');
+                setOrUpdateMeta(data.metadata, 'og:type', 'website');
+            } else if (!isHomepage) {
+                const title = 'The Development Blog | Justin Kim';
+                const description = 'Keeping a personal record of my mistakes and lessons learned as a developer.';
+                const url = `${getBaseUrl()}/blog/posts`;
+                const ogImg = `${getBaseUrl()}/og-image.png`;
+
+                setOrUpdateMeta(data.metadata, 'title', title);
+                setOrUpdateMeta(data.metadata, 'og:title', 'The Development Blog');
+                setOrUpdateMeta(data.metadata, 'twitter:title', 'The Development Blog');
+                setOrUpdateMeta(data.metadata, 'description', description);
+                setOrUpdateMeta(data.metadata, 'og:description', description);
+                setOrUpdateMeta(data.metadata, 'twitter:description', description);
+                setOrUpdateMeta(data.metadata, 'url', url);
+                setOrUpdateMeta(data.metadata, 'og:url', url);
+                setOrUpdateMeta(data.metadata, 'twitter:url', url);
+                setOrUpdateMeta(data.metadata, 'og:image', ogImg);
+                setOrUpdateMeta(data.metadata, 'twitter:image', ogImg);
+                setOrUpdateMeta(data.metadata, 'og:site_name', 'The Justin Blog');
+                setOrUpdateMeta(data.metadata, 'og:type', 'website');
+            }
+        } catch (err) {
+            console.error('Error preparing blog posts view metadata: ', err);
+        }
+    }
+
     return {
         query,
         hasSearchQuery,
@@ -955,18 +1081,35 @@ function prepareBlogPostsViewData(blogposts, isHomepage, isClimbing, params = {}
  * Prepares single blog view data on the server, including metadata updates and GA view_item tracking
  */
 function prepareBlogSingleViewData(singleBlog, isClimbing, params = {}, data = {}, req = null) {
-    if (!singleBlog && params?.title) {
+    if (!singleBlog && (params?.title || params?.id)) {
         try {
-            const { getBlogPostsByTitlePrefix, getClimbingLogsByTitlePrefix } = require(`${__hooks}/pages/utils/pocket.js`);
-            const firstWord = params.title.split('-')[0].replace(/"/g, '\\"');
-            const possibleBlogs = isClimbing 
-                ? getClimbingLogsByTitlePrefix(firstWord)
-                : getBlogPostsByTitlePrefix(firstWord);
+            const { getBlogPostById, getBlogPostsByTitlePrefix, getClimbingPostById, getClimbingLogsByTitlePrefix } = require(`${__hooks}/pages/utils/pocket.js`);
 
-            const targetSlug = params.title.toLowerCase();
-            singleBlog = possibleBlogs.find(
-                (b) => slugifyTitle(b.getString('title')) === targetSlug
-            ) || null;
+            // New URL format: /climbing/:title/:id or /blog/posts/:title/:id
+            // params.id is the PocketBase record ID (direct lookup — fastest path)
+            if (params.id) {
+                try {
+                    singleBlog = isClimbing
+                        ? getClimbingPostById(params.id)
+                        : getBlogPostById(params.id);
+                } catch (_) {
+                    singleBlog = null;
+                }
+            }
+
+            // Fallback: old-format URL — resolve by slug match (for redirect pages)
+            if (!singleBlog && params.title) {
+                const titleParam = params.title;
+                const firstWord = titleParam.split('-')[0].replace(/"/g, '\\"');
+                const possibleBlogs = isClimbing
+                    ? getClimbingLogsByTitlePrefix(firstWord)
+                    : getBlogPostsByTitlePrefix(firstWord);
+
+                const targetSlug = titleParam.toLowerCase();
+                singleBlog = possibleBlogs.find(
+                    (b) => slugifyTitle(b.getString('title')) === targetSlug
+                ) || null;
+            }
         } catch (error) {
             console.error('Error fetching single blog post: ', error);
         }
@@ -975,83 +1118,118 @@ function prepareBlogSingleViewData(singleBlog, isClimbing, params = {}, data = {
     let viewModel = null;
 
     if (singleBlog) {
+        const postTitle = singleBlog.getString('title') || '';
+        const slug = slugifyTitle(postTitle);
+        const canonicalPath = isClimbing
+            ? `/climbing/${encodeURIComponent(slug)}/${singleBlog.id}`
+            : `/blog/posts/${encodeURIComponent(slug)}/${singleBlog.id}`;
+        const canonicalUrl = `${getBaseUrl()}${canonicalPath}`;
+
         if (data?.metadata) {
             try {
-                const newTitle = isClimbing
-                    ? `${singleBlog.getString('title')} | Climbing Blog`
-                    : `${singleBlog.getString('title')} | The Justin Blog`;
-                    
-                data.metadata
-                    .filter((m) => m.name.includes('title'))
-                    .forEach((m) => (m.content = newTitle));
+                const pageTitle = isClimbing
+                    ? `${postTitle} | Climbing Blog`
+                    : `${postTitle} | The Justin Blog`;
 
-                data.metadata
-                    .filter((m) => m.name === 'og:image' || m.name === 'twitter:image')
-                    .forEach((m) => (m.content = getImageUrl(singleBlog)));
+                setOrUpdateMeta(data.metadata, 'title', pageTitle);
+                setOrUpdateMeta(data.metadata, 'og:title', postTitle);
+                setOrUpdateMeta(data.metadata, 'twitter:title', postTitle);
 
-                const description = extractPreviewText(
-                    singleBlog.getString(isClimbing ? 'content' : 'content1')
-                ).slice(0, 160);
+                const rawContent = singleBlog.getString(isClimbing ? 'content' : 'content1') || '';
+                const previewText = extractPreviewText(rawContent);
+                const metaDescription = previewText.slice(0, 160) || (isClimbing ? 'Climbing journal log by Justin Kim.' : 'Blog post by Justin Kim.');
 
-                data.metadata
-                    .filter(
-                        (m) =>
-                            m.name === 'description' ||
-                            m.name === 'og:description' ||
-                            m.name === 'twitter:description'
-                    )
-                    .forEach((m) => (m.content = description));
+                setOrUpdateMeta(data.metadata, 'description', metaDescription);
+                setOrUpdateMeta(data.metadata, 'og:description', metaDescription);
+                setOrUpdateMeta(data.metadata, 'twitter:description', metaDescription);
 
+                // URL metadata
+                setOrUpdateMeta(data.metadata, 'url', canonicalUrl);
+                setOrUpdateMeta(data.metadata, 'og:url', canonicalUrl);
+                setOrUpdateMeta(data.metadata, 'twitter:url', canonicalUrl);
+
+                // Type & site name
+                setOrUpdateMeta(data.metadata, 'og:type', 'article');
+                setOrUpdateMeta(data.metadata, 'og:site_name', isClimbing ? 'The Climbing Blog' : 'The Justin Blog');
+                setOrUpdateMeta(data.metadata, 'og:locale', 'en_CA');
+
+                // Image handling
+                const rawImgUrl = getImageUrl(singleBlog);
+                const ogImageUrl = rawImgUrl ? `${rawImgUrl}?thumb=1200x630` : `${getBaseUrl()}/og-image.png`;
+                const coverAlt = singleBlog.getString('coverImageAlt') || postTitle || 'Blog post cover image';
+                const isWebp = ogImageUrl.includes('.webp');
+                const isJpg = ogImageUrl.includes('.jpg') || ogImageUrl.includes('.jpeg');
+                const mimeType = isWebp ? 'image/webp' : (isJpg ? 'image/jpeg' : 'image/png');
+
+                setOrUpdateMeta(data.metadata, 'og:image', ogImageUrl);
+                setOrUpdateMeta(data.metadata, 'og:image:secure_url', ogImageUrl);
+                setOrUpdateMeta(data.metadata, 'og:image:type', mimeType);
+                setOrUpdateMeta(data.metadata, 'twitter:image', ogImageUrl);
+                setOrUpdateMeta(data.metadata, 'og:image:alt', coverAlt);
+                setOrUpdateMeta(data.metadata, 'og:image:width', '1200');
+                setOrUpdateMeta(data.metadata, 'og:image:height', '630');
+
+                // Robots & Crawlers
+                setOrUpdateMeta(data.metadata, 'robots', 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1');
+
+                // Twitter Card
+                setOrUpdateMeta(data.metadata, 'twitter:card', 'summary_large_image');
+                setOrUpdateMeta(data.metadata, 'twitter:site', '@MatchaLatteTea');
+                setOrUpdateMeta(data.metadata, 'twitter:creator', '@MatchaLatteTea');
+
+                // Author & Publisher
+                setOrUpdateMeta(data.metadata, 'author', 'Justin Kim');
+                setOrUpdateMeta(data.metadata, 'article:author', 'https://www.justink.dev');
+                setOrUpdateMeta(data.metadata, 'article:author:name', 'Justin Kim');
+                setOrUpdateMeta(data.metadata, 'article:publisher', 'https://www.justink.dev/');
+                setOrUpdateMeta(data.metadata, 'article:section', isClimbing ? 'Climbing' : 'Software Development');
+
+                // Dates
+                const publishedDate = isClimbing
+                    ? singleBlog.getString('date') || singleBlog.getString('created')
+                    : singleBlog.getString('manualPublishDate') || singleBlog.getString('created');
+                if (publishedDate) {
+                    setOrUpdateMeta(data.metadata, 'article:published_time', new Date(publishedDate).toISOString());
+                }
+
+                const updatedDate = singleBlog.getString('updated');
+                if (updatedDate) {
+                    setOrUpdateMeta(data.metadata, 'article:modified_time', new Date(updatedDate).toISOString());
+                }
+
+                // Tags & Keywords
+                // Remove previous article:tag entries in place to prevent duplicates
+                for (let i = data.metadata.length - 1; i >= 0; i--) {
+                    if (data.metadata[i].name === 'article:tag') {
+                        data.metadata.splice(i, 1);
+                    }
+                }
+
+                let tagsList = [];
                 if (isClimbing) {
                     const climbType = singleBlog.getString('climbType');
                     const grade = singleBlog.getString('grade');
                     const style = singleBlog.getString('style');
                     const location = singleBlog.getString('location');
-                    const climbTags = [climbType, grade, style, location].filter(Boolean);
-                    climbTags.forEach((tag) => {
-                        data.metadata.push({ name: 'article:tag', content: tag });
-                    });
-                    data.metadata.push({ name: 'keywords', content: climbTags.join(', ') });
+                    tagsList = [climbType, grade, style, location].filter(Boolean);
                 } else {
                     const blogTags = singleBlog.getString('tags');
                     if (blogTags && blogTags.length > 0) {
-                        const tags = blogTags.split(';');
-                        tags.forEach((tag) => {
-                            data.metadata.push({ name: 'article:tag', content: tag.trim() });
-                        });
-                        data.metadata.push({ name: 'keywords', content: tags.join(', ') });
+                        tagsList = blogTags.split(';').map(t => t.trim()).filter(Boolean);
                     }
                 }
 
-                const publishedDate = isClimbing
-                    ? singleBlog.getString('date')
-                    : singleBlog.getString('manualPublishDate') || singleBlog.getString('created');
-                if (publishedDate) {
-                    data.metadata.push({
-                        name: 'article:published_time',
-                        content: new Date(publishedDate).toISOString(),
-                    });
-                }
-
-                const updatedDate = singleBlog.getString('updated');
-                if (updatedDate) {
-                    data.metadata.push({
-                        name: 'article:modified_time',
-                        content: new Date(updatedDate).toISOString(),
-                    });
-                }
-
-                const ogType = data.metadata.find((m) => m.name === 'og:type');
-                if (ogType) {
-                    ogType.content = 'article';
-                } else {
-                    data.metadata.push({ name: 'og:type', content: 'article' });
+                tagsList.forEach((tag) => {
+                    data.metadata.push({ name: 'article:tag', content: tag });
+                });
+                if (tagsList.length > 0) {
+                    setOrUpdateMeta(data.metadata, 'keywords', tagsList.join(', '));
                 }
 
                 trackGAEvent('view_item', {
                     event_category: isClimbing ? 'climbing_engagement' : 'blog_engagement',
                     item_id: singleBlog.id,
-                    item_name: singleBlog.getString('title') || '',
+                    item_name: postTitle,
                     item_category: isClimbing ? (singleBlog.getString('climbType') || '') : (singleBlog.getString('tags') || ''),
                     author: 'Justin K'
                 }, req);
@@ -1191,6 +1369,7 @@ module.exports = {
     sanitizeSearchTerm,
     extractPreviewText,
     toNoCookie,
-    formatPostViewModel
+    formatPostViewModel,
+    setOrUpdateMeta
 }
 

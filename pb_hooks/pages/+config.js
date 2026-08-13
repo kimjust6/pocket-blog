@@ -10,6 +10,6 @@ module.exports = function (api) {
             },
             'pocketpages-plugin-ejs',
         ],
-        debug: false,
+        debug: true,
     }
 }

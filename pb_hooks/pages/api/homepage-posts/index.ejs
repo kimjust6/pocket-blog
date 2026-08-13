@@ -1,6 +1,6 @@
 <script server>
-  const { getCombinedHomepagePosts, isClimbingRecord } = resolve('../../utils/pocket')
-  const { formatPostViewModel } = resolve('../../utils/common')
+  const { getCombinedHomepagePosts, isClimbingRecord } = require(`${__hooks}/pages/utils/pocket.js`)
+  const { formatPostViewModel } = require(`${__hooks}/pages/utils/common.js`)
 
   const page = parseInt(params?.page || '1', 10)
   const perPage = parseInt(params?.perPage || '6', 10)

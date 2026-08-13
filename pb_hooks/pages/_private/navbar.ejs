@@ -1,4 +1,5 @@
-<nav class="navbar dark:bg-base-300/70 bg-base-300/60 backdrop-blur-xl w-full fixed top-0 left-0 right-0 z-40 navbar-persistent" aria-label="Main Navigation">
+<nav class="navbar dark:bg-base-300/70 bg-base-300/60 backdrop-blur-xl w-full fixed top-0 left-0 right-0 z-40 navbar-persistent"
+    aria-label="Main Navigation">
     <div class="flex-none lg:hidden">
         <!-- hamburger icon -->
         <label for="my-drawer-3" aria-label="Open sidebar menu" class="btn btn-square btn-ghost">
@@ -11,35 +12,36 @@
     </div>
 
     <div class="menu menu-horizontal mx-2 flex-1 px-2">
-        <a href="/" class="<%= data.currentPath === '/' ? 'text-accent font-semibold' : '' %>" aria-current="<%= data.currentPath === '/' ? 'page' : 'false' %>">Home</a>
+        <a href="/"
+            class="font-medium hover:text-secondary transition-colors duration-200 no-underline text-base-content"
+            aria-current="<%= data.currentPath === '/' ? 'page' : 'false' %>">Home</a>
     </div>
-    <div class="hidden flex-none lg:block">
-        <ul class="menu menu-horizontal">
-            <% data.navigation.forEach(function(item) { %>
-                <li>
-                    <a href="<%= item.url %>">
-                        <%= item.title %>
-                    </a>
-                </li>
-                <% }); %>
-        </ul>
+    <div class="hidden flex-none lg:flex items-center gap-6 px-2 text-sm">
+        <% data.navigation.forEach(function(item) { %>
+            <a href="<%= item.url %>"
+                class="font-medium hover:text-secondary transition-colors duration-200 no-underline <%= data.currentPath === item.url ? 'text-accent' : 'text-base-content' %>">
+                <%= item.title %>
+            </a>
+            <% }); %>
     </div>
-    <div class="flex-none">
-        <button onclick="toggleTheme()" class="btn btn-ghost btn-circle group" aria-label="Toggle theme">
+    <div class="flex-none ml-2">
+        <button onclick="toggleTheme()"
+            class="flex items-center justify-center group cursor-pointer bg-transparent p-2 rounded-xl border border-transparent hover:border-accent/50 transition-all duration-200"
+            aria-label="Toggle theme">
             <!-- Sun Icon -->
-            <svg id="theme-icon-sun"
-                xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                class="h-5 w-5 stroke-base-content group-hover:stroke-secondary <%= data.theme === 'nord' ? '' : 'hidden' %>" aria-hidden="true">
+            <svg id="theme-icon-sun" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+                class="h-5 w-5 fill-transparent stroke-accent group-hover:fill-accent group-hover:scale-110 transition-all duration-200 <%= data.theme === 'dark' ? '' : 'hidden' %>"
+                aria-hidden="true">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z">
+                    d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z">
                 </path>
             </svg>
             <!-- Moon Icon -->
-            <svg id="theme-icon-moon"
-                xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                class="h-5 w-5 stroke-yellow-200 group-hover:stroke-yellow-400 <%= data.theme === 'dark' ? '' : 'hidden' %>" aria-hidden="true">
+            <svg id="theme-icon-moon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+                class="h-5 w-5 fill-transparent stroke-accent group-hover:fill-accent group-hover:scale-110 transition-all duration-200 <%= data.theme === 'nord' ? '' : 'hidden' %>"
+                aria-hidden="true">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z">
+                    d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z">
                 </path>
             </svg>
         </button>
