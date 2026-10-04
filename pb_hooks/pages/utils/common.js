@@ -1296,7 +1296,7 @@ function prepareBlogSingleViewData(singleBlog, isClimbing, params = {}, data = {
             cleanContent,
             cleanContent2,
             backLink: isClimbing ? '/climbing' : '/blog/posts',
-            backLabel: isClimbing ? 'Back to Climbs' : 'Back to Dev',
+            backLabel: isClimbing ? 'More Climbing' : 'More Dev Posts',
             dateLabel: isClimbing ? 'Logged' : 'Posted'
         };
     }
