@@ -1,7 +1,7 @@
 {
     "description": "DO NOT DELETE THIS FILE. This file is used to keep track of which files have been synced in the most recent deployment. If you delete this file a resync will need to be done (which can take a while) - read more: https://github.com/SamKirkland/FTP-Deploy-Action",
     "version": "1.0.0",
-    "generatedTime": 1791072877217,
+    "generatedTime": 1791075053671,
     "data": [
         {
             "type": "folder",
@@ -272,8 +272,8 @@
         {
             "type": "file",
             "name": "pb_hooks/pages/app.css",
-            "size": 89635,
-            "hash": "c02274c5b47fb86fb7165f45d6da3dd050249c005aba6354d120d3572f891181"
+            "size": 89778,
+            "hash": "1975f63651d74b94aab5930001e0ff80363b4d5990971fcfb13735a9e5f8abdd"
         },
         {
             "type": "folder",
@@ -320,8 +320,8 @@
         {
             "type": "file",
             "name": "pb_hooks/pages/utils/common.js",
-            "size": 48470,
-            "hash": "429edfc4e9e69ed4713962a8eb0075add46d8cac685995df574117c5928baac6"
+            "size": 48466,
+            "hash": "f2eb6364fa72f76e5d959db01726ae2c53b31f1cbb8706ef9473fd0b856f1982"
         },
         {
             "type": "file",
@@ -414,8 +414,8 @@
         {
             "type": "file",
             "name": "pb_hooks/pages/_private/hero.ejs",
-            "size": 6747,
-            "hash": "100e96a83a6662c32583a2b3c11bd1f79e0d678af49c6178ac95e9c5f99e6dbe"
+            "size": 7412,
+            "hash": "51e96bfc2125e187d214c4faf5cf1409a1591c7620d01eed3b73560fb2101787"
         },
         {
             "type": "file",
@@ -426,8 +426,8 @@
         {
             "type": "file",
             "name": "pb_hooks/pages/_private/blogpage.ejs",
-            "size": 6768,
-            "hash": "a6d0107bfe63925c5b38a57784218e00e1c1ac65c6898a3d2b00975ac5971aa1"
+            "size": 8881,
+            "hash": "d22d72b5554bb752503ebb8a60d2070e242ddefa16c9834899a8f16bb1079206"
         },
         {
             "type": "file",
