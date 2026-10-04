@@ -1,7 +1,7 @@
 {
     "description": "DO NOT DELETE THIS FILE. This file is used to keep track of which files have been synced in the most recent deployment. If you delete this file a resync will need to be done (which can take a while) - read more: https://github.com/SamKirkland/FTP-Deploy-Action",
     "version": "1.0.0",
-    "generatedTime": 1791119427855,
+    "generatedTime": 1791120568533,
     "data": [
         {
             "type": "folder",
@@ -208,8 +208,8 @@
         {
             "type": "file",
             "name": "pb_hooks/pocketpages.pb.js",
-            "size": 23,
-            "hash": "83f80163c8424e9245990124ea42a8b74425828cf66395cb680498225d26f275"
+            "size": 1763,
+            "hash": "5c940c2d85db8e42d7ee19fe79967c6eb8a4d036b4086c1e6f75e5d31156d84e"
         },
         {
             "type": "folder",
@@ -256,8 +256,8 @@
         {
             "type": "file",
             "name": "pb_hooks/pages/pagenotfound.ejs",
-            "size": 44,
-            "hash": "d8c0a053c55e951acea485b84c9f8a87e9b514cc127db1cbeaaf728f7c03398f"
+            "size": 35,
+            "hash": "4b40c5e9b39fff04e525cc89afc92fd3f66e372c99ccbb5d302aa3797a93dd63"
         },
         {
             "type": "folder",
@@ -292,8 +292,8 @@
         {
             "type": "file",
             "name": "pb_hooks/pages/+config.js",
-            "size": 368,
-            "hash": "403887973b4905320d20bb721fef45a655499835582d4a80d4d5a3b5173e1c16"
+            "size": 788,
+            "hash": "d9054d9138024e1466425cbbbfcc9bbe83ad36e134a0abec5ddbe885ae122a01"
         },
         {
             "type": "folder",
@@ -368,8 +368,8 @@
         {
             "type": "file",
             "name": "pb_hooks/pages/notfound/index.ejs",
-            "size": 166,
-            "hash": "c097476e44007fba048e73672e26ba5198ca2305e1abb81e0ee10bacd5b14c19"
+            "size": 32,
+            "hash": "ed84372c3d04a6ceb7d4d619d202f219b12245d57ec93a1bb10f304467d7babc"
         },
         {
             "type": "folder",
@@ -453,6 +453,12 @@
         },
         {
             "type": "file",
+            "name": "pb_hooks/pages/(navbarLayout)/pagenotfound.ejs",
+            "size": 83,
+            "hash": "890dc64c4bf4596f395f62b5c47492b9559b5a082c509e5a2d30769e4eb75a51"
+        },
+        {
+            "type": "file",
             "name": "pb_hooks/pages/(navbarLayout)/index.ejs",
             "size": 134,
             "hash": "bc805b17b68b492bdfee1a04a4308afe0eb60e8fd1f79c0d2635372755799672"
@@ -490,8 +496,8 @@
         {
             "type": "file",
             "name": "pb_hooks/pages/(navbarLayout)/climbing/[title]/[id].ejs",
-            "size": 1520,
-            "hash": "4225c16644df4bb62f3b8e403c2dd77e2932dfddf1c4a8b8844c0c5feecbc0c1"
+            "size": 1666,
+            "hash": "865a4f71ca9419d1cd9db759ee269a1a4045035c3ba78102e31fb7dd0b25d8ea"
         },
         {
             "type": "folder",
@@ -510,8 +516,8 @@
         {
             "type": "file",
             "name": "pb_hooks/pages/(navbarLayout)/blog/posts/[title]/[id].ejs",
-            "size": 1509,
-            "hash": "2e64ffe65e461f9e7cd83b1fcd737048a2a2e94a909e8dda12fc916466712bc2"
+            "size": 1655,
+            "hash": "e926cc589fabe53d0f1b5190f0f70b3dfbd62840f435ce6d4b1cb81788d7a189"
         },
         {
             "type": "file",
