@@ -59,17 +59,39 @@
                                 </div>
 
                                 <!-- Back to Posts & Dates Meta Bar -->
-                                <div class="flex justify-between items-center w-full text-sm text-base-content">
-                                    <a href="<%= blogView.backLink %>"
-                                        class="btn btn-accent btn-sm gap-2 rounded-full transition-all duration-200">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
-                                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                                            stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                                            <path d="m12 19-7-7 7-7" />
-                                            <path d="M19 12H5" />
-                                        </svg>
-                                        <%= blogView.backLabel %>
-                                    </a>
+                                <div
+                                    class="flex justify-between items-center w-full text-sm text-base-content flex-wrap gap-4">
+                                    <div class="flex items-center gap-2 flex-wrap">
+                                        <button type="button"
+                                            onclick="if (window.history.length > 1) { window.history.back(); } else { window.location.href = '<%= blogView.backLink %>'; }"
+                                            class="btn btn-accent btn-sm gap-2 rounded-full transition-all duration-200">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                                stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                                <path d="m12 19-7-7 7-7" />
+                                                <path d="M19 12H5" />
+                                            </svg>
+                                            Back
+                                        </button>
+                                        <a href="<%= blogView.backLink %>"
+                                            class="btn btn-accent btn-sm gap-2 rounded-full transition-all duration-200">
+                                            <% if (blogView.isClimbing) { %>
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                                    viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                                    stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                                    <path d="m8 3 4 8 5-5 5 15H2L8 3z" />
+                                                </svg>
+                                            <% } else { %>
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                                    viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                                    stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                                    <polyline points="16 18 22 12 16 6" />
+                                                    <polyline points="8 6 2 12 8 18" />
+                                                </svg>
+                                            <% } %>
+                                            <%= blogView.backLabel %>
+                                        </a>
+                                    </div>
                                     <div class="text-right">
                                         <%= blogView.dateLabel %>:
                                             <strong>
@@ -89,7 +111,8 @@
 
                             <!-- Blog Content Body -->
                             <div class="w-full self-start backdrop-blur-md px-4 sm:px-8 pt-6 pb-8 rounded-xl">
-                                <div class="prose max-w-none text-base-content min-w-0 w-full font-normal leading-relaxed">
+                                <div
+                                    class="prose max-w-none text-base-content min-w-0 w-full font-normal leading-relaxed">
                                     <%- blogView.cleanContent %>
                                 </div>
                                 <% if (blogView.cleanContent2) { %>
