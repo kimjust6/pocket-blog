@@ -10,8 +10,7 @@
     "push": "npx phio deploy mlt-blog -e pb_data \"pb_data/**/*\" package.json bun.lock bun.lockb patches \"patches/**/*\"",
     "login": "npx phio login",
     "update": "pocketbase update",
-    "typegen": "node scripts/typegen.mjs",
-    "postinstall": "patch-package"
+    "typegen": "node scripts/typegen.mjs"
   },
   "description": "Justin's personal blog using PocketPages and DaisyUI.",
   "author": {
@@ -35,12 +34,15 @@
     "daisyui": "^4.12.23",
     "dotenv": "^17.2.3",
     "esbuild": "^0.28.2",
-    "patch-package": "^8.0.1",
     "phio": "^0.4.0",
     "prettier": "^3.6.2",
     "prettier-plugin-ejs": "^1.0.3",
     "prettier-plugin-tailwindcss": "^0.6.14",
     "tailwindcss": "^3.4.17"
+  },
+  "overrides": {
+    "basic-ftp": "^6.2.1",
+    "chokidar": "^4.0.3"
   },
   "dependencies": {
     "pocketbase": "^0.26.6",

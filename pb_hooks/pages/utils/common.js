@@ -126,6 +126,19 @@ function formatDateTime(date) {
 }
 
 function getBaseUrl() {
+    try {
+        if (typeof $app !== 'undefined' && $app?.settings) {
+            const meta = $app.settings()?.meta;
+            const appUrl = meta?.appURL || meta?.appUrl;
+            if (appUrl) {
+                return appUrl.replace(/\/+$/, '');
+            }
+        }
+    } catch (err) {
+        if (typeof $app !== 'undefined' && $app?.logger) {
+            $app.logger().error('Error getting appURL from settings', 'error', err);
+        }
+    }
     return 'https://www.jkim.win';
 }
 
