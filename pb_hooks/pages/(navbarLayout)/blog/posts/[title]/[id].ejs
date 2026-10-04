@@ -21,6 +21,10 @@
         // Canonical URL: /blog/posts/:slug/:id
         singleBlogView = prepareBlogSingleViewData(null, false, params, data, reqObj)
     }
+
+    if (!isListView && ((isCanonicalPost && singleBlogView == null) || (!isCanonicalPost && !viewForRedirect))) {
+        api.status = 404
+    }
 </script>
 
 <% if (isListView) { %>

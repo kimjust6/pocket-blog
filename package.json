@@ -8,6 +8,7 @@
     "wsl": "wsl bash -c \"set -a && source .env && set +a && npm run dev\"",
     "css": "tailwindcss -i ./pb_hooks/pages/app.tailwind.css -o ./pb_hooks/pages/app.css --minify --watch",
     "push": "npx phio deploy mlt-blog -e pb_data \"pb_data/**/*\" package.json bun.lock bun.lockb patches \"patches/**/*\"",
+    "push2": "npx phio deploy my-blog -e pb_data \"pb_data/**/*\" package.json bun.lock bun.lockb patches \"patches/**/*\"",
     "login": "npx phio login",
     "update": "pocketbase update",
     "typegen": "node scripts/typegen.mjs"
