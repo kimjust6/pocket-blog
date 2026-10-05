@@ -1055,7 +1055,7 @@ function prepareBlogPostsViewData(blogposts, isHomepage, isClimbing, params = {}
                 setOrUpdateMeta(data.metadata, 'og:site_name', 'The Climbing Blog');
                 setOrUpdateMeta(data.metadata, 'og:type', 'website');
             } else if (!isHomepage) {
-                const title = 'The Development Blog | Justin Kim';
+                const title = 'The Dev Blog | Justin Kim';
                 const description = 'Keeping a personal record of my mistakes and lessons learned as a developer.';
                 const url = `${getBaseUrl()}/blog/posts`;
                 const ogImg = `${getBaseUrl()}/og-image.png`;
