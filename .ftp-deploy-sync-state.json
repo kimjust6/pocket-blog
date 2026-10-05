@@ -1,7 +1,7 @@
 {
     "description": "DO NOT DELETE THIS FILE. This file is used to keep track of which files have been synced in the most recent deployment. If you delete this file a resync will need to be done (which can take a while) - read more: https://github.com/SamKirkland/FTP-Deploy-Action",
     "version": "1.0.0",
-    "generatedTime": 1791120568533,
+    "generatedTime": 1791166842876,
     "data": [
         {
             "type": "folder",
@@ -132,78 +132,6 @@
             "name": "pb_migrations/auxiliary.db",
             "size": 4096,
             "hash": "5c9dec1886cc01f5f2307ee1ea87f9b32a4cef0f8f9a2c68beebc558013bedab"
-        },
-        {
-            "type": "file",
-            "name": "pb_migrations/1782355440_optimize_image_thumbnails.js",
-            "size": 1115,
-            "hash": "6ddd1a02c8fa5025798338461480c77971e8f045cb2f50a2e8c5a689e070fa8c"
-        },
-        {
-            "type": "file",
-            "name": "pb_migrations/1782355438_updated_blogposts.js",
-            "size": 450,
-            "hash": "bfab55ec23b73e3ef527d4f6a781310abdf45fc3b257ab45112454fd531e192e"
-        },
-        {
-            "type": "file",
-            "name": "pb_migrations/1782355418_updated_climbing_logs.js",
-            "size": 458,
-            "hash": "2d6d9a6d57c4279d815ab37418e2034ee5dee8a94349de0bc518ad0234f8a080"
-        },
-        {
-            "type": "file",
-            "name": "pb_migrations/1782355399_updated_blogposts.js",
-            "size": 669,
-            "hash": "cd08d83955c3eb0fbf7dd63a537c537a5d44b3defc52383801336fe185c6bbe1"
-        },
-        {
-            "type": "file",
-            "name": "pb_migrations/1782355372_updated_blogposts.js",
-            "size": 669,
-            "hash": "ba3812c066232f0bab7be0913932a4760c5e0e1c957b63525faeff8bb698d56f"
-        },
-        {
-            "type": "file",
-            "name": "pb_migrations/1781063374_add_mock_climbing_logs.js",
-            "size": 1862,
-            "hash": "6bcf27df8e72b8395015d3bf62c3a9c4d0f1d3f7de7542829763191cad85e587"
-        },
-        {
-            "type": "file",
-            "name": "pb_migrations/1781063373_create_climbing_logs.js",
-            "size": 1674,
-            "hash": "07ca9210e6a26c4ceb9bcb021ea79faeb9642e7068cde56d7ce43d45918b03bc"
-        },
-        {
-            "type": "file",
-            "name": "pb_migrations/1776990330_updated_blogposts.js",
-            "size": 441,
-            "hash": "072be2d8775edc720f7efadcea27a2cf2a7907b41d78a33978de03784f3acc80"
-        },
-        {
-            "type": "file",
-            "name": "pb_migrations/1776990323_updated_blogposts.js",
-            "size": 483,
-            "hash": "e34fd487d0da774aee6ed0ee77cca397375fa171d9c09136306c47b5b316b579"
-        },
-        {
-            "type": "file",
-            "name": "pb_migrations/1776990271_updated_blogposts.js",
-            "size": 483,
-            "hash": "e44919aab8df4e4da7f3ed733e6019ba5db449a0d412c80c06e24a6c39a4c9d7"
-        },
-        {
-            "type": "file",
-            "name": "pb_migrations/1776990220_updated_blogposts.js",
-            "size": 441,
-            "hash": "82c4fa0bdaf016d481d6a4f58cef0ffdd46225ff098571e6eaa01064b1fe2dd3"
-        },
-        {
-            "type": "file",
-            "name": "pb_migrations/1776990211_updated_blogposts.js",
-            "size": 441,
-            "hash": "bca345c7c092a899805395348b53620b7b2db2c847e859884a993e8179ee5745"
         },
         {
             "type": "file",
@@ -432,8 +360,8 @@
         {
             "type": "file",
             "name": "pb_hooks/pages/_private/blogcards.ejs",
-            "size": 32458,
-            "hash": "a80c37a01b6c2dd4bdd81ac6f63cb5859da4931f79c8cfe92b9475da6998323c"
+            "size": 32450,
+            "hash": "646c51bd1792ec1a4de39159d47930cdadce6f8b3bd61ad118391764fd9bb956"
         },
         {
             "type": "folder",
