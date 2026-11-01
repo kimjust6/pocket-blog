@@ -126,6 +126,19 @@ function formatDateTime(date) {
 }
 
 function getBaseUrl() {
+    try {
+        if (typeof $app !== 'undefined' && $app?.settings) {
+            const meta = $app.settings()?.meta;
+            const appUrl = meta?.appURL || meta?.appUrl;
+            if (appUrl) {
+                return appUrl.replace(/\/+$/, '');
+            }
+        }
+    } catch (err) {
+        if (typeof $app !== 'undefined' && $app?.logger) {
+            $app.logger().error('Error getting appURL from settings', 'error', err);
+        }
+    }
     return 'https://www.jkim.win';
 }
 
@@ -1042,7 +1055,7 @@ function prepareBlogPostsViewData(blogposts, isHomepage, isClimbing, params = {}
                 setOrUpdateMeta(data.metadata, 'og:site_name', 'The Climbing Blog');
                 setOrUpdateMeta(data.metadata, 'og:type', 'website');
             } else if (!isHomepage) {
-                const title = 'The Development Blog | Justin Kim';
+                const title = 'The Dev Blog | Justin Kim';
                 const description = 'Keeping a personal record of my mistakes and lessons learned as a developer.';
                 const url = `${getBaseUrl()}/blog/posts`;
                 const ogImg = `${getBaseUrl()}/og-image.png`;
@@ -1283,7 +1296,7 @@ function prepareBlogSingleViewData(singleBlog, isClimbing, params = {}, data = {
             cleanContent,
             cleanContent2,
             backLink: isClimbing ? '/climbing' : '/blog/posts',
-            backLabel: isClimbing ? 'Back to journal' : 'View all posts',
+            backLabel: isClimbing ? 'More Climbing' : 'More Dev Posts',
             dateLabel: isClimbing ? 'Logged' : 'Posted'
         };
     }

@@ -1,8 +1,1 @@
-<% if (params.notfound == "_") {%>
-<script>
-    return routerNext(e)
-</script>
-<% } else { %>
-<%- include('pagenotfound.ejs') %>
-<%- include('footer.ejs') %>
-<% } %>
+<% redirect('/pagenotfound') %>
