@@ -1,7 +1,7 @@
 {
     "description": "DO NOT DELETE THIS FILE. This file is used to keep track of which files have been synced in the most recent deployment. If you delete this file a resync will need to be done (which can take a while) - read more: https://github.com/SamKirkland/FTP-Deploy-Action",
     "version": "1.0.0",
-    "generatedTime": 1791167708906,
+    "generatedTime": 1793718309395,
     "data": [
         {
             "type": "folder",
@@ -90,6 +90,12 @@
             "name": "pb_public/apple-touch-icon.png",
             "size": 33653,
             "hash": "21234d0d6b14f4eb48603437a630e51cf320effdd5ea621b271306558a2a65b1"
+        },
+        {
+            "type": "file",
+            "name": "pb_public/js/petite-vue.iife.js",
+            "size": 16901,
+            "hash": "774bb8e88b09936246a57f0dfed88a375258a8235b893561c96880411dabc4d5"
         },
         {
             "type": "file",
@@ -200,8 +206,8 @@
         {
             "type": "file",
             "name": "pb_hooks/pages/app.css",
-            "size": 89778,
-            "hash": "1975f63651d74b94aab5930001e0ff80363b4d5990971fcfb13735a9e5f8abdd"
+            "size": 89776,
+            "hash": "fa142b7eb86c3b22a1333b56161280141ed2b0b76525813d3f49ba9f17ffaf03"
         },
         {
             "type": "folder",
@@ -408,8 +414,8 @@
         {
             "type": "file",
             "name": "pb_hooks/pages/(navbarLayout)/+layout.ejs",
-            "size": 11413,
-            "hash": "7a300cfc10381868108343735ff6d4b634f7a946d2f4084f9259d04c0abcf3be"
+            "size": 11318,
+            "hash": "1a1f5078e9ba08bf2113c12a812c05ea66589d05ea02d39b4592c57cdd7d920d"
         },
         {
             "type": "file",
