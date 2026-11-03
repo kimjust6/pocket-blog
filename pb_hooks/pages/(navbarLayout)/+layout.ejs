@@ -28,7 +28,7 @@
             http-equiv="Content-Security-Policy"
             content="
                 default-src 'self';
-                script-src 'self' 'unsafe-inline' 'unsafe-eval' https://*.youtube.com https://youtube.com https://*.ytimg.com https://unpkg.com https://www.googletagmanager.com https://www.google.com https://cdnjs.cloudflare.com;
+                script-src 'self' 'unsafe-inline' 'unsafe-eval' https://*.youtube.com https://youtube.com https://*.ytimg.com https://www.googletagmanager.com https://www.google.com https://cdnjs.cloudflare.com;
                 frame-src 'self' https://*.youtube.com https://youtube.com https://*.youtube-nocookie.com;
                 img-src 'self' data: blob: https://*.ytimg.com https://*.youtube.com https://*.ggpht.com https://www.google.com https://www.googletagmanager.com;
                 connect-src 'self' https://*.youtube.com https://youtubei.googleapis.com https://yt3.ggpht.com https://www.google-analytics.com https://www.googletagmanager.com;
@@ -71,7 +71,6 @@
 
         <!-- Styles & Preconnects -->
         <link href="<%=asset('/app.css')%>" rel="stylesheet" />
-        <link rel="preconnect" href="https://unpkg.com" crossorigin />
         <link rel="preconnect" href="https://www.googletagmanager.com" crossorigin />
 
         <!-- Structured Data (JSON-LD) -->
@@ -143,7 +142,7 @@
             ]
         }
         </script>
-        <script src="https://unpkg.com/petite-vue" defer init></script>
+        <script src="/js/petite-vue.iife.js" defer init></script>
         <script type="module">
             function syncThemeIcons(theme) {
                 const currentTheme = theme || document.documentElement.getAttribute('data-theme') || 'dark';
