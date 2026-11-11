@@ -25,6 +25,51 @@
         }
     }
 
+    function preloadImage(url, timeoutMs) {
+        if (!url || typeof Image === 'undefined') return Promise.resolve();
+        return new Promise((resolve) => {
+            let settled = false;
+            const done = () => {
+                if (!settled) {
+                    settled = true;
+                    resolve();
+                }
+            };
+            const timer = setTimeout(done, timeoutMs || 180);
+            try {
+                const img = new Image();
+                const finishDecode = () => {
+                    clearTimeout(timer);
+                    if (typeof img.decode === 'function') {
+                        img.decode().then(done, done);
+                    } else {
+                        done();
+                    }
+                };
+                img.onload = finishDecode;
+                img.onerror = () => {
+                    clearTimeout(timer);
+                    done();
+                };
+                img.src = url;
+                if (img.complete) finishDecode();
+            } catch (_) {
+                clearTimeout(timer);
+                done();
+            }
+        });
+    }
+
+    function setBoundedCache(cache, key, value, maxSize) {
+        if (!key) return;
+        if (cache.has(key)) cache.delete(key);
+        cache.set(key, value);
+        while (cache.size > maxSize) {
+            const oldestKey = cache.keys().next().value;
+            cache.delete(oldestKey);
+        }
+    }
+
     function trackPostClick(post) {
         if (!post || typeof window.gtag !== 'function') return;
         window.gtag('event', 'click', {
@@ -73,6 +118,94 @@
             if (matcher && !matcher(initialPayload)) return null;
             const consumed = initialPayload;
             initialPayload = null;
+            return consumed;
+        }
+
+        const listCache = new Map();
+        const postCache = new Map();
+        let resolvedRoutePayload = null;
+
+        function getListCacheKey(section, query) {
+            const params = new URLSearchParams();
+            params.set('section', section);
+            if (query && query.page) params.set('page', String(query.page));
+            if (query && query.query) params.set('query', String(query.query));
+            if (query && query.climbType) params.set('climbType', String(query.climbType));
+            return params.toString();
+        }
+
+        function createListSnapshot(section, data) {
+            return {
+                data,
+                extraPosts: [],
+                infinitePage: data.currentPage || 1,
+                hasMore: section === 'home' && (data.currentPage || 1) < (data.totalPages || 1),
+            };
+        }
+
+        async function fetchPostsPayload(section, query, signal) {
+            const key = getListCacheKey(section, query);
+            if (listCache.has(key)) {
+                return listCache.get(key);
+            }
+            const res = await fetch(`/api/posts?${key}`, signal ? { signal } : undefined);
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            const json = await res.json();
+            const entry = createListSnapshot(section, json);
+            setBoundedCache(listCache, key, entry, 25);
+            return entry;
+        }
+
+        async function fetchSinglePostPayload(isClimbing, params, signal) {
+            const climbingFlag = !!isClimbing;
+            const idKey = params && params.id ? `post:${climbingFlag}:id:${String(params.id)}` : null;
+            const titleKey = params && params.title ? `post:${climbingFlag}:title:${String(params.title)}` : null;
+            const cached = (idKey && postCache.get(idKey)) || (!idKey && titleKey && postCache.get(titleKey));
+            if (cached) return cached;
+
+            const queryParams = new URLSearchParams();
+            queryParams.set('type', climbingFlag ? 'climbing' : 'blog');
+            if (params && params.title) queryParams.set('title', String(params.title));
+            if (params && params.id) queryParams.set('id', String(params.id));
+
+            const res = await fetch(`/api/post?${queryParams.toString()}`, signal ? { signal } : undefined);
+            const json = await res.json();
+            const entry = {
+                ok: res.ok,
+                found: !!(res.ok && json && json.found),
+                data: json,
+            };
+            if (entry.found && json.post && json.post.id) {
+                setBoundedCache(postCache, `post:${climbingFlag}:id:${json.post.id}`, entry, 50);
+                if (!idKey && titleKey) {
+                    setBoundedCache(postCache, titleKey, entry, 50);
+                }
+            }
+            return entry;
+        }
+
+        function seedCacheFromInitial(routeLocation) {
+            if (!initialPayload || !routeLocation) return;
+            if (initialPayload.type === 'posts-list') {
+                const section = initialPayload.isHomepage
+                    ? 'home'
+                    : (initialPayload.isClimbing ? 'climbing' : 'blog');
+                const key = getListCacheKey(section, routeLocation.query);
+                if (!listCache.has(key)) {
+                    setBoundedCache(listCache, key, createListSnapshot(section, initialPayload), 25);
+                }
+            } else if (initialPayload.type === 'post-detail' && initialPayload.post && initialPayload.post.id) {
+                const climbingFlag = !!initialPayload.post.isClimbing;
+                const entry = { ok: true, found: true, data: initialPayload };
+                setBoundedCache(postCache, `post:${climbingFlag}:id:${initialPayload.post.id}`, entry, 50);
+            }
+        }
+
+        function consumeResolvedPayload(fullPath, expectedType) {
+            if (!resolvedRoutePayload || resolvedRoutePayload.fullPath !== fullPath) return null;
+            if (expectedType && resolvedRoutePayload.type !== expectedType) return null;
+            const consumed = resolvedRoutePayload;
+            resolvedRoutePayload = null;
             return consumed;
         }
 
@@ -334,9 +467,27 @@
                         if (res.ok) {
                             const json = await res.json();
                             if (Array.isArray(json.items) && json.items.length > 0) {
-                                extraPosts.value.push(...json.items.map(normalizeExtraItem));
+                                const seenIds = new Set();
+                                if (heroPost.value && heroPost.value.id) seenIds.add(heroPost.value.id);
+                                (payload.value?.gridPosts || []).forEach((p) => p && seenIds.add(p.id));
+                                extraPosts.value.forEach((p) => p && seenIds.add(p.id));
+
+                                const normalized = json.items
+                                    .map(normalizeExtraItem)
+                                    .filter((item) => item && item.id && !seenIds.has(item.id));
+                                extraPosts.value.push(...normalized);
                                 infinitePage.value = nextPage;
                                 hasMore.value = !!json.hasMore;
+
+                                const key = getListCacheKey(props.section, route.query);
+                                if (listCache.has(key)) {
+                                    setBoundedCache(listCache, key, {
+                                        data: payload.value,
+                                        extraPosts: [...extraPosts.value],
+                                        infinitePage: infinitePage.value,
+                                        hasMore: hasMore.value,
+                                    }, 25);
+                                }
                             } else {
                                 hasMore.value = false;
                             }
@@ -352,17 +503,27 @@
                     }
                 }
 
-                function applyPayload(data) {
+                function applyPayload(data, snapshot) {
                     payload.value = data;
                     searchQuery.value = data.rawQuery || '';
-                    extraPosts.value = [];
-                    infinitePage.value = data.currentPage || 1;
-                    hasMore.value = isHomepage.value && (data.currentPage || 1) < (data.totalPages || 1);
+                    if (snapshot) {
+                        extraPosts.value = [...(snapshot.extraPosts || [])];
+                        infinitePage.value = snapshot.infinitePage || data.currentPage || 1;
+                        hasMore.value = !!snapshot.hasMore;
+                    } else {
+                        extraPosts.value = [];
+                        infinitePage.value = data.currentPage || 1;
+                        hasMore.value = isHomepage.value && (data.currentPage || 1) < (data.totalPages || 1);
+                    }
                     if (data.pageTitle) document.title = data.pageTitle;
 
                     nextTick(() => {
                         if (!isHomepage.value && searchInput.value && isDesktop()) {
-                            searchInput.value.focus();
+                            try {
+                                searchInput.value.focus({ preventScroll: true });
+                            } catch (_) {
+                                searchInput.value.focus();
+                            }
                         }
                         setupObserver();
                     });
@@ -383,24 +544,21 @@
                         return;
                     }
 
+                    const prefetched = consumeResolvedPayload(route.fullPath, 'posts-list');
+                    if (prefetched && prefetched.entry) {
+                        loading.value = false;
+                        applyPayload(prefetched.entry.data, prefetched.entry);
+                        return;
+                    }
+
                     loading.value = true;
                     const controller = new AbortController();
                     activeController = controller;
 
                     try {
-                        const params = new URLSearchParams();
-                        params.set('section', props.section);
-                        if (route.query.page) params.set('page', String(route.query.page));
-                        if (route.query.query) params.set('query', String(route.query.query));
-                        if (route.query.climbType) params.set('climbType', String(route.query.climbType));
-
-                        const res = await fetch(`/api/posts?${params.toString()}`, {
-                            signal: controller.signal,
-                        });
-                        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-                        const json = await res.json();
+                        const entry = await fetchPostsPayload(props.section, route.query, controller.signal);
                         if (controller.signal.aborted) return;
-                        applyPayload(json);
+                        applyPayload(entry.data, entry);
                     } catch (err) {
                         if (err.name !== 'AbortError') {
                             console.error('Error loading posts:', err);
@@ -691,24 +849,33 @@
                         return;
                     }
 
+                    const prefetched = consumeResolvedPayload(route.fullPath, 'post-detail');
+                    if (prefetched && prefetched.entry) {
+                        const entry = prefetched.entry;
+                        loading.value = false;
+                        if (!entry.found) {
+                            post.value = null;
+                            notFound.value = true;
+                            document.title = entry.data?.pageTitle || 'The Justin Blog';
+                        } else {
+                            post.value = entry.data.post;
+                            notFound.value = false;
+                            if (entry.data.pageTitle) document.title = entry.data.pageTitle;
+                        }
+                        return;
+                    }
+
                     loading.value = true;
                     notFound.value = false;
                     const controller = new AbortController();
                     activeController = controller;
 
                     try {
-                        const params = new URLSearchParams();
-                        params.set('type', props.isClimbing ? 'climbing' : 'blog');
-                        if (route.params.title) params.set('title', String(route.params.title));
-                        if (route.params.id) params.set('id', String(route.params.id));
-
-                        const res = await fetch(`/api/post?${params.toString()}`, {
-                            signal: controller.signal,
-                        });
-                        const json = await res.json();
+                        const entry = await fetchSinglePostPayload(props.isClimbing, route.params, controller.signal);
                         if (controller.signal.aborted) return;
+                        const json = entry.data || {};
 
-                        if (!res.ok || !json.found) {
+                        if (!entry.found) {
                             post.value = null;
                             notFound.value = true;
                             document.title = json.pageTitle || 'The Justin Blog';
@@ -888,21 +1055,194 @@
             { path: '/:pathMatch(.*)*', name: 'not-found', component: NotFoundView },
         ];
 
+        let pendingViewUpdateResolve = null;
+        let pendingFallbackTimer = null;
+        let navSeq = 0;
+        let activeNavController = null;
+
+        function resolvePendingViewUpdate() {
+            if (pendingFallbackTimer) {
+                clearTimeout(pendingFallbackTimer);
+                pendingFallbackTimer = null;
+            }
+            if (pendingViewUpdateResolve) {
+                const fn = pendingViewUpdateResolve;
+                pendingViewUpdateResolve = null;
+                fn();
+            }
+        }
+
+        async function prefetchTargetRoute(to, from, signal) {
+            resolvedRoutePayload = null;
+
+            if (to.name === 'home' || to.name === 'blog-list' || to.name === 'climbing-list') {
+                const section = to.name === 'home' ? 'home' : (to.name === 'climbing-list' ? 'climbing' : 'blog');
+                const entry = await fetchPostsPayload(section, to.query, signal);
+                if (signal.aborted) return null;
+
+                resolvedRoutePayload = {
+                    fullPath: to.fullPath,
+                    type: 'posts-list',
+                    entry,
+                };
+
+                const fromId = from && from.params && from.params.id ? String(from.params.id) : null;
+                const d = entry.data || {};
+                const candidates = [d.heroPost, ...(d.gridPosts || []), ...(entry.extraPosts || [])].filter(Boolean);
+                const matchingCard = fromId ? candidates.find((c) => c.id === fromId) : null;
+                const imgUrl = matchingCard
+                    ? (matchingCard === d.heroPost ? matchingCard.heroImageUrl : matchingCard.gridImageUrl)
+                    : (d.heroPost?.heroImageUrl || d.gridPosts?.[0]?.gridImageUrl);
+                if (imgUrl) {
+                    await preloadImage(imgUrl, 160);
+                }
+                return null;
+            }
+
+            if (
+                to.name === 'blog-detail' ||
+                to.name === 'blog-legacy' ||
+                to.name === 'climbing-detail' ||
+                to.name === 'climbing-legacy'
+            ) {
+                const isClimbing = to.name.startsWith('climbing');
+                const entry = await fetchSinglePostPayload(isClimbing, to.params, signal);
+                if (signal.aborted) return null;
+
+                if (
+                    entry.found &&
+                    entry.data &&
+                    entry.data.canonicalPath &&
+                    safeDecodePath(to.path) !== safeDecodePath(entry.data.canonicalPath)
+                ) {
+                    return entry.data.canonicalPath;
+                }
+
+                resolvedRoutePayload = {
+                    fullPath: to.fullPath,
+                    type: 'post-detail',
+                    entry,
+                };
+
+                if (entry.found && entry.data && entry.data.post && entry.data.post.imageUrl) {
+                    await preloadImage(entry.data.post.imageUrl, 200);
+                }
+                return null;
+            }
+
+            return null;
+        }
+
         const router = createRouter({
             history: createWebHistory(),
             routes,
             scrollBehavior(to, from, savedPosition) {
-                if (savedPosition) return savedPosition;
-                if (to.hash) return { el: to.hash, behavior: 'smooth' };
-                return { top: 0, behavior: 'instant' };
+                let target = { top: 0, behavior: 'instant' };
+                if (savedPosition) target = Object.assign({}, savedPosition, { behavior: 'instant' });
+                else if (to.hash) target = { el: to.hash, behavior: 'smooth' };
+                queueMicrotask(() => {
+                    queueMicrotask(resolvePendingViewUpdate);
+                });
+                return target;
             },
         });
 
         const drawerOpen = ref(false);
         const currentTheme = ref(document.documentElement.getAttribute('data-theme') === 'nord' ? 'nord' : 'dark');
 
-        router.afterEach((to, from) => {
+        router.beforeResolve(async (to, from) => {
+            if (from === VueRouter.START_LOCATION) {
+                seedCacheFromInitial(to);
+                return true;
+            }
+
+            const seq = ++navSeq;
+            if (activeNavController) {
+                activeNavController.abort();
+            }
+            const controller = new AbortController();
+            activeNavController = controller;
+
+            try {
+                const redirectTarget = await prefetchTargetRoute(to, from, controller.signal);
+                if (seq !== navSeq || controller.signal.aborted) {
+                    return false;
+                }
+                if (redirectTarget) {
+                    return redirectTarget;
+                }
+            } catch (err) {
+                if (err && err.name === 'AbortError') return false;
+                console.error('Error preparing route:', err);
+            } finally {
+                if (activeNavController === controller) {
+                    activeNavController = null;
+                }
+            }
+
+            if (seq !== navSeq) return false;
+
+            const samePageHashOnly =
+                to.path === from.path &&
+                JSON.stringify(to.query) === JSON.stringify(from.query) &&
+                to.hash !== from.hash;
+
+            const reducedMotion =
+                typeof window.matchMedia === 'function' &&
+                window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+            if (
+                samePageHashOnly ||
+                reducedMotion ||
+                typeof document.startViewTransition !== 'function'
+            ) {
+                return true;
+            }
+
+            resolvePendingViewUpdate();
+
+            await new Promise((allowCommit) => {
+                let committed = false;
+                const commitOnce = () => {
+                    if (!committed) {
+                        committed = true;
+                        allowCommit();
+                    }
+                };
+                const startTimer = setTimeout(commitOnce, 200);
+
+                try {
+                    const transition = document.startViewTransition(() => {
+                        clearTimeout(startTimer);
+                        const updateDone = new Promise((resolve) => {
+                            pendingViewUpdateResolve = resolve;
+                            pendingFallbackTimer = setTimeout(resolvePendingViewUpdate, 600);
+                        });
+                        commitOnce();
+                        return updateDone;
+                    });
+                    if (transition && transition.finished) {
+                        transition.finished.catch(() => {});
+                    }
+                } catch (_) {
+                    clearTimeout(startTimer);
+                    commitOnce();
+                }
+            });
+
+            return true;
+        });
+
+        router.onError(() => {
+            resolvePendingViewUpdate();
+        });
+
+        router.afterEach((to, from, failure) => {
             drawerOpen.value = false;
+            if (failure) {
+                resolvePendingViewUpdate();
+                return;
+            }
             if (from !== VueRouter.START_LOCATION && typeof window.gtag === 'function') {
                 nextTick(() => {
                     window.gtag('event', 'page_view', {
