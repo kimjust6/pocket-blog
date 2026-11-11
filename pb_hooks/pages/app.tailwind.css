@@ -339,6 +339,11 @@ input::-ms-reveal {
     padding-right: 0.875rem;
 }
 
+/* Hide uncompiled Vue templates until mounted */
+[v-cloak] {
+    display: none !important;
+}
+
 /* Responsive iframes and media embeds */
 iframe {
     max-width: 100%;
