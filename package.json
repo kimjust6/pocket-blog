@@ -7,11 +7,12 @@
     "start": "pocketbase serve --dir=pb_data --dev",
     "wsl": "wsl bash -c \"set -a && source .env && set +a && npm run dev\"",
     "css": "tailwindcss -i ./pb_hooks/pages/app.tailwind.css -o ./pb_hooks/pages/app.css --minify --watch",
-    "push2": "npx phio deploy mlt-blog -e pb_data \"pb_data/**/*\" package.json bun.lock bun.lockb patches \"patches/**/*\"",
-    "push": "npx phio deploy my-blog -e pb_data \"pb_data/**/*\" package.json bun.lock bun.lockb patches \"patches/**/*\"",
+    "push2": "node scripts/patch-phio.mjs && npx phio deploy my-blog -e pb_data \"pb_data/**/*\" package.json bun.lock bun.lockb patches \"patches/**/*\"",
+    "push": "node scripts/patch-phio.mjs && npx phio deploy mlt-blog -e pb_data \"pb_data/**/*\" package.json bun.lock bun.lockb patches \"patches/**/*\"",
     "login": "npx phio login",
     "update": "pocketbase update",
-    "typegen": "node scripts/typegen.mjs"
+    "typegen": "node scripts/typegen.mjs",
+    "postinstall": "node scripts/patch-phio.mjs"
   },
   "description": "Justin's personal blog using PocketPages and DaisyUI.",
   "author": {

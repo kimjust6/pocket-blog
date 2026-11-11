@@ -1,4 +1,7 @@
 <script server>
+    const { getBaseUrl } = require(`${__hooks}/pages/utils/common.js`)
+    const baseUrl = getBaseUrl()
+
     response.header('Content-Type', 'text/plain; charset=utf-8')
     response.write(`User-agent: *
 Allow: /
@@ -8,8 +11,8 @@ Disallow: /api/
 Disallow: /_/
 
 # Sitemaps (all canonical aliases)
-Sitemap: https://www.jkim.win/sitemap.xml
-Sitemap: https://www.jkim.win/sitemap
-Sitemap: https://www.jkim.win/sitemap_index.xml
-Sitemap: https://www.jkim.win/sitemap-index.xml`)
+Sitemap: ${baseUrl}/sitemap.xml
+Sitemap: ${baseUrl}/sitemap
+Sitemap: ${baseUrl}/sitemap_index.xml
+Sitemap: ${baseUrl}/sitemap-index.xml`)
 </script>

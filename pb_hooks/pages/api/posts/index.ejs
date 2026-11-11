@@ -1,0 +1,11 @@
+<script server>
+    const { buildBlogPostsPayload } = require(`${__hooks}/pages/utils/common.js`)
+
+    const section = String(params?.section || 'blog').toLowerCase()
+    const isHomepage = section === 'home'
+    const isClimbing = section === 'climbing'
+    const reqObj = typeof request !== 'undefined' ? request : null
+
+    const payload = buildBlogPostsPayload(isHomepage, isClimbing, params, reqObj, data)
+    response.json(200, payload)
+</script>

@@ -49,7 +49,7 @@
             <% } %>
         <% }); %>
 
-        <title><%= data.metadata.find(x => x.name === 'title')?.content || 'The Justin Blog' %></title>
+        <title><%= data.metadata.find(x => x.name === 'title')?.content || data.siteName %></title>
         <% const canonicalUrl = data.metadata.find(x => x.name === 'og:url' || x.name === 'url')?.content; %>
         <% if (canonicalUrl) { %>
         <link rel="canonical" href="<%= canonicalUrl %>" />
@@ -77,10 +77,10 @@
         <%
             const metaGet = (key) => (data.metadata || []).find(m => m.name === key)?.content;
             const isArticle = metaGet('og:type') === 'article';
-            const pageCanonical = metaGet('og:url') || metaGet('url') || 'https://www.jkim.win/';
-            const pageTitle = metaGet('og:title') || metaGet('title') || 'The Justin Blog';
-            const pageDesc = metaGet('og:description') || metaGet('description') || 'Keeping a personal record of my mistakes and lessons learned as a developer.';
-            const pageImg = metaGet('og:image') || 'https://www.jkim.win/og-image.png';
+            const pageCanonical = metaGet('og:url') || metaGet('url') || `${data.baseUrl}/`;
+            const pageTitle = metaGet('og:title') || metaGet('title') || data.siteName;
+            const pageDesc = metaGet('og:description') || metaGet('description') || data.siteDescription;
+            const pageImg = metaGet('og:image') || `${data.baseUrl}/og-image.png`;
 
             let jsonLd;
             if (isArticle) {
@@ -96,13 +96,13 @@
                     "image": [pageImg],
                     "author": {
                         "@type": "Person",
-                        "name": metaGet('author') || "Justin Kim",
-                        "url": metaGet('article:author') || "https://www.justink.dev"
+                        "name": metaGet('author') || data.authorName,
+                        "url": metaGet('article:author') || data.authorUrl
                     },
                     "publisher": {
                         "@type": "Person",
-                        "name": "Justin Kim",
-                        "url": "https://www.justink.dev"
+                        "name": data.authorName,
+                        "url": data.authorUrl
                     }
                 };
                 const pubTime = metaGet('article:published_time');
@@ -117,13 +117,13 @@
                 jsonLd = {
                     "@context": "https://schema.org",
                     "@type": "WebSite",
-                    "name": "The Justin Blog",
+                    "name": data.siteName,
                     "url": pageCanonical,
                     "description": pageDesc,
                     "author": {
                         "@type": "Person",
-                        "name": "Justin Kim",
-                        "url": "https://www.justink.dev"
+                        "name": data.authorName,
+                        "url": data.authorUrl
                     }
                 };
             }
@@ -131,18 +131,19 @@
         <script type="application/ld+json">
 <%- JSON.stringify(jsonLd, null, 2) %>
         </script>
-        <!-- Speculation Rules API for instant navigation prefetching -->
-        <script type="speculationrules">
-        {
-            "prefetch": [
-                {
-                    "where": { "href_matches": "/*" },
-                    "eagerness": "moderate"
-                }
-            ]
-        }
-        </script>
-        <script src="/js/petite-vue.iife.js" defer init></script>
+        <script id="app-config-data" type="application/json"><%- JSON.stringify({
+            siteName: data.siteName,
+            currentYear: new Date().getFullYear(),
+            navigation: data.navigation || [],
+            socials: data.socials || []
+        }).replace(/</g, '\\u003c') %></script>
+        <% if (typeof data !== 'undefined' && data.initialRouteData) { %>
+        <script id="initial-route-data" type="application/json"><%- JSON.stringify(data.initialRouteData).replace(/</g, '\\u003c') %></script>
+        <% } %>
+        <script src="/js/vue.global.prod.js" defer></script>
+        <script src="/js/vue-router.global.prod.js" defer></script>
+        <script src="/js/components.js?v=7" defer></script>
+        <script src="/js/app.js?v=7" defer></script>
         <script type="module">
             function syncThemeIcons(theme) {
                 const currentTheme = theme || document.documentElement.getAttribute('data-theme') || 'dark';
@@ -170,6 +171,8 @@
                 }
 
                 syncThemeIcons(newTheme);
+                window.dispatchEvent(new CustomEvent('theme-change', { detail: newTheme }));
+                return newTheme;
             }
             window.toggleTheme = toggleTheme;
 
@@ -186,26 +189,11 @@
                     });
                 });
             }
-
-            // Link hover prefetching for instant page navigation
-            const prefetchedUrls = new Set();
-            document.addEventListener('pointerenter', (e) => {
-                const a = e.target && e.target.closest ? e.target.closest('a') : null;
-                if (a && a.href && a.origin === location.origin && !a.hasAttribute('download')) {
-                    if (!prefetchedUrls.has(a.href)) {
-                        prefetchedUrls.add(a.href);
-                        const link = document.createElement('link');
-                        link.rel = 'prefetch';
-                        link.href = a.href;
-                        document.head.appendChild(link);
-                    }
-                }
-            }, { passive: true, capture: true });
         </script>
         <!-- Google tag (gtag.js) -->
         <script
             async
-            src="https://www.googletagmanager.com/gtag/js?id=G-6P8M4DJNQL"
+            src="https://www.googletagmanager.com/gtag/js?id=<%= data.gaMeasurementId %>"
         ></script>
         <script>
             window.dataLayer = window.dataLayer || []
@@ -214,7 +202,7 @@
             }
             gtag('js', new Date())
 
-            gtag('config', 'G-6P8M4DJNQL', {
+            gtag('config', '<%= data.gaMeasurementId %>', {
                 anonymize_ip: true,
                 allow_google_signals: false,
                 allow_ad_personalization_signals: false,
@@ -224,19 +212,21 @@
     </head>
 
     <body class="flex min-h-screen flex-col">
-        <a href="#main-content" class="sr-only focus:not-sr-only focus:absolute focus:z-50 focus:top-4 focus:left-4 focus:p-4 focus:bg-primary focus:text-primary-content focus:rounded-md focus:shadow-lg">Skip to main content</a>
-        <div class="drawer flex-1">
-            <input id="my-drawer-3" type="checkbox" class="drawer-toggle" aria-label="Toggle navigation drawer" />
-            <div class="drawer-content flex min-h-full flex-col">
-                <!-- Navbar -->
-                <%- include('navbar.ejs') %>
-                <main id="main-content" tabindex="-1" class="prose max-w-none flex-1 pt-16">
-                    <%- slot %>
-                </main>
+        <div id="app" class="flex min-h-screen flex-col">
+            <a href="#main-content" class="sr-only focus:not-sr-only focus:absolute focus:z-50 focus:top-4 focus:left-4 focus:p-4 focus:bg-primary focus:text-primary-content focus:rounded-md focus:shadow-lg">Skip to main content</a>
+            <div class="drawer flex-1">
+                <input id="my-drawer-3" type="checkbox" class="drawer-toggle" aria-label="Toggle navigation drawer" />
+                <div class="drawer-content flex min-h-full flex-col">
+                    <!-- Navbar -->
+                    <%- include('navbar.ejs') %>
+                    <main id="main-content" tabindex="-1" class="prose max-w-none flex-1 pt-16">
+                        <%- slot %>
+                    </main>
+                </div>
+                <%- include('sidebar.ejs') %>
             </div>
-            <%- include('sidebar.ejs') %>
-        </div>
 
-        <%- include('footer.ejs') %>
+            <%- include('footer.ejs') %>
+        </div>
     </body>
 </html>

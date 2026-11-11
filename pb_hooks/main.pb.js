@@ -28,11 +28,25 @@ routerAdd("GET", "/api/collection-schedule", (e) => {
         DISCORD_ID_JUSTIN,
         COLLECTION_ENDPOINT_BASE_URL,
         COLLECTION_SUGGEST_URL,
+        POCKET_ADMIN_COLLECTION_CRON_SECRET,
+        POCKET_ADMIN_COLLECTION_ADDRESS,
     } = require(`${__hooks}/pages/utils/constants.js`);
 
     const {
         sendDiscordMessage2,
+        getAdminSetting,
+        verifyConfiguredSecret,
     } = require(`${__hooks}/pages/utils/common.js`);
+
+    const auth = verifyConfiguredSecret(
+        e,
+        "COLLECTION_CRON_SECRET",
+        POCKET_ADMIN_COLLECTION_CRON_SECRET,
+        ["X-Cron-Secret", "X-Webhook-Secret"]
+    );
+    if (!auth.authorized) {
+        return e.json(401, { error: "Unauthorized" });
+    }
 
     const buildEndpointFromKeyString = (keyString) => {
         return `${COLLECTION_ENDPOINT_BASE_URL}?f=json&keyString=${encodeURIComponent(keyString)}&unit=%25&areaTypeCode1=RESW&areaTypeCode2=CITW`;
@@ -52,7 +66,14 @@ routerAdd("GET", "/api/collection-schedule", (e) => {
 
     try {
         const resolveCollectionEndpointUrlLocal = () => {
-            let location = "5 o'meara court";
+            let queryLocation = "";
+            try {
+                queryLocation = String(e.requestInfo()?.query?.location || "").trim();
+            } catch (_) {}
+            const envLocation =
+                typeof process !== "undefined" ? String(process?.env?.COLLECTION_SCHEDULE_ADDRESS || "").trim() : "";
+            const dbLocation = String(getAdminSetting(POCKET_ADMIN_COLLECTION_ADDRESS) || "").trim();
+            let location = queryLocation || envLocation || dbLocation || "5 o'meara court";
 
             // Normalize common address suffixes to Toronto geocoder abbreviations
             location = location
@@ -130,8 +151,22 @@ routerAdd("GET", "/api/collection-schedule", (e) => {
 routerAdd("POST", "/clippy/zendesk", (e) => {
 
     const {
+        POCKET_ADMIN_ZENDESK_WEBHOOK_SECRET,
+    } = require(`${__hooks}/pages/utils/constants.js`);
+    const {
         saveZendeskRecord,
+        verifyConfiguredSecret,
     } = require(`${__hooks}/pages/utils/common.js`);
+
+    const auth = verifyConfiguredSecret(
+        e,
+        "ZENDESK_WEBHOOK_SECRET",
+        POCKET_ADMIN_ZENDESK_WEBHOOK_SECRET,
+        ["X-Webhook-Secret", "X-Zendesk-Webhook-Signature"]
+    );
+    if (!auth.authorized) {
+        return e.json(401, { message: "Unauthorized" });
+    }
 
     let data;
     try {
@@ -187,6 +222,7 @@ onRecordAfterCreateSuccess((e) => {
             return;
         }
 
+        let myMessage = "";
         try {
             const settingRaw = getAdminSetting(POCKET_ADMIN_IGNORE_DUPLICATE_ZENDESK_CALLBACK_IN_SECONDS) ?? "10";
             const appsettingsDelaySeconds = parseInt(settingRaw, 10);
@@ -205,10 +241,10 @@ onRecordAfterCreateSuccess((e) => {
                 return;
             }
 
-            const myMessage = generateNormalTicketMessage(data);
+            myMessage = generateNormalTicketMessage(data);
             sendDiscordMessage(myMessage, discordId);
         } catch (error) {
-            $app.logger().error(`Error sending ticket update message: ${myMessage}.`, "error", error);
+            $app.logger().error(`Error sending ticket update message: ${myMessage || "unknown"}.`, "error", error);
         }
     }
 
