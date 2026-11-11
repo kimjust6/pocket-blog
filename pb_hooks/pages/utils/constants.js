@@ -27,10 +27,10 @@ const POCKET_ADMIN_COLLECTION_ADDRESS = "COLLECTION_SCHEDULE_ADDRESS";
 const GA_MEASUREMENT_ID = "G-6P8M4DJNQL";
 const SITE_NAME = "The Justin Blog";
 const SITE_DESCRIPTION = "Keeping a personal record of my mistakes and lessons learned as a developer.";
-const DEFAULT_BASE_URL = "https://www.jkim.win";
+const DEFAULT_BASE_URL = "https://myblog.jkim.win";
 const AUTHOR_NAME = "Justin Kim";
 const AUTHOR_SHORT_NAME = "Justin K";
-const AUTHOR_URL = "https://www.justink.dev";
+const AUTHOR_URL = "https://www.jkim.win";
 const TWITTER_HANDLE = "@MatchaLatteTea";
 
 const SITE_NAVIGATION = [
@@ -39,7 +39,7 @@ const SITE_NAVIGATION = [
 ];
 
 const SITE_SOCIALS = [
-    { name: "Portfolio", url: "https://www.justink.dev" },
+    { name: "Portfolio", url: "https://www.jkim.win" },
     { name: "GitHub", url: "https://www.github.com/kimjust6" },
     { name: "Instagram", url: "https://www.instagram.com/milklatteteas" },
     { name: "Bluesky", url: "https://bsky.app/profile/milklattetea.bsky.social" },
