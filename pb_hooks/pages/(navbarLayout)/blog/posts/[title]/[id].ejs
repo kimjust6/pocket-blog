@@ -1,5 +1,5 @@
 <script server>
-    const { prepareBlogSingleViewData, slugifyTitle } = require(`${__hooks}/pages/utils/common.js`)
+    const { prepareBlogSingleViewData, serializeSinglePostPayload, slugifyTitle } = require(`${__hooks}/pages/utils/common.js`)
     const reqObj = typeof request !== 'undefined' ? request : null
 
     const isListView = !params.id && (!params.title || params.title === 'index')
@@ -24,6 +24,9 @@
 
     if (!isListView && ((isCanonicalPost && singleBlogView == null) || (!isCanonicalPost && !viewForRedirect))) {
         api.status = 404
+        data.initialRouteData = serializeSinglePostPayload(null, false)
+    } else if (isCanonicalPost && singleBlogView) {
+        data.initialRouteData = serializeSinglePostPayload(singleBlogView, false)
     }
 </script>
 

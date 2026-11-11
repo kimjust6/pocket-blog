@@ -1,6 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 export default {
-    content: ['./pb_hooks/pages/**/*.{ejs,md}'],
+    content: ['./pb_hooks/pages/**/*.{ejs,md}', './pb_public/js/**/*.js'],
     darkMode: 'class',
     theme: {
         extend: {},

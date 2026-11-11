@@ -1346,6 +1346,135 @@ function extractPreviewText(html) {
     return clean.replace(/\s+/g, ' ').trim();
 }
 
+/**
+ * Strip raw PocketBase record from a formatted post card view model for JSON serialization.
+ * @param {Object|null} vm
+ * @returns {Object|null}
+ */
+function serializePostCard(vm) {
+    if (!vm) return null;
+    return {
+        id: vm.id,
+        title: vm.title,
+        slug: vm.slug,
+        link: vm.link,
+        previewText: vm.previewText,
+        heroImageUrl: vm.heroImageUrl,
+        gridImageUrl: vm.gridImageUrl,
+        formattedDate: vm.formattedDate,
+        itemIsClimbing: vm.itemIsClimbing,
+        badges: vm.badges || [],
+        location: vm.location || null
+    };
+}
+
+/**
+ * Build a JSON-serializable view payload for list routes (homepage, dev blog, climbing).
+ * @param {boolean} isHomepage
+ * @param {boolean} isClimbing
+ * @param {Object} params
+ * @param {Object|null} req
+ * @param {Object} data
+ * @returns {Object}
+ */
+function buildBlogPostsPayload(isHomepage, isClimbing, params = {}, req = null, data = {}) {
+    const { getBlogPosts, getClimbingLogs, getCombinedHomepagePosts } = require(`${__hooks}/pages/utils/pocket.js`);
+    const currentPage = Math.max(1, parseInt(params?.page, 10) || 1);
+    const perPage = parseInt(params?.perPage, 10) || (isHomepage ? 7 : 6);
+
+    const rawBlogPosts = isHomepage
+        ? (getCombinedHomepagePosts(currentPage, perPage, params?.query) ?? { items: [], totalPages: 1 })
+        : isClimbing
+            ? (getClimbingLogs(currentPage, perPage, params?.query, params?.climbType) ?? { items: [], totalPages: 1 })
+            : (getBlogPosts(currentPage, perPage, params?.query) ?? { items: [], totalPages: 1 });
+    const totalPages = rawBlogPosts?.totalPages || 1;
+
+    const viewData = prepareBlogPostsViewData(rawBlogPosts, isHomepage, isClimbing, params, req, data);
+    const pageTitle = isClimbing
+        ? 'The Climbing Blog | Justin Kim'
+        : isHomepage
+            ? 'The Justin Blog'
+            : 'The Dev Blog | Justin Kim';
+
+    return {
+        type: 'posts-list',
+        isHomepage: !!isHomepage,
+        isClimbing: !!isClimbing,
+        currentPage,
+        totalPages,
+        query: viewData.query || '',
+        rawQuery: params?.query ? String(params.query) : '',
+        climbType: params?.climbType ? String(params.climbType) : '',
+        hasSearchQuery: viewData.hasSearchQuery,
+        hasPosts: viewData.hasPosts,
+        hasNoSearchResults: viewData.hasNoSearchResults,
+        fullParams: viewData.fullParams,
+        pageTitle,
+        heroPost: serializePostCard(viewData.heroPost),
+        gridPosts: (viewData.gridPosts || []).map(serializePostCard)
+    };
+}
+
+/**
+ * Serialize a single post view model into a JSON-safe route payload.
+ * @param {Object|null} view
+ * @param {boolean} isClimbing
+ * @returns {Object}
+ */
+function serializeSinglePostPayload(view, isClimbing) {
+    if (!view || !view.rawBlog) {
+        return {
+            type: 'not-found',
+            found: false,
+            pageTitle: 'The Justin Blog'
+        };
+    }
+
+    const postTitle = view.title || '';
+    const slug = slugifyTitle(postTitle);
+    const canonicalPath = isClimbing
+        ? `/climbing/${encodeURIComponent(slug)}/${view.id}`
+        : `/blog/posts/${encodeURIComponent(slug)}/${view.id}`;
+    const pageTitle = isClimbing
+        ? `${postTitle} | Climbing Blog`
+        : `${postTitle} | The Justin Blog`;
+
+    return {
+        type: 'post-detail',
+        found: true,
+        canonicalPath,
+        pageTitle,
+        post: {
+            id: view.id,
+            title: view.title,
+            imageUrl: view.imageUrl,
+            badges: view.badges || [],
+            isClimbing: !!view.isClimbing,
+            formattedDate: view.formattedDate,
+            formattedUpdated: view.formattedUpdated,
+            cleanContent: view.cleanContent,
+            cleanContent2: view.cleanContent2,
+            backLink: view.backLink,
+            backLabel: view.backLabel,
+            dateLabel: view.dateLabel
+        }
+    };
+}
+
+/**
+ * Build a JSON-serializable view payload for a single post or climbing log.
+ * @param {boolean} isClimbing
+ * @param {Object} params
+ * @param {Object|null} req
+ * @param {Object} data
+ * @returns {Object}
+ */
+function buildSinglePostPayload(isClimbing, params = {}, req = null, data = {}) {
+    const metaCtx = data && data.metadata ? data : Object.assign({}, data || {}, { metadata: [] });
+    const view = prepareBlogSingleViewData(null, !!isClimbing, params, metaCtx, req);
+    return serializeSinglePostPayload(view, isClimbing);
+}
+
 module.exports = {
     formatDateTime,
     getImageUrl,
@@ -1383,6 +1512,10 @@ module.exports = {
     extractPreviewText,
     toNoCookie,
     formatPostViewModel,
-    setOrUpdateMeta
+    setOrUpdateMeta,
+    serializePostCard,
+    serializeSinglePostPayload,
+    buildBlogPostsPayload,
+    buildSinglePostPayload
 }
 

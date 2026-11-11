@@ -1,0 +1,9 @@
+<script server>
+    const { buildSinglePostPayload } = require(`${__hooks}/pages/utils/common.js`)
+
+    const isClimbing = String(params?.type || '').toLowerCase() === 'climbing'
+    const reqObj = typeof request !== 'undefined' ? request : null
+
+    const payload = buildSinglePostPayload(isClimbing, params, reqObj, data)
+    response.json(payload.found ? 200 : 404, payload)
+</script>
