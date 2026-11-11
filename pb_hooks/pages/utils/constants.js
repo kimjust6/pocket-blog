@@ -40,8 +40,8 @@ const SITE_NAVIGATION = [
 
 const SITE_SOCIALS = [
     { name: "Portfolio", url: "https://www.justink.dev" },
-    { name: "GitHub", url: "https://github.com/kimjust6" },
-    { name: "Instagram", url: "https://instagram.com/milklatteteas" },
+    { name: "GitHub", url: "https://www.github.com/kimjust6" },
+    { name: "Instagram", url: "https://www.instagram.com/milklatteteas" },
     { name: "Bluesky", url: "https://bsky.app/profile/milklattetea.bsky.social" },
 ];
 
