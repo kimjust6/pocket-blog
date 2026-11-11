@@ -1,47 +1,53 @@
 <script server>
-  const { slugifyTitle } = require(`${__hooks}/pages/utils/common.js`)
+  const { SITE_NAME } = require(`${__hooks}/pages/utils/constants.js`)
+  const {
+    slugifyTitle,
+    getBaseUrl,
+    toNoCookie,
+    extractPreviewText,
+    escapeXml,
+    escapeCdata,
+  } = require(`${__hooks}/pages/utils/common.js`)
   const { getAllBlogPosts } = require(`${__hooks}/pages/utils/pocket.js`)
   const blogposts = getAllBlogPosts("-manualPublishDate,-updated")
 
+  const baseUrl = getBaseUrl()
   const buildDate = new Date().toUTCString()
-  const description = "The Justin Blog - Read about the lessons I have learned (from the mistakes I have made)."
+  const description = `${SITE_NAME} - Read about the lessons I have learned (from the mistakes I have made).`
 
   const items = blogposts.map(post => {
     const pubDate = new Date(post.getString('manualPublishDate') || post.getString('created')).toUTCString()
-    const postLink = `https://www.jkim.win/blog/posts/${encodeURIComponent(slugifyTitle(post.getString('title')))}/${post.id}`
+    const postLink = `${baseUrl}/blog/posts/${encodeURIComponent(slugifyTitle(post.getString('title')))}/${post.id}`
     const content1 = post.getString('content1') || ''
     const content2 = post.getString('content2') || ''
-    const postDesc = content1
-      .replace(/<[^>]*>/g, '') // Strip HTML
-      .substring(0, 300) // Truncate
-      + (content1.length > 300 ? '...' : '')
-
-    const fullContent = content1 + content2
+    const preview = extractPreviewText(content1)
+    const postDesc = preview.substring(0, 300) + (preview.length > 300 ? '...' : '')
+    const fullContent = toNoCookie(`${content1}${content2}`)
 
     return `
     <item>
-      <title><![CDATA[${post.getString('title')}]]></title>
-      <link>${postLink}</link>
-      <guid>${postLink}</guid>
-      <pubDate>${pubDate}</pubDate>
-      <description><![CDATA[${postDesc}]]></description>
-      <content:encoded><![CDATA[${fullContent}]]></content:encoded>
+      <title><![CDATA[${escapeCdata(post.getString('title'))}]]></title>
+      <link>${escapeXml(postLink)}</link>
+      <guid>${escapeXml(postLink)}</guid>
+      <pubDate>${escapeXml(pubDate)}</pubDate>
+      <description><![CDATA[${escapeCdata(postDesc)}]]></description>
+      <content:encoded><![CDATA[${escapeCdata(fullContent)}]]></content:encoded>
     </item>`
   }).join('')
 
   const rss = `<?xml version="1.0" encoding="UTF-8" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
   <channel>
-    <title>The Justin Blog</title>
-    <link>https://www.jkim.win</link>
-    <description>${description}</description>
+    <title>${escapeXml(SITE_NAME)}</title>
+    <link>${escapeXml(baseUrl)}</link>
+    <description>${escapeXml(description)}</description>
     <language>en-us</language>
-    <lastBuildDate>${buildDate}</lastBuildDate>
-    <atom:link href="https://www.jkim.win/rss.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>${escapeXml(buildDate)}</lastBuildDate>
+    <atom:link href="${escapeXml(baseUrl)}/rss.xml" rel="self" type="application/rss+xml" />
     ${items}
   </channel>
 </rss>`
 
-  response.header('Content-Type', 'application/xml')
+  response.header('Content-Type', 'application/xml; charset=utf-8')
   response.write(rss)
 </script>

@@ -1,51 +1,56 @@
 <script server>
-  // Data is passed in as locals: blogposts, climbingposts, slugifyTitle
+  const { getSitemapData, escapeXml } = require(`${__hooks}/pages/utils/common.js`)
+  const sitemapData = getSitemapData()
+  const postsBlog = typeof blogposts !== 'undefined' ? blogposts : sitemapData.blogposts
+  const postsClimb = typeof climbingposts !== 'undefined' ? climbingposts : sitemapData.climbingposts
+  const toSlug = typeof slugifyTitle !== 'undefined' ? slugifyTitle : sitemapData.slugifyTitle
+  const siteBaseUrl = sitemapData.baseUrl
+
   response.header('Content-Type', 'application/xml; charset=utf-8')
 
-  const latestBlogUpdate = (blogposts && blogposts.length > 0)
-    ? (new Date(blogposts[0].getString('updated')).toISOString().split('.')[0] + 'Z')
+  const latestBlogUpdate = (postsBlog && postsBlog.length > 0)
+    ? (new Date(postsBlog[0].getString('updated')).toISOString().split('.')[0] + 'Z')
     : (new Date().toISOString().split('.')[0] + 'Z')
 
-  const latestClimbingUpdate = (climbingposts && climbingposts.length > 0)
-    ? (new Date(climbingposts[0].getString('updated') || climbingposts[0].getString('date')).toISOString().split('.')[0] + 'Z')
+  const latestClimbingUpdate = (postsClimb && postsClimb.length > 0)
+    ? (new Date(postsClimb[0].getString('updated') || postsClimb[0].getString('date')).toISOString().split('.')[0] + 'Z')
     : (new Date().toISOString().split('.')[0] + 'Z')
 
   const staticPages = [
-    { loc: 'https://www.jkim.win/',           lastmod: latestBlogUpdate,     priority: '1.00', changefreq: 'weekly' },
-    { loc: 'https://www.jkim.win/blog/posts', lastmod: latestBlogUpdate,     priority: '0.90', changefreq: 'daily'  },
-    { loc: 'https://www.jkim.win/climbing',   lastmod: latestClimbingUpdate, priority: '0.90', changefreq: 'daily'  },
+    { loc: `${siteBaseUrl}/`,           lastmod: latestBlogUpdate,     priority: '1.00', changefreq: 'weekly' },
+    { loc: `${siteBaseUrl}/blog/posts`, lastmod: latestBlogUpdate,     priority: '0.90', changefreq: 'daily'  },
+    { loc: `${siteBaseUrl}/climbing`,   lastmod: latestClimbingUpdate, priority: '0.90', changefreq: 'daily'  },
   ]
 
-  const xmlStaticPages = staticPages.map(({ loc, lastmod, priority, changefreq }) =>
+  const renderUrl = ({ loc, lastmod, changefreq, priority }) =>
     `<url>
-    <loc>${loc}</loc>
-    <lastmod>${lastmod}</lastmod>
-    <changefreq>${changefreq}</changefreq>
-    <priority>${priority}</priority>
+    <loc>${escapeXml(loc)}</loc>
+    <lastmod>${escapeXml(lastmod)}</lastmod>
+    <changefreq>${escapeXml(changefreq)}</changefreq>
+    <priority>${escapeXml(priority)}</priority>
   </url>`
-  ).join('\n  ')
 
-  const xmlBlogposts = (blogposts || [])
-    .map(
-      (post) =>
-        `<url>
-    <loc>https://www.jkim.win/blog/posts/${encodeURIComponent(slugifyTitle(post?.getString('title')))}/${post?.id}</loc>
-    <lastmod>${new Date(post?.getString('updated')).toISOString().split('.')[0] + 'Z'}</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.80</priority>
-  </url>`
+  const xmlStaticPages = staticPages.map(renderUrl).join('\n  ')
+
+  const xmlBlogposts = (postsBlog || [])
+    .map((post) =>
+      renderUrl({
+        loc: `${siteBaseUrl}/blog/posts/${encodeURIComponent(toSlug(post?.getString('title')))}/${post?.id}`,
+        lastmod: new Date(post?.getString('updated')).toISOString().split('.')[0] + 'Z',
+        changefreq: 'weekly',
+        priority: '0.80',
+      })
     )
     .join('\n  ')
 
-  const xmlClimbingposts = (climbingposts || [])
-    .map(
-      (post) =>
-        `<url>
-    <loc>https://www.jkim.win/climbing/${encodeURIComponent(slugifyTitle(post?.getString('title')))}/${post?.id}</loc>
-    <lastmod>${new Date(post?.getString('updated') || post?.getString('date')).toISOString().split('.')[0] + 'Z'}</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.70</priority>
-  </url>`
+  const xmlClimbingposts = (postsClimb || [])
+    .map((post) =>
+      renderUrl({
+        loc: `${siteBaseUrl}/climbing/${encodeURIComponent(toSlug(post?.getString('title')))}/${post?.id}`,
+        lastmod: new Date(post?.getString('updated') || post?.getString('date')).toISOString().split('.')[0] + 'Z',
+        changefreq: 'weekly',
+        priority: '0.70',
+      })
     )
     .join('\n  ')
 

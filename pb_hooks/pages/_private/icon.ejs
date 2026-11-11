@@ -1,0 +1,65 @@
+<%
+    const iconName = String(typeof name !== 'undefined' ? name : '').toLowerCase()
+    const cls = typeof iconClass !== 'undefined' ? iconClass : ''
+    const elId = typeof svgId !== 'undefined' && svgId ? `id="${svgId}"` : ''
+%>
+<% if (iconName === 'menu') { -%>
+<svg <%- elId %> xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="<%= cls || 'inline-block h-6 w-6 stroke-current' %>" aria-hidden="true">
+    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+</svg>
+<% } else if (iconName === 'sun') { -%>
+<svg <%- elId %> xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="<%= cls || 'h-5 w-5 fill-transparent stroke-accent group-hover:fill-accent group-hover:scale-110 transition-all duration-200' %>" aria-hidden="true">
+    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+</svg>
+<% } else if (iconName === 'moon') { -%>
+<svg <%- elId %> xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="<%= cls || 'h-5 w-5 fill-transparent stroke-accent group-hover:fill-accent group-hover:scale-110 transition-all duration-200' %>" aria-hidden="true">
+    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+</svg>
+<% } else if (iconName === 'back') { -%>
+<svg <%- elId %> xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="<%= cls %>" aria-hidden="true">
+    <path d="m12 19-7-7 7-7" />
+    <path d="M19 12H5" />
+</svg>
+<% } else if (iconName === 'close') { -%>
+<svg <%- elId %> xmlns="http://www.w3.org/2000/svg" class="<%= cls || 'h-4 w-4' %>" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+</svg>
+<% } else if (iconName === 'search') { -%>
+<svg <%- elId %> xmlns="http://www.w3.org/2000/svg" class="<%= cls || 'h-4 w-4' %>" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+</svg>
+<% } else if (iconName === 'location') { -%>
+<svg <%- elId %> xmlns="http://www.w3.org/2000/svg" class="<%= cls || 'h-3.5 w-3.5' %>" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+    <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd" />
+</svg>
+<% } else if (iconName === 'mountain') { -%>
+<svg <%- elId %> xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="<%= cls %>" aria-hidden="true">
+    <path d="m8 3 4 8 5-5 5 15H2L8 3z" />
+    <path d="M4.14 15.08c2.62-1.57 5.24-1.43 7.86.42 2.74 1.94 5.49 2 8.23.19" />
+</svg>
+<% } else if (iconName === 'code') { -%>
+<svg <%- elId %> xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="<%= cls %>" aria-hidden="true">
+    <polyline points="16 18 22 12 16 6" />
+    <polyline points="8 6 2 12 8 18" />
+</svg>
+<% } else if (iconName === 'portfolio') { -%>
+<svg <%- elId %> xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="<%= cls || 'w-6 h-6 group-hover:scale-110 transition-transform duration-200' %>" aria-hidden="true">
+    <path d="M20 16V7a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v9m16 0H4m16 0 1.28 2.55a1 1 0 0 1-.9 1.45H3.62a1 1 0 0 1-.9-1.45L4 16" />
+    <path d="m10 9-2 2 2 2m4-4 2 2-2 2" />
+</svg>
+<% } else if (iconName === 'github') { -%>
+<svg <%- elId %> xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="<%= cls || 'w-6 h-6 group-hover:scale-110 transition-transform duration-200' %>" aria-hidden="true">
+    <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
+</svg>
+<% } else if (iconName === 'instagram') { -%>
+<svg <%- elId %> xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="<%= cls || 'w-6 h-6 group-hover:scale-110 transition-transform duration-200' %>" aria-hidden="true">
+    <rect width="20" height="20" x="2" y="2" rx="5" ry="5" />
+    <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+    <line x1="17.5" x2="17.51" y1="6.5" y2="6.5" />
+</svg>
+<% } else if (iconName === 'bluesky') { -%>
+<svg <%- elId %> xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="<%= cls || 'w-6 h-6 group-hover:scale-110 transition-transform duration-200' %>" aria-hidden="true">
+    <path d="M3.468 1.948C5.303 3.325 7.276 6.118 8 7.616c.725-1.498 2.698-4.29 4.532-5.668C13.855.955 16 .186 16 2.632c0 .489-.28 4.105-.444 4.692-.572 2.04-2.653 2.561-4.504 2.246 3.236.551 4.06 2.375 2.281 4.2-3.376 3.464-4.852-.87-5.23-1.98-.07-.204-.103-.3-.103-.218 0-.081-.033.014-.102.218-.379 1.11-1.855 5.444-5.231 1.98-1.778-1.825-.955-3.65 2.28-4.2-1.85.315-3.932-.205-4.503-2.246C.28 6.737 0 3.12 0 2.632 0 .186 2.145.955 3.468 1.948" />
+</svg>
+<% } -%>
+

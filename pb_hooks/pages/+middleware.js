@@ -1,3 +1,15 @@
+const {
+    SITE_NAME,
+    SITE_DESCRIPTION,
+    AUTHOR_NAME,
+    AUTHOR_URL,
+    TWITTER_HANDLE,
+    GA_MEASUREMENT_ID,
+    SITE_NAVIGATION,
+    SITE_SOCIALS,
+} = require('./utils/constants.js');
+const { getBaseUrl } = require('./utils/blog.js');
+
 /** @type {import('pocketpages').MiddlewareLoaderFunc} */
 module.exports = function (api) {
     let cookieValue = 'dark';
@@ -5,14 +17,11 @@ module.exports = function (api) {
         // api.request.cookies is a function in the JS bridge
         const cookiesMap = api.request.cookies();
 
-        // Check if theme cookie exists
-        // cookiesMap might be an object where keys are cookie names
         if (cookiesMap && cookiesMap.theme) {
-            // value might be the string directly or an object with .value
             cookieValue = cookiesMap.theme.value || cookiesMap.theme;
         }
     } catch (e) {
-        console.log("Error reading cookies:", e);
+        console.log('Error reading cookies:', e);
     }
 
     let pathname = '/';
@@ -29,90 +38,56 @@ module.exports = function (api) {
         }
     } catch (_) {}
 
-    const baseUrl = 'https://www.jkim.win';
+    const baseUrl = getBaseUrl();
     const pageUrl = pathname === '/' ? `${baseUrl}/` : `${baseUrl}${pathname}`;
+    const defaultOgImage = `${baseUrl}/og-image.png`;
 
     return {
         currentPath: pathname,
+        baseUrl,
+        siteName: SITE_NAME,
+        siteDescription: SITE_DESCRIPTION,
+        authorName: AUTHOR_NAME,
+        authorUrl: AUTHOR_URL,
+        gaMeasurementId: GA_MEASUREMENT_ID,
         metadata: [
             // Basic metadata
-            {
-                name: 'title',
-                content:
-                    "The Justin Blog",
-            },
-            {
-                name: 'description',
-                content:
-                    'Keeping a personal record of my mistakes and lessons learned as a developer.',
-            },
+            { name: 'title', content: SITE_NAME },
+            { name: 'description', content: SITE_DESCRIPTION },
             { name: 'url', content: pageUrl },
             { name: 'robots', content: 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1' },
 
             // Open Graph metadata
-            {
-                name: 'og:title',
-                content:
-                    "The Justin Blog",
-            },
+            { name: 'og:title', content: SITE_NAME },
             { name: 'og:type', content: 'website' },
             { name: 'og:url', content: pageUrl },
-            {
-                name: 'og:image',
-                content: 'https://www.jkim.win/og-image.png',
-            },
-            {
-                name: 'og:image:secure_url',
-                content: 'https://www.jkim.win/og-image.png',
-            },
+            { name: 'og:image', content: defaultOgImage },
+            { name: 'og:image:secure_url', content: defaultOgImage },
             { name: 'og:image:type', content: 'image/png' },
-            { name: 'og:image:alt', content: 'The Justin Blog Cover' },
+            { name: 'og:image:alt', content: `${SITE_NAME} Cover` },
             { name: 'og:image:width', content: '1200' },
             { name: 'og:image:height', content: '630' },
-            {
-                name: 'og:description',
-                content:
-                    'Keeping a personal record of my mistakes and lessons learned as a developer.',
-            },
-            { name: 'og:site_name', content: "The Justin Blog" },
+            { name: 'og:description', content: SITE_DESCRIPTION },
+            { name: 'og:site_name', content: SITE_NAME },
             { name: 'og:locale', content: 'en_CA' },
 
-            // Encourage connection—author details
-            { name: 'author', content: 'Justin Kim' },
-            {
-                name: 'article:author',
-                content: 'https://www.justink.dev',
-            },
-            { name: 'article:author:name', content: 'Justin Kim' },
-            { name: 'article:publisher', content: 'https://www.justink.dev/' },
+            // Author details
+            { name: 'author', content: AUTHOR_NAME },
+            { name: 'article:author', content: AUTHOR_URL },
+            { name: 'article:author:name', content: AUTHOR_NAME },
+            { name: 'article:publisher', content: `${AUTHOR_URL}/` },
 
-            // Twitter Card metadata (optional, but helpful)
+            // Twitter Card metadata
             { name: 'twitter:card', content: 'summary_large_image' },
-            { name: 'twitter:site', content: '@MatchaLatteTea' },
-            { name: 'twitter:creator', content: '@MatchaLatteTea' },
-            {
-                name: 'twitter:title',
-                content:
-                    "The Justin Blog",
-            },
-            {
-                name: 'twitter:description',
-                content:
-                    'Keeping a personal record of my mistakes and lessons learned as a developer.',
-            },
-            {
-                name: 'twitter:image',
-                content: 'https://www.jkim.win/og-image.png',
-            },
-            {
-                name: 'twitter:url',
-                content: pageUrl,
-            },
+            { name: 'twitter:site', content: TWITTER_HANDLE },
+            { name: 'twitter:creator', content: TWITTER_HANDLE },
+            { name: 'twitter:title', content: SITE_NAME },
+            { name: 'twitter:description', content: SITE_DESCRIPTION },
+            { name: 'twitter:image', content: defaultOgImage },
+            { name: 'twitter:url', content: pageUrl },
         ],
         theme: cookieValue,
-        navigation: [
-            { title: 'Climbing', url: '/climbing' },
-            { title: 'Development', url: '/blog/posts' }
-        ]
-    }
-}
+        navigation: SITE_NAVIGATION,
+        socials: SITE_SOCIALS,
+    };
+};

@@ -2,6 +2,24 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer components {
+    .glass-surface {
+        @apply dark:bg-base-300/70 bg-base-300/60 backdrop-blur-xl;
+    }
+
+    .glass-card {
+        @apply glass-surface hover:bg-base-300/70 dark:hover:bg-base-300/90 transition-all duration-300 border border-secondary/20 hover:border-secondary/50;
+    }
+
+    .tag-pill {
+        @apply bg-base-100/60 backdrop-blur-md border border-accent/30 shadow-md text-base-content text-nowrap hover:bg-accent hover:text-accent-content hover:border-accent hover:shadow-lg hover:shadow-accent/30 hover:-translate-y-0.5 hover:scale-105 active:scale-95 transition-all duration-200 cursor-pointer z-10 relative;
+    }
+
+    .location-pill {
+        @apply absolute bottom-3 left-3 flex items-center gap-1.5 py-1 px-2.5 bg-base-100/60 backdrop-blur-md border border-white/20 shadow-md text-base-content text-xs font-medium rounded-full z-10 hover:bg-accent hover:text-accent-content hover:border-accent hover:shadow-lg hover:shadow-accent/30 hover:-translate-y-0.5 hover:scale-105 active:scale-95 transition-all duration-200 cursor-pointer;
+    }
+}
+
 html {
     scroll-padding-top: 4rem;
     scroll-behavior: smooth;
@@ -142,36 +160,34 @@ input::-ms-reveal {
     navigation: auto;
 }
 
-/* Isolate and freeze navbar so it never fades, flashes, or re-animates during transitions */
-.navbar-persistent {
-    view-transition-name: main-navbar;
-}
-
-::view-transition-group(main-navbar) {
-    animation: none !important;
-}
-
-::view-transition-old(main-navbar),
-::view-transition-new(main-navbar) {
-    animation: none !important;
-}
-
 /* Master View Transition Easing & Timing (Subtle & Fast) */
+::view-transition-group(*) {
+    animation-duration: 0.28s;
+    animation-timing-function: cubic-bezier(0.2, 0, 0, 1);
+}
+
+::view-transition-old(*),
+::view-transition-new(*) {
+    animation-duration: 0.28s;
+    animation-timing-function: cubic-bezier(0.2, 0, 0, 1);
+    mix-blend-mode: normal;
+}
+
+/* Specific root & navbar overrides placed after generic rules */
 ::view-transition-group(root) {
     animation-duration: 0.2s;
     animation-timing-function: ease-out;
 }
 
-::view-transition-group(*):not(::view-transition-group(root)):not(::view-transition-group(main-navbar)) {
-    animation-duration: 0.28s;
-    animation-timing-function: cubic-bezier(0.2, 0, 0, 1);
+/* Isolate and freeze navbar so it never fades, flashes, or re-animates during transitions */
+.navbar-persistent {
+    view-transition-name: main-navbar;
 }
 
-::view-transition-old(*):not(::view-transition-old(main-navbar)),
-::view-transition-new(*):not(::view-transition-new(main-navbar)) {
-    animation-duration: 0.28s;
-    animation-timing-function: cubic-bezier(0.2, 0, 0, 1);
-    mix-blend-mode: normal;
+::view-transition-group(main-navbar),
+::view-transition-old(main-navbar),
+::view-transition-new(main-navbar) {
+    animation: none !important;
 }
 
 /* Image Morphing Optimizations — names are dynamic (blog-image-{id}) so this

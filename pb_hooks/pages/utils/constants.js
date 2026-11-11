@@ -20,6 +20,30 @@ const DISCORD_ID_JUSTIN = "90909125164163072";
 const POCKET_ADMIN_IGNORE_DUPLICATE_ZENDESK_CALLBACK_IN_SECONDS = "IGNORE_DUPLICATE_ZENDESK_CALLBACK_IN_SECONDS";
 const POCKET_ADMIN_MAX_RANDOM_DELAY_IN_SECONDS = "MAX_RANDOM_DELAY_IN_SECONDS";
 const POCKET_ADMIN_DISCORD_BOT_TOKEN = "SECRET_DISCORD_BOT_TOKEN";
+const POCKET_ADMIN_ZENDESK_WEBHOOK_SECRET = "SECRET_ZENDESK_WEBHOOK_SECRET";
+const POCKET_ADMIN_COLLECTION_CRON_SECRET = "SECRET_COLLECTION_CRON_SECRET";
+const POCKET_ADMIN_COLLECTION_ADDRESS = "COLLECTION_SCHEDULE_ADDRESS";
+
+const GA_MEASUREMENT_ID = "G-6P8M4DJNQL";
+const SITE_NAME = "The Justin Blog";
+const SITE_DESCRIPTION = "Keeping a personal record of my mistakes and lessons learned as a developer.";
+const DEFAULT_BASE_URL = "https://www.jkim.win";
+const AUTHOR_NAME = "Justin Kim";
+const AUTHOR_SHORT_NAME = "Justin K";
+const AUTHOR_URL = "https://www.justink.dev";
+const TWITTER_HANDLE = "@MatchaLatteTea";
+
+const SITE_NAVIGATION = [
+    { title: "Climbing", url: "/climbing" },
+    { title: "Development", url: "/blog/posts" },
+];
+
+const SITE_SOCIALS = [
+    { name: "Portfolio", url: "https://www.justink.dev" },
+    { name: "GitHub", url: "https://github.com/kimjust6" },
+    { name: "Instagram", url: "https://instagram.com/milklatteteas" },
+    { name: "Bluesky", url: "https://bsky.app/profile/milklattetea.bsky.social" },
+];
 
 
 const COLLECTION_CONFIG_URL = "https://www.toronto.ca/app_content/swm_collection_calendar_config/";
@@ -98,6 +122,9 @@ module.exports = {
     POCKET_ADMIN_IGNORE_DUPLICATE_ZENDESK_CALLBACK_IN_SECONDS,
     POCKET_ADMIN_MAX_RANDOM_DELAY_IN_SECONDS,
     POCKET_ADMIN_DISCORD_BOT_TOKEN,
+    POCKET_ADMIN_ZENDESK_WEBHOOK_SECRET,
+    POCKET_ADMIN_COLLECTION_CRON_SECRET,
+    POCKET_ADMIN_COLLECTION_ADDRESS,
     COLLECTION_CONFIG_URL,
     COLLECTION_CALENDAR_URL,
     COLLECTION_ENDPOINT_HEADERS,
@@ -107,5 +134,14 @@ module.exports = {
     WEEKDAY_INDEX,
     COLLECTION_ENDPOINT_BASE_URL,
     COLLECTION_SUGGEST_URL,
-    GA_MEASUREMENT_ID: "G-6P8M4DJNQL",
-}
+    GA_MEASUREMENT_ID,
+    SITE_NAME,
+    SITE_DESCRIPTION,
+    DEFAULT_BASE_URL,
+    AUTHOR_NAME,
+    AUTHOR_SHORT_NAME,
+    AUTHOR_URL,
+    TWITTER_HANDLE,
+    SITE_NAVIGATION,
+    SITE_SOCIALS,
+};

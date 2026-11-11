@@ -1,0 +1,32 @@
+<%
+    const list = Array.isArray(typeof badges !== 'undefined' ? badges : null) ? badges : []
+    const baseSectionPath = (typeof isClimbing !== 'undefined' && isClimbing) ? '/climbing' : '/blog/posts'
+    const sizeCls = typeof sizeClass !== 'undefined' ? sizeClass : ''
+    const wrapCls = typeof wrapClass !== 'undefined' ? wrapClass : 'flex flex-wrap gap-2'
+    const nestedInLink = typeof stopPropagation !== 'undefined' && stopPropagation
+%>
+<div class="<%= wrapCls %>">
+    <% list.forEach(function(badge) { %>
+        <% const badgeHref = baseSectionPath + '?query=' + encodeURIComponent(badge.query || badge.text); %>
+        <% if (nestedInLink) { %>
+            <span
+                onclick="event.preventDefault(); event.stopPropagation(); window.location.href='<%= badgeHref %>';"
+                class="badge tag-pill <%= sizeCls %>">
+                <% if (badge.isLocation) { %>
+                    <%- include('icon.ejs', { name: 'location', iconClass: 'h-3.5 w-3.5 mr-1 inline-block transition-transform duration-200' }) %>
+                <% } %>
+                <%= badge.text %>
+            </span>
+        <% } else { %>
+            <a href="<%= badgeHref %>" class="no-underline">
+                <span class="badge tag-pill <%= sizeCls %> group">
+                    <% if (badge.isLocation) { %>
+                        <%- include('icon.ejs', { name: 'location', iconClass: 'h-3.5 w-3.5 mr-1 inline-block transition-transform duration-200' }) %>
+                    <% } %>
+                    <%= badge.text %>
+                </span>
+            </a>
+        <% } %>
+    <% }); %>
+</div>
+

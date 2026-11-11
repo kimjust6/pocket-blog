@@ -49,7 +49,7 @@
             <% } %>
         <% }); %>
 
-        <title><%= data.metadata.find(x => x.name === 'title')?.content || 'The Justin Blog' %></title>
+        <title><%= data.metadata.find(x => x.name === 'title')?.content || data.siteName %></title>
         <% const canonicalUrl = data.metadata.find(x => x.name === 'og:url' || x.name === 'url')?.content; %>
         <% if (canonicalUrl) { %>
         <link rel="canonical" href="<%= canonicalUrl %>" />
@@ -77,10 +77,10 @@
         <%
             const metaGet = (key) => (data.metadata || []).find(m => m.name === key)?.content;
             const isArticle = metaGet('og:type') === 'article';
-            const pageCanonical = metaGet('og:url') || metaGet('url') || 'https://www.jkim.win/';
-            const pageTitle = metaGet('og:title') || metaGet('title') || 'The Justin Blog';
-            const pageDesc = metaGet('og:description') || metaGet('description') || 'Keeping a personal record of my mistakes and lessons learned as a developer.';
-            const pageImg = metaGet('og:image') || 'https://www.jkim.win/og-image.png';
+            const pageCanonical = metaGet('og:url') || metaGet('url') || `${data.baseUrl}/`;
+            const pageTitle = metaGet('og:title') || metaGet('title') || data.siteName;
+            const pageDesc = metaGet('og:description') || metaGet('description') || data.siteDescription;
+            const pageImg = metaGet('og:image') || `${data.baseUrl}/og-image.png`;
 
             let jsonLd;
             if (isArticle) {
@@ -96,13 +96,13 @@
                     "image": [pageImg],
                     "author": {
                         "@type": "Person",
-                        "name": metaGet('author') || "Justin Kim",
-                        "url": metaGet('article:author') || "https://www.justink.dev"
+                        "name": metaGet('author') || data.authorName,
+                        "url": metaGet('article:author') || data.authorUrl
                     },
                     "publisher": {
                         "@type": "Person",
-                        "name": "Justin Kim",
-                        "url": "https://www.justink.dev"
+                        "name": data.authorName,
+                        "url": data.authorUrl
                     }
                 };
                 const pubTime = metaGet('article:published_time');
@@ -117,13 +117,13 @@
                 jsonLd = {
                     "@context": "https://schema.org",
                     "@type": "WebSite",
-                    "name": "The Justin Blog",
+                    "name": data.siteName,
                     "url": pageCanonical,
                     "description": pageDesc,
                     "author": {
                         "@type": "Person",
-                        "name": "Justin Kim",
-                        "url": "https://www.justink.dev"
+                        "name": data.authorName,
+                        "url": data.authorUrl
                     }
                 };
             }
@@ -132,22 +132,18 @@
 <%- JSON.stringify(jsonLd, null, 2) %>
         </script>
         <script id="app-config-data" type="application/json"><%- JSON.stringify({
-            siteName: 'The Justin Blog',
+            siteName: data.siteName,
             currentYear: new Date().getFullYear(),
-            navigation: (typeof data !== 'undefined' && data.navigation) ? data.navigation : [],
-            socials: [
-                { name: 'Portfolio', url: 'https://www.justink.dev' },
-                { name: 'GitHub', url: 'https://github.com/kimjust6' },
-                { name: 'Instagram', url: 'https://instagram.com/milklatteteas' },
-                { name: 'Bluesky', url: 'https://bsky.app/profile/milklattetea.bsky.social' }
-            ]
+            navigation: data.navigation || [],
+            socials: data.socials || []
         }).replace(/</g, '\\u003c') %></script>
         <% if (typeof data !== 'undefined' && data.initialRouteData) { %>
         <script id="initial-route-data" type="application/json"><%- JSON.stringify(data.initialRouteData).replace(/</g, '\\u003c') %></script>
         <% } %>
         <script src="/js/vue.global.prod.js" defer></script>
         <script src="/js/vue-router.global.prod.js" defer></script>
-        <script src="/js/app.js?v=6" defer></script>
+        <script src="/js/components.js?v=7" defer></script>
+        <script src="/js/app.js?v=7" defer></script>
         <script type="module">
             function syncThemeIcons(theme) {
                 const currentTheme = theme || document.documentElement.getAttribute('data-theme') || 'dark';
@@ -175,6 +171,8 @@
                 }
 
                 syncThemeIcons(newTheme);
+                window.dispatchEvent(new CustomEvent('theme-change', { detail: newTheme }));
+                return newTheme;
             }
             window.toggleTheme = toggleTheme;
 
@@ -191,12 +189,11 @@
                     });
                 });
             }
-
         </script>
         <!-- Google tag (gtag.js) -->
         <script
             async
-            src="https://www.googletagmanager.com/gtag/js?id=G-6P8M4DJNQL"
+            src="https://www.googletagmanager.com/gtag/js?id=<%= data.gaMeasurementId %>"
         ></script>
         <script>
             window.dataLayer = window.dataLayer || []
@@ -205,7 +202,7 @@
             }
             gtag('js', new Date())
 
-            gtag('config', 'G-6P8M4DJNQL', {
+            gtag('config', '<%= data.gaMeasurementId %>', {
                 anonymize_ip: true,
                 allow_google_signals: false,
                 allow_ad_personalization_signals: false,

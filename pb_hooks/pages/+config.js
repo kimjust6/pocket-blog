@@ -21,6 +21,8 @@ module.exports = function (api) {
                 }),
             },
         ],
-        debug: true,
+        debug:
+            (typeof $app !== 'undefined' && typeof $app.isDev === 'function' && $app.isDev()) ||
+            (typeof process !== 'undefined' && process?.env?.DEBUG === 'true'),
     }
 }

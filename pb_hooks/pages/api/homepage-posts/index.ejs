@@ -1,28 +1,15 @@
 <script server>
   const { getCombinedHomepagePosts, isClimbingRecord } = require(`${__hooks}/pages/utils/pocket.js`)
-  const { formatPostViewModel } = require(`${__hooks}/pages/utils/common.js`)
+  const { formatPostViewModel, serializePostCard } = require(`${__hooks}/pages/utils/common.js`)
 
-  const page = parseInt(params?.page || '1', 10)
-  const perPage = parseInt(params?.perPage || '6', 10)
+  const page = Math.max(1, parseInt(params?.page || '1', 10) || 1)
+  const perPage = Math.max(1, parseInt(params?.perPage || '6', 10) || 6)
   const query = params?.query || ''
 
   const result = getCombinedHomepagePosts(page, perPage, query)
-
-  const formattedItems = (result.items || []).map((blog) => {
-      const vm = formatPostViewModel(blog, true, isClimbingRecord(blog))
-      return {
-          id: vm.id,
-          title: vm.title,
-          slug: vm.slug,
-          link: vm.link,
-          text: vm.previewText,
-          imageUrl: vm.gridImageUrl,
-          date: vm.formattedDate,
-          itemIsClimbing: vm.itemIsClimbing,
-          badges: (vm.badges || []).map(b => b.text),
-          location: vm.location
-      }
-  })
+  const formattedItems = (result.items || []).map((blog) =>
+      serializePostCard(formatPostViewModel(blog, true, isClimbingRecord(blog)))
+  )
 
   response.header('Content-Type', 'application/json')
   response.write(JSON.stringify({
