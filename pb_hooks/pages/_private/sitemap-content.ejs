@@ -1,20 +1,31 @@
 <script server>
   const { getSitemapData, escapeXml, getImageUrl } = require(`${__hooks}/pages/utils/common.js`)
   const sitemapData = getSitemapData()
-  const postsBlog = typeof blogposts !== 'undefined' ? blogposts : sitemapData.blogposts
-  const postsClimb = typeof climbingposts !== 'undefined' ? climbingposts : sitemapData.climbingposts
+  const postsBlog = (typeof blogposts !== 'undefined' ? blogposts : sitemapData.blogposts) || []
+  const postsClimb = (typeof climbingposts !== 'undefined' ? climbingposts : sitemapData.climbingposts) || []
   const toSlug = typeof slugifyTitle !== 'undefined' ? slugifyTitle : sitemapData.slugifyTitle
   const siteBaseUrl = sitemapData.baseUrl
 
   response.header('Content-Type', 'application/xml; charset=utf-8')
 
+  const safeIsoDate = (rawDate) => {
+    if (!rawDate) return new Date().toISOString().split('.')[0] + 'Z'
+    try {
+      const d = new Date(rawDate)
+      if (isNaN(d.getTime())) return new Date().toISOString().split('.')[0] + 'Z'
+      return d.toISOString().split('.')[0] + 'Z'
+    } catch (_) {
+      return new Date().toISOString().split('.')[0] + 'Z'
+    }
+  }
+
   const latestBlogUpdate = (postsBlog && postsBlog.length > 0)
-    ? (new Date(postsBlog[0].getString('updated') || postsBlog[0].getString('created')).toISOString().split('.')[0] + 'Z')
-    : (new Date().toISOString().split('.')[0] + 'Z')
+    ? safeIsoDate(postsBlog[0].getString('updated') || postsBlog[0].getString('created'))
+    : safeIsoDate()
 
   const latestClimbingUpdate = (postsClimb && postsClimb.length > 0)
-    ? (new Date(postsClimb[0].getString('updated') || postsClimb[0].getString('date') || postsClimb[0].getString('created')).toISOString().split('.')[0] + 'Z')
-    : (new Date().toISOString().split('.')[0] + 'Z')
+    ? safeIsoDate(postsClimb[0].getString('updated') || postsClimb[0].getString('date') || postsClimb[0].getString('created'))
+    : safeIsoDate()
 
   const staticPages = [
     { loc: `${siteBaseUrl}/`,           lastmod: latestBlogUpdate,     priority: '1.00', changefreq: 'weekly' },
@@ -52,14 +63,16 @@
 
   const xmlStaticPages = staticPages.map(renderUrl).join('\n')
 
-  const xmlBlogposts = (postsBlog || [])
+  const xmlBlogposts = postsBlog
+    .filter((post) => post && post.id)
     .map((post) => {
       const imgUrl = getImageUrl(post)
-      const postTitle = post?.getString('title') || ''
-      const coverAlt = post?.getString('coverImageAlt') || postTitle
+      const postTitle = post.getString('title') || 'Untitled'
+      const coverAlt = post.getString('coverImageAlt') || postTitle
+      const postSlug = toSlug(postTitle) || post.id
       return renderUrl({
-        loc: `${siteBaseUrl}/blog/posts/${encodeURIComponent(toSlug(postTitle))}/${post?.id}`,
-        lastmod: new Date(post?.getString('updated') || post?.getString('created')).toISOString().split('.')[0] + 'Z',
+        loc: `${siteBaseUrl}/blog/posts/${encodeURIComponent(postSlug)}/${post.id}`,
+        lastmod: safeIsoDate(post.getString('updated') || post.getString('created')),
         changefreq: 'weekly',
         priority: '0.80',
         image: imgUrl ? { loc: imgUrl, title: postTitle, caption: coverAlt } : null,
@@ -67,13 +80,15 @@
     })
     .join('\n')
 
-  const xmlClimbingposts = (postsClimb || [])
+  const xmlClimbingposts = postsClimb
+    .filter((post) => post && post.id)
     .map((post) => {
       const imgUrl = getImageUrl(post)
-      const postTitle = post?.getString('title') || ''
+      const postTitle = post.getString('title') || 'Untitled'
+      const postSlug = toSlug(postTitle) || post.id
       return renderUrl({
-        loc: `${siteBaseUrl}/climbing/${encodeURIComponent(toSlug(postTitle))}/${post?.id}`,
-        lastmod: new Date(post?.getString('updated') || post?.getString('date') || post?.getString('created')).toISOString().split('.')[0] + 'Z',
+        loc: `${siteBaseUrl}/climbing/${encodeURIComponent(postSlug)}/${post.id}`,
+        lastmod: safeIsoDate(post.getString('updated') || post.getString('date') || post.getString('created')),
         changefreq: 'weekly',
         priority: '0.70',
         image: imgUrl ? { loc: imgUrl, title: postTitle, caption: postTitle } : null,
@@ -81,12 +96,12 @@
     })
     .join('\n')
 
+  const sections = [xmlStaticPages, xmlBlogposts, xmlClimbingposts].filter(Boolean).join('\n')
+
   const xmlSnippet = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
         xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
-${xmlStaticPages}
-${xmlBlogposts}
-${xmlClimbingposts}
+${sections}
 </urlset>`
 
   response.write(xmlSnippet)

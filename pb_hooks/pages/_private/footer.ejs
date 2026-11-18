@@ -15,20 +15,15 @@
                         </a>
                     </li>
                 <% }) %>
-            </ul>
-        </nav>
-        <!-- Site Links -->
-        <nav aria-label="Site links" class="text-xs text-base-content/70">
-            <ul class="flex gap-4 flex-wrap justify-center items-center">
-                <li><a href="/faq" class="hover:text-secondary transition-colors duration-200 no-underline">FAQ</a></li>
-                <li><span class="opacity-40" aria-hidden="true">&bull;</span></li>
-                <li><a href="/privacy" class="hover:text-secondary transition-colors duration-200 no-underline">Privacy Policy</a></li>
-                <li><span class="opacity-40" aria-hidden="true">&bull;</span></li>
-                <li><a href="/terms" class="hover:text-secondary transition-colors duration-200 no-underline">Terms of Service</a></li>
-                <li><span class="opacity-40" aria-hidden="true">&bull;</span></li>
-                <li><a href="/rss.xml" class="hover:text-secondary transition-colors duration-200 no-underline">RSS Feed</a></li>
-                <li><span class="opacity-40" aria-hidden="true">&bull;</span></li>
-                <li><a href="/sitemap.xml" class="hover:text-secondary transition-colors duration-200 no-underline">Sitemap</a></li>
+                <li>
+                    <a href="/rss.xml" target="_blank" rel="noopener alternate" type="application/rss+xml"
+                        class="font-medium text-base-content hover:text-secondary transition-colors duration-200 no-underline inline-flex items-center gap-1.5"
+                        title="Subscribe via RSS">
+                        <%- include('icon.ejs', { name: 'rss', iconClass: 'w-4 h-4 inline-block text-secondary' }) %>
+                        RSS
+                        <span class="sr-only">(RSS Feed)</span>
+                    </a>
+                </li>
             </ul>
         </nav>
         <p class="opacity-60">&copy; <%= new Date().getFullYear() %> Justin K. All rights reserved.</p>

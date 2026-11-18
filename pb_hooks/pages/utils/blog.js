@@ -921,9 +921,21 @@ function handleSinglePostRoute(isClimbing, params = {}, data = {}, req = null, a
  * Fetch records and base URL for XML sitemap generation.
  */
 function getSitemapData() {
+    let blogposts = [];
+    let climbingposts = [];
+    try {
+        blogposts = getAllBlogPosts("-updated") || [];
+    } catch (err) {
+        console.error("Error fetching blog posts for sitemap:", err);
+    }
+    try {
+        climbingposts = getAllClimbingLogs("-date") || [];
+    } catch (err) {
+        console.error("Error fetching climbing logs for sitemap:", err);
+    }
     return {
-        blogposts: getAllBlogPosts("-updated"),
-        climbingposts: getAllClimbingLogs("-date"),
+        blogposts,
+        climbingposts,
         baseUrl: getBaseUrl(),
         slugifyTitle,
     };

@@ -11,17 +11,27 @@
   } = require(`${__hooks}/pages/utils/common.js`)
   const { getAllBlogPosts, getAllClimbingLogs } = require(`${__hooks}/pages/utils/pocket.js`)
 
-  const devPosts = (getAllBlogPosts("-manualPublishDate,-updated") || []).map(p => ({
-    record: p,
-    isClimbing: false,
-    date: new Date(p.getString('manualPublishDate') || p.getString('created') || Date.now()),
-  }))
+  let devPosts = []
+  try {
+    devPosts = (getAllBlogPosts("-manualPublishDate,-updated") || []).map(p => ({
+      record: p,
+      isClimbing: false,
+      date: new Date(p.getString('manualPublishDate') || p.getString('created') || Date.now()),
+    }))
+  } catch (err) {
+    console.error("Error loading blog posts for RSS:", err)
+  }
 
-  const climbingPosts = (getAllClimbingLogs("-date") || []).map(p => ({
-    record: p,
-    isClimbing: true,
-    date: new Date(p.getString('date') || p.getString('created') || Date.now()),
-  }))
+  let climbingPosts = []
+  try {
+    climbingPosts = (getAllClimbingLogs("-date") || []).map(p => ({
+      record: p,
+      isClimbing: true,
+      date: new Date(p.getString('date') || p.getString('created') || Date.now()),
+    }))
+  } catch (err) {
+    console.error("Error loading climbing posts for RSS:", err)
+  }
 
   const allPosts = [...devPosts, ...climbingPosts].sort((a, b) => b.date.getTime() - a.date.getTime())
 
