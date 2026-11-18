@@ -1,50 +1,109 @@
 <script server>
-  const { SITE_NAME } = require(`${__hooks}/pages/utils/constants.js`)
+  const { SITE_NAME, AUTHOR_NAME } = require(`${__hooks}/pages/utils/constants.js`)
   const {
     slugifyTitle,
     getBaseUrl,
+    getImageUrl,
     toNoCookie,
     extractPreviewText,
     escapeXml,
     escapeCdata,
   } = require(`${__hooks}/pages/utils/common.js`)
-  const { getAllBlogPosts } = require(`${__hooks}/pages/utils/pocket.js`)
-  const blogposts = getAllBlogPosts("-manualPublishDate,-updated")
+  const { getAllBlogPosts, getAllClimbingLogs } = require(`${__hooks}/pages/utils/pocket.js`)
+
+  const devPosts = (getAllBlogPosts("-manualPublishDate,-updated") || []).map(p => ({
+    record: p,
+    isClimbing: false,
+    date: new Date(p.getString('manualPublishDate') || p.getString('created') || Date.now()),
+  }))
+
+  const climbingPosts = (getAllClimbingLogs("-date") || []).map(p => ({
+    record: p,
+    isClimbing: true,
+    date: new Date(p.getString('date') || p.getString('created') || Date.now()),
+  }))
+
+  const allPosts = [...devPosts, ...climbingPosts].sort((a, b) => b.date.getTime() - a.date.getTime())
 
   const baseUrl = getBaseUrl()
   const buildDate = new Date().toUTCString()
-  const description = `${SITE_NAME} - Read about the lessons I have learned (from the mistakes I have made).`
+  const description = `${SITE_NAME} - Software engineering lessons, personal mistakes, and climbing notes by ${AUTHOR_NAME}.`
 
-  const items = blogposts.map(post => {
-    const pubDate = new Date(post.getString('manualPublishDate') || post.getString('created')).toUTCString()
-    const postLink = `${baseUrl}/blog/posts/${encodeURIComponent(slugifyTitle(post.getString('title')))}/${post.id}`
-    const content1 = post.getString('content1') || ''
-    const content2 = post.getString('content2') || ''
-    const preview = extractPreviewText(content1)
+  const items = allPosts.map(({ record: post, isClimbing, date }) => {
+    const pubDate = date.toUTCString()
+    const title = post.getString('title') || 'Untitled'
+    const slug = slugifyTitle(title)
+    const postLink = isClimbing
+      ? `${baseUrl}/climbing/${encodeURIComponent(slug)}/${post.id}`
+      : `${baseUrl}/blog/posts/${encodeURIComponent(slug)}/${post.id}`
+
+    const rawContent = isClimbing
+      ? post.getString('content') || ''
+      : `${post.getString('content1') || ''}${post.getString('content2') || ''}`
+
+    const preview = extractPreviewText(rawContent)
     const postDesc = preview.substring(0, 300) + (preview.length > 300 ? '...' : '')
-    const fullContent = toNoCookie(`${content1}${content2}`)
+    const fullContent = toNoCookie(rawContent)
+    const imgUrl = getImageUrl(post)
+
+    let tags = []
+    if (isClimbing) {
+      tags.push('Climbing')
+      const climbType = post.getString('climbType')
+      if (climbType) tags.push(climbType)
+    } else {
+      tags.push('Software Development')
+      const blogTags = post.getString('tags')
+      if (blogTags) {
+        blogTags.split(';').map(t => t.trim()).filter(Boolean).forEach(t => tags.push(t))
+      }
+    }
+
+    const categoriesXml = tags.map(t => `      <category><![CDATA[${escapeCdata(t)}]]></category>`).join('\n')
+
+    let mediaXml = ''
+    if (imgUrl) {
+      const mime = imgUrl.endsWith('.webp') ? 'image/webp' : (imgUrl.endsWith('.png') ? 'image/png' : 'image/jpeg')
+      mediaXml = `
+      <media:content url="${escapeXml(imgUrl)}" medium="image" />
+      <media:thumbnail url="${escapeXml(imgUrl)}" />
+      <enclosure url="${escapeXml(imgUrl)}" type="${escapeXml(mime)}" length="0" />`
+    }
 
     return `
     <item>
-      <title><![CDATA[${escapeCdata(post.getString('title'))}]]></title>
+      <title><![CDATA[${escapeCdata(title)}]]></title>
       <link>${escapeXml(postLink)}</link>
-      <guid>${escapeXml(postLink)}</guid>
+      <guid isPermaLink="true">${escapeXml(postLink)}</guid>
       <pubDate>${escapeXml(pubDate)}</pubDate>
+      <dc:creator><![CDATA[${escapeCdata(AUTHOR_NAME)}]]></dc:creator>
+${categoriesXml}
       <description><![CDATA[${escapeCdata(postDesc)}]]></description>
-      <content:encoded><![CDATA[${escapeCdata(fullContent)}]]></content:encoded>
+      <content:encoded><![CDATA[${escapeCdata(fullContent)}]]></content:encoded>${mediaXml}
     </item>`
   }).join('')
 
   const rss = `<?xml version="1.0" encoding="UTF-8" ?>
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+<rss version="2.0"
+     xmlns:atom="http://www.w3.org/2005/Atom"
+     xmlns:content="http://purl.org/rss/1.0/modules/content/"
+     xmlns:dc="http://purl.org/dc/elements/1.1/"
+     xmlns:media="http://search.yahoo.com/mrss/">
   <channel>
     <title>${escapeXml(SITE_NAME)}</title>
     <link>${escapeXml(baseUrl)}</link>
     <description>${escapeXml(description)}</description>
-    <language>en-us</language>
+    <language>en-ca</language>
     <lastBuildDate>${escapeXml(buildDate)}</lastBuildDate>
+    <managingEditor>${escapeXml(AUTHOR_NAME)}</managingEditor>
+    <webMaster>${escapeXml(AUTHOR_NAME)}</webMaster>
+    <image>
+      <url>${escapeXml(baseUrl)}/icon-192.png</url>
+      <title>${escapeXml(SITE_NAME)}</title>
+      <link>${escapeXml(baseUrl)}</link>
+    </image>
     <atom:link href="${escapeXml(baseUrl)}/rss.xml" rel="self" type="application/rss+xml" />
-    ${items}
+${items}
   </channel>
 </rss>`
 

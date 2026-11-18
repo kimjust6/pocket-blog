@@ -1,5 +1,5 @@
 <script server>
-  const { getSitemapData, escapeXml } = require(`${__hooks}/pages/utils/common.js`)
+  const { getSitemapData, escapeXml, getImageUrl } = require(`${__hooks}/pages/utils/common.js`)
   const sitemapData = getSitemapData()
   const postsBlog = typeof blogposts !== 'undefined' ? blogposts : sitemapData.blogposts
   const postsClimb = typeof climbingposts !== 'undefined' ? climbingposts : sitemapData.climbingposts
@@ -9,56 +9,84 @@
   response.header('Content-Type', 'application/xml; charset=utf-8')
 
   const latestBlogUpdate = (postsBlog && postsBlog.length > 0)
-    ? (new Date(postsBlog[0].getString('updated')).toISOString().split('.')[0] + 'Z')
+    ? (new Date(postsBlog[0].getString('updated') || postsBlog[0].getString('created')).toISOString().split('.')[0] + 'Z')
     : (new Date().toISOString().split('.')[0] + 'Z')
 
   const latestClimbingUpdate = (postsClimb && postsClimb.length > 0)
-    ? (new Date(postsClimb[0].getString('updated') || postsClimb[0].getString('date')).toISOString().split('.')[0] + 'Z')
+    ? (new Date(postsClimb[0].getString('updated') || postsClimb[0].getString('date') || postsClimb[0].getString('created')).toISOString().split('.')[0] + 'Z')
     : (new Date().toISOString().split('.')[0] + 'Z')
 
   const staticPages = [
     { loc: `${siteBaseUrl}/`,           lastmod: latestBlogUpdate,     priority: '1.00', changefreq: 'weekly' },
     { loc: `${siteBaseUrl}/blog/posts`, lastmod: latestBlogUpdate,     priority: '0.90', changefreq: 'daily'  },
     { loc: `${siteBaseUrl}/climbing`,   lastmod: latestClimbingUpdate, priority: '0.90', changefreq: 'daily'  },
+    { loc: `${siteBaseUrl}/faq`,        lastmod: latestBlogUpdate,     priority: '0.60', changefreq: 'monthly' },
+    { loc: `${siteBaseUrl}/privacy`,    lastmod: latestBlogUpdate,     priority: '0.30', changefreq: 'yearly'  },
+    { loc: `${siteBaseUrl}/terms`,      lastmod: latestBlogUpdate,     priority: '0.30', changefreq: 'yearly'  },
   ]
 
-  const renderUrl = ({ loc, lastmod, changefreq, priority }) =>
-    `<url>
+  const renderUrl = ({ loc, lastmod, changefreq, priority, image }) => {
+    let xml = `  <url>
     <loc>${escapeXml(loc)}</loc>
     <lastmod>${escapeXml(lastmod)}</lastmod>
     <changefreq>${escapeXml(changefreq)}</changefreq>
-    <priority>${escapeXml(priority)}</priority>
-  </url>`
+    <priority>${escapeXml(priority)}</priority>`
+    if (image && image.loc) {
+      xml += `
+    <image:image>
+      <image:loc>${escapeXml(image.loc)}</image:loc>`
+      if (image.title) {
+        xml += `
+      <image:title>${escapeXml(image.title)}</image:title>`
+      }
+      if (image.caption) {
+        xml += `
+      <image:caption>${escapeXml(image.caption)}</image:caption>`
+      }
+      xml += `
+    </image:image>`
+    }
+    xml += `\n  </url>`
+    return xml
+  }
 
-  const xmlStaticPages = staticPages.map(renderUrl).join('\n  ')
+  const xmlStaticPages = staticPages.map(renderUrl).join('\n')
 
   const xmlBlogposts = (postsBlog || [])
-    .map((post) =>
-      renderUrl({
-        loc: `${siteBaseUrl}/blog/posts/${encodeURIComponent(toSlug(post?.getString('title')))}/${post?.id}`,
-        lastmod: new Date(post?.getString('updated')).toISOString().split('.')[0] + 'Z',
+    .map((post) => {
+      const imgUrl = getImageUrl(post)
+      const postTitle = post?.getString('title') || ''
+      const coverAlt = post?.getString('coverImageAlt') || postTitle
+      return renderUrl({
+        loc: `${siteBaseUrl}/blog/posts/${encodeURIComponent(toSlug(postTitle))}/${post?.id}`,
+        lastmod: new Date(post?.getString('updated') || post?.getString('created')).toISOString().split('.')[0] + 'Z',
         changefreq: 'weekly',
         priority: '0.80',
+        image: imgUrl ? { loc: imgUrl, title: postTitle, caption: coverAlt } : null,
       })
-    )
-    .join('\n  ')
+    })
+    .join('\n')
 
   const xmlClimbingposts = (postsClimb || [])
-    .map((post) =>
-      renderUrl({
-        loc: `${siteBaseUrl}/climbing/${encodeURIComponent(toSlug(post?.getString('title')))}/${post?.id}`,
-        lastmod: new Date(post?.getString('updated') || post?.getString('date')).toISOString().split('.')[0] + 'Z',
+    .map((post) => {
+      const imgUrl = getImageUrl(post)
+      const postTitle = post?.getString('title') || ''
+      return renderUrl({
+        loc: `${siteBaseUrl}/climbing/${encodeURIComponent(toSlug(postTitle))}/${post?.id}`,
+        lastmod: new Date(post?.getString('updated') || post?.getString('date') || post?.getString('created')).toISOString().split('.')[0] + 'Z',
         changefreq: 'weekly',
         priority: '0.70',
+        image: imgUrl ? { loc: imgUrl, title: postTitle, caption: postTitle } : null,
       })
-    )
-    .join('\n  ')
+    })
+    .join('\n')
 
   const xmlSnippet = `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  ${xmlStaticPages}
-  ${xmlBlogposts}
-  ${xmlClimbingposts}
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+${xmlStaticPages}
+${xmlBlogposts}
+${xmlClimbingposts}
 </urlset>`
 
   response.write(xmlSnippet)

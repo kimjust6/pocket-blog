@@ -1,4 +1,9 @@
 <script server>
-    data.initialRouteData = { type: 'static-page', text: 'terms of service', pageTitle: 'The Justin Blog' }
+    const { applyStaticPageMetadata } = require(`${__hooks}/pages/utils/common.js`)
+    applyStaticPageMetadata(data?.metadata, 'terms')
+    data.initialRouteData = { type: 'static-page', text: 'terms of service', pageTitle: 'Terms of Service | The Justin Blog' }
 </script>
-terms of service
+<div class="mx-auto max-w-4xl px-4 py-12">
+    <h1 class="text-3xl font-bold mb-6 text-accent">Terms of Service</h1>
+    <p class="text-base-content">terms of service</p>
+</div>

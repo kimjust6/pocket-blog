@@ -17,7 +17,7 @@
 <% if (blogView == null) { %>
     <%- include('pagenotfound.ejs') %>
 <% } else { %>
-    <div class="hero bg-base-200 py-12 min-h-[calc(100vh-12.54rem)] flex flex-col items-center justify-start blog-card-transition"
+    <article class="hero bg-base-200 py-12 min-h-[calc(100vh-12.54rem)] flex flex-col items-center justify-start blog-card-transition"
         style="--blog-card-id: blog-card-<%= blogView.id %>">
         <div class="hero-content max-w-4xl flex flex-col w-full gap-0">
             <!-- Blog Image -->
@@ -25,7 +25,7 @@
                 <img src="<%= blogView.imageUrl %>"
                     class="rounded-xl shadow-lg w-full h-auto max-h-96 object-cover m-0 mb-6 blog-image-transition"
                     style="--blog-image-id: blog-image-<%= blogView.id %>; aspect-ratio: 16/9;"
-                    alt="<%= blogView.title %>" width="896" height="504" fetchpriority="high" decoding="async" />
+                    alt="<%= blogView.coverImageAlt || blogView.title %>" width="896" height="504" fetchpriority="high" decoding="async" />
             <% } %>
             <!-- Blog Title, Tags & Meta Header -->
             <div class="w-full pt-6 pb-8 border-b border-base-content/10 flex flex-col gap-4">
@@ -60,11 +60,19 @@
                     </div>
                     <div class="text-right">
                         <%= blogView.dateLabel %>:
-                        <strong><%= blogView.formattedDate %></strong>
+                        <% if (blogView.dateIso) { %>
+                            <time datetime="<%= blogView.dateIso %>"><strong><%= blogView.formattedDate %></strong></time>
+                        <% } else { %>
+                            <strong><%= blogView.formattedDate %></strong>
+                        <% } %>
                         <% if (blogView.formattedUpdated) { %>
                             <div class="text-right">
                                 Updated:
-                                <strong><%= blogView.formattedUpdated %></strong>
+                                <% if (blogView.updatedIso) { %>
+                                    <time datetime="<%= blogView.updatedIso %>"><strong><%= blogView.formattedUpdated %></strong></time>
+                                <% } else { %>
+                                    <strong><%= blogView.formattedUpdated %></strong>
+                                <% } %>
                             </div>
                         <% } %>
                     </div>
@@ -83,5 +91,5 @@
                 <% } %>
             </div>
         </div>
-    </div>
+    </article>
 <% } %>

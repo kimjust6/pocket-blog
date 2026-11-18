@@ -393,6 +393,66 @@ function applySectionMeta(metadata, { title, ogTitle, description, url, siteName
 }
 
 /**
+ * Apply metadata for static and error pages (FAQ, Privacy, Terms, Not Found).
+ * @param {Array<Object>} metadata
+ * @param {string} pageType - 'faq' | 'privacy' | 'terms' | 'notfound'
+ */
+function applyStaticPageMetadata(metadata, pageType) {
+    if (!metadata || !Array.isArray(metadata)) return;
+    const baseUrl = getBaseUrl();
+
+    switch (pageType) {
+        case "faq": {
+            const title = `Frequently Asked Questions (FAQ) | ${SITE_NAME}`;
+            const desc = `Frequently asked questions about ${AUTHOR_NAME}'s software development work, tech stack, and climbing journal.`;
+            const url = `${baseUrl}/faq`;
+            applySectionMeta(metadata, {
+                title,
+                ogTitle: `Frequently Asked Questions | ${SITE_NAME}`,
+                description: desc,
+                url,
+                siteName: SITE_NAME,
+            });
+            break;
+        }
+        case "privacy": {
+            const title = `Privacy Policy | ${SITE_NAME}`;
+            const desc = `Privacy Policy and data protection details for ${SITE_NAME}.`;
+            const url = `${baseUrl}/privacy`;
+            applySectionMeta(metadata, {
+                title,
+                ogTitle: title,
+                description: desc,
+                url,
+                siteName: SITE_NAME,
+            });
+            break;
+        }
+        case "terms": {
+            const title = `Terms of Service | ${SITE_NAME}`;
+            const desc = `Terms of Service and conditions of use for ${SITE_NAME}.`;
+            const url = `${baseUrl}/terms`;
+            applySectionMeta(metadata, {
+                title,
+                ogTitle: title,
+                description: desc,
+                url,
+                siteName: SITE_NAME,
+            });
+            break;
+        }
+        case "notfound": {
+            const title = `404 - Page Not Found | ${SITE_NAME}`;
+            setOrUpdateMeta(metadata, "title", title);
+            setOrUpdateMeta(metadata, "og:title", title);
+            setOrUpdateMeta(metadata, "twitter:title", title);
+            setOrUpdateMeta(metadata, "robots", "noindex, nofollow");
+            break;
+        }
+    }
+}
+
+/**
  * Prepare blog posts view data on the server.
  */
 function prepareBlogPostsViewData(blogposts, isHomepage, isClimbing, params = {}, req = null, data = {}) {
@@ -436,6 +496,14 @@ function prepareBlogPostsViewData(blogposts, isHomepage, isClimbing, params = {}
                     siteName: SITE_NAME,
                 });
             }
+
+            if (hasSearchQuery) {
+                const searchTitle = `Search: "${query}" | ${isClimbing ? "The Climbing Blog" : SITE_NAME}`;
+                setOrUpdateMeta(data.metadata, "title", searchTitle);
+                setOrUpdateMeta(data.metadata, "og:title", searchTitle);
+                setOrUpdateMeta(data.metadata, "twitter:title", searchTitle);
+                setOrUpdateMeta(data.metadata, "robots", "noindex, follow");
+            }
         } catch (err) {
             console.error("Error preparing blog posts view metadata: ", err);
         }
@@ -470,9 +538,26 @@ function applySinglePostMetadata(singleBlog, isClimbing, metadata, req) {
     setOrUpdateMeta(metadata, "twitter:title", postTitle);
 
     const rawContent = singleBlog.getString(isClimbing ? "content" : "content1") || "";
-    const metaDescription =
-        extractPreviewText(rawContent).slice(0, 160) ||
-        (isClimbing ? `Climbing journal log by ${AUTHOR_NAME}.` : `Blog post by ${AUTHOR_NAME}.`);
+    const extraContent = !isClimbing ? singleBlog.getString("content2") || "" : "";
+    const fullArticleText = extractPreviewText(`${rawContent} ${extraContent}`);
+    const words = fullArticleText ? fullArticleText.trim().split(/\s+/).filter(Boolean).length : 0;
+    if (words > 0) {
+        const readMinutes = Math.max(1, Math.ceil(words / 200));
+        setOrUpdateMeta(metadata, "article:word_count", String(words));
+        setOrUpdateMeta(metadata, "article:reading_time", `PT${readMinutes}M`);
+        setOrUpdateMeta(metadata, "twitter:label1", "Reading time");
+        setOrUpdateMeta(metadata, "twitter:data1", `${readMinutes} min read`);
+    }
+
+    let metaDescription = extractPreviewText(rawContent);
+    if (metaDescription.length > 155) {
+        metaDescription = metaDescription.slice(0, 155).replace(/\s+\S*$/, "") + "...";
+    }
+    if (!metaDescription) {
+        metaDescription = isClimbing
+            ? `Climbing journal log by ${AUTHOR_NAME}.`
+            : `Blog post by ${AUTHOR_NAME}.`;
+    }
 
     setOrUpdateMeta(metadata, "description", metaDescription);
     setOrUpdateMeta(metadata, "og:description", metaDescription);
@@ -624,15 +709,22 @@ function prepareBlogSingleViewData(singleBlog, isClimbing, params = {}, data = {
     const cleanContent2 =
         !isClimbing && singleBlog.getString("content2") ? toNoCookie(singleBlog.getString("content2")) : null;
 
+    const coverImageAlt = singleBlog.getString("coverImageAlt") || singleBlog.getString("title") || null;
+    const dateIso = dateRaw ? new Date(dateRaw).toISOString() : null;
+    const updatedIso = updatedRaw ? new Date(updatedRaw).toISOString() : null;
+
     return {
         id: singleBlog.id,
         rawBlog: singleBlog,
         title: singleBlog.getString("title"),
         imageUrl,
+        coverImageAlt,
         badges,
         isClimbing,
         formattedDate,
         formattedUpdated,
+        dateIso,
+        updatedIso,
         cleanContent,
         cleanContent2,
         backLink: isClimbing ? "/climbing" : "/blog/posts",
@@ -810,6 +902,7 @@ function handleSinglePostRoute(isClimbing, params = {}, data = {}, req = null, a
 
     if (!isListView && ((isCanonicalPost && singleBlogView == null) || (!isCanonicalPost && !viewForRedirect))) {
         api.status = 404;
+        applyStaticPageMetadata(data?.metadata, "notfound");
         data.initialRouteData = serializeSinglePostPayload(null, !!isClimbing);
     } else if (isCanonicalPost && singleBlogView) {
         data.initialRouteData = serializeSinglePostPayload(singleBlogView, !!isClimbing);
@@ -854,6 +947,8 @@ module.exports = {
     toNoCookie,
     formatPostViewModel,
     setOrUpdateMeta,
+    applySectionMeta,
+    applyStaticPageMetadata,
     serializePostCard,
     serializeSinglePostPayload,
     buildBlogPostsPayload,

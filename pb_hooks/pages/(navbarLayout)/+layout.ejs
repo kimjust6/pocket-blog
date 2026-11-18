@@ -55,7 +55,13 @@
         <link rel="canonical" href="<%= canonicalUrl %>" />
         <% } %>
 
+        <!-- Feeds & Sitemaps -->
+        <link rel="alternate" type="application/rss+xml" title="<%= data.siteName %> RSS Feed" href="/rss.xml" />
+        <link rel="sitemap" type="application/xml" title="Sitemap" href="/sitemap.xml" />
+
         <!-- Mobile & Browser Theme Color -->
+        <meta name="application-name" content="<%= data.siteName %>" />
+        <meta name="apple-mobile-web-app-title" content="<%= data.siteName %>" />
         <meta name="theme-color" content="#2D6392" media="(prefers-color-scheme: light)" />
         <meta name="theme-color" content="#0f141c" media="(prefers-color-scheme: dark)" />
         <meta name="theme-color" content="#0f141c" />
@@ -72,64 +78,195 @@
         <!-- Styles & Preconnects -->
         <link href="<%=asset('/app.css')%>" rel="stylesheet" />
         <link rel="preconnect" href="https://www.googletagmanager.com" crossorigin />
+        <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
 
         <!-- Structured Data (JSON-LD) -->
         <%
             const metaGet = (key) => (data.metadata || []).find(m => m.name === key)?.content;
             const isArticle = metaGet('og:type') === 'article';
             const pageCanonical = metaGet('og:url') || metaGet('url') || `${data.baseUrl}/`;
-            const pageTitle = metaGet('og:title') || metaGet('title') || data.siteName;
-            const pageDesc = metaGet('og:description') || metaGet('description') || data.siteDescription;
+            const pageTitle = metaGet('title') || metaGet('og:title') || data.siteName;
+            const pageDesc = metaGet('description') || metaGet('og:description') || data.siteDescription;
             const pageImg = metaGet('og:image') || `${data.baseUrl}/og-image.png`;
+            const currentPath = data.currentPath || '/';
 
-            let jsonLd;
+            const breadcrumbItems = [
+                {
+                    "@type": "ListItem",
+                    "position": 1,
+                    "name": "Home",
+                    "item": `${data.baseUrl}/`
+                }
+            ];
+
+            let isCollection = false;
+            if (currentPath.startsWith('/blog/posts') || currentPath.startsWith('/blog')) {
+                breadcrumbItems.push({
+                    "@type": "ListItem",
+                    "position": 2,
+                    "name": "Development",
+                    "item": `${data.baseUrl}/blog/posts`
+                });
+                if (isArticle) {
+                    breadcrumbItems.push({
+                        "@type": "ListItem",
+                        "position": 3,
+                        "name": metaGet('og:title') || pageTitle,
+                        "item": pageCanonical
+                    });
+                } else {
+                    isCollection = true;
+                }
+            } else if (currentPath.startsWith('/climbing')) {
+                breadcrumbItems.push({
+                    "@type": "ListItem",
+                    "position": 2,
+                    "name": "Climbing",
+                    "item": `${data.baseUrl}/climbing`
+                });
+                if (isArticle) {
+                    breadcrumbItems.push({
+                        "@type": "ListItem",
+                        "position": 3,
+                        "name": metaGet('og:title') || pageTitle,
+                        "item": pageCanonical
+                    });
+                } else {
+                    isCollection = true;
+                }
+            } else if (currentPath.startsWith('/faq')) {
+                breadcrumbItems.push({
+                    "@type": "ListItem",
+                    "position": 2,
+                    "name": "FAQ",
+                    "item": `${data.baseUrl}/faq`
+                });
+            } else if (currentPath.startsWith('/privacy')) {
+                breadcrumbItems.push({
+                    "@type": "ListItem",
+                    "position": 2,
+                    "name": "Privacy Policy",
+                    "item": `${data.baseUrl}/privacy`
+                });
+            } else if (currentPath.startsWith('/terms')) {
+                breadcrumbItems.push({
+                    "@type": "ListItem",
+                    "position": 2,
+                    "name": "Terms of Service",
+                    "item": `${data.baseUrl}/terms`
+                });
+            }
+
+            const graph = [
+                {
+                    "@type": "WebSite",
+                    "@id": `${data.baseUrl}/#website`,
+                    "url": `${data.baseUrl}/`,
+                    "name": data.siteName,
+                    "description": data.siteDescription,
+                    "inLanguage": "en-CA",
+                    "publisher": {
+                        "@type": "Person",
+                        "@id": `${data.baseUrl}/#author`
+                    },
+                    "potentialAction": {
+                        "@type": "SearchAction",
+                        "target": {
+                            "@type": "EntryPoint",
+                            "urlTemplate": `${data.baseUrl}/blog/posts?query={search_term_string}`
+                        },
+                        "query-input": "required name=search_term_string"
+                    }
+                },
+                {
+                    "@type": "Person",
+                    "@id": `${data.baseUrl}/#author`,
+                    "name": data.authorName,
+                    "url": data.authorUrl,
+                    "image": {
+                        "@type": "ImageObject",
+                        "@id": `${data.baseUrl}/#authorImage`,
+                        "url": `${data.baseUrl}/icon-192.png`,
+                        "caption": data.authorName
+                    },
+                    "sameAs": (data.socials || []).map(s => s.url).filter(Boolean)
+                },
+                {
+                    "@type": "BreadcrumbList",
+                    "@id": `${pageCanonical}#breadcrumb`,
+                    "itemListElement": breadcrumbItems
+                }
+            ];
+
             if (isArticle) {
-                jsonLd = {
-                    "@context": "https://schema.org",
+                const articleSchema = {
                     "@type": "BlogPosting",
-                    "mainEntityOfPage": {
+                    "@id": `${pageCanonical}#article`,
+                    "isPartOf": {
                         "@type": "WebPage",
                         "@id": pageCanonical
                     },
-                    "headline": pageTitle,
+                    "mainEntityOfPage": pageCanonical,
+                    "headline": metaGet('og:title') || pageTitle,
                     "description": pageDesc,
-                    "image": [pageImg],
+                    "image": {
+                        "@type": "ImageObject",
+                        "url": pageImg,
+                        "width": 1200,
+                        "height": 630
+                    },
+                    "inLanguage": "en-CA",
+                    "breadcrumb": {
+                        "@id": `${pageCanonical}#breadcrumb`
+                    },
                     "author": {
-                        "@type": "Person",
-                        "name": metaGet('author') || data.authorName,
-                        "url": metaGet('article:author') || data.authorUrl
+                        "@id": `${data.baseUrl}/#author`
                     },
                     "publisher": {
-                        "@type": "Person",
-                        "name": data.authorName,
-                        "url": data.authorUrl
+                        "@id": `${data.baseUrl}/#author`
                     }
                 };
+
                 const pubTime = metaGet('article:published_time');
-                if (pubTime) jsonLd.datePublished = pubTime;
+                if (pubTime) articleSchema.datePublished = pubTime;
                 const modTime = metaGet('article:modified_time') || pubTime;
-                if (modTime) jsonLd.dateModified = modTime;
+                if (modTime) articleSchema.dateModified = modTime;
                 const keywords = metaGet('keywords');
-                if (keywords) jsonLd.keywords = keywords;
+                if (keywords) articleSchema.keywords = keywords;
                 const section = metaGet('article:section');
-                if (section) jsonLd.articleSection = section;
+                if (section) articleSchema.articleSection = section;
+
+                const wordCount = metaGet('article:word_count');
+                if (wordCount) articleSchema.wordCount = parseInt(wordCount, 10);
+                const readingTime = metaGet('article:reading_time');
+                if (readingTime) articleSchema.timeRequired = readingTime;
+
+                graph.push(articleSchema);
             } else {
-                jsonLd = {
-                    "@context": "https://schema.org",
-                    "@type": "WebSite",
-                    "name": data.siteName,
+                const pageType = isCollection ? "CollectionPage" : "WebPage";
+                graph.push({
+                    "@type": pageType,
+                    "@id": pageCanonical,
                     "url": pageCanonical,
+                    "name": pageTitle,
                     "description": pageDesc,
-                    "author": {
-                        "@type": "Person",
-                        "name": data.authorName,
-                        "url": data.authorUrl
-                    }
-                };
+                    "isPartOf": {
+                        "@id": `${data.baseUrl}/#website`
+                    },
+                    "breadcrumb": {
+                        "@id": `${pageCanonical}#breadcrumb`
+                    },
+                    "inLanguage": "en-CA"
+                });
             }
+
+            const jsonLd = {
+                "@context": "https://schema.org",
+                "@graph": graph
+            };
         %>
         <script type="application/ld+json">
-<%- JSON.stringify(jsonLd, null, 2) %>
+<%- JSON.stringify(jsonLd, null, 2).replace(/</g, '\\u003c') %>
         </script>
         <script id="app-config-data" type="application/json"><%- JSON.stringify({
             siteName: data.siteName,

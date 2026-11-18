@@ -18,7 +18,7 @@
                 <%= badge.text %>
             </span>
         <% } else { %>
-            <a href="<%= badgeHref %>" class="no-underline">
+            <a href="<%= badgeHref %>" class="no-underline" rel="tag">
                 <span class="badge tag-pill <%= sizeCls %> group">
                     <% if (badge.isLocation) { %>
                         <%- include('icon.ejs', { name: 'location', iconClass: 'h-3.5 w-3.5 mr-1 inline-block transition-transform duration-200' }) %>

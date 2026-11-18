@@ -1,4 +1,9 @@
 <script server>
-    data.initialRouteData = { type: 'static-page', text: 'faq', pageTitle: 'The Justin Blog' }
+    const { applyStaticPageMetadata } = require(`${__hooks}/pages/utils/common.js`)
+    applyStaticPageMetadata(data?.metadata, 'faq')
+    data.initialRouteData = { type: 'static-page', text: 'faq', pageTitle: 'Frequently Asked Questions | The Justin Blog' }
 </script>
-faq
+<div class="mx-auto max-w-4xl px-4 py-12">
+    <h1 class="text-3xl font-bold mb-6 text-accent">Frequently Asked Questions</h1>
+    <p class="text-base-content">faq</p>
+</div>

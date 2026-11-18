@@ -1,4 +1,9 @@
 <script server>
-    data.initialRouteData = { type: 'static-page', text: 'privacy', pageTitle: 'The Justin Blog' }
+    const { applyStaticPageMetadata } = require(`${__hooks}/pages/utils/common.js`)
+    applyStaticPageMetadata(data?.metadata, 'privacy')
+    data.initialRouteData = { type: 'static-page', text: 'privacy', pageTitle: 'Privacy Policy | The Justin Blog' }
 </script>
-privacy
+<div class="mx-auto max-w-4xl px-4 py-12">
+    <h1 class="text-3xl font-bold mb-6 text-accent">Privacy Policy</h1>
+    <p class="text-base-content">privacy</p>
+</div>

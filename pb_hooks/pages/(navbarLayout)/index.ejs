@@ -1,6 +1,12 @@
 <script server>
     const isHomepage = true
-
+    const { setOrUpdateMeta } = require(`${__hooks}/pages/utils/common.js`)
+    const { SITE_NAME, AUTHOR_NAME } = require(`${__hooks}/pages/utils/constants.js`)
+    if (data?.metadata) {
+        setOrUpdateMeta(data.metadata, 'title', `${SITE_NAME} | ${AUTHOR_NAME}`)
+        setOrUpdateMeta(data.metadata, 'og:title', `${SITE_NAME} | ${AUTHOR_NAME}`)
+        setOrUpdateMeta(data.metadata, 'twitter:title', `${SITE_NAME} | ${AUTHOR_NAME}`)
+    }
 </script>
 
 <%- include("hero.ejs") %>
