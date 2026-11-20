@@ -150,7 +150,7 @@ function trackGAEvent(eventName, eventParams = {}, req = null) {
                         clientId = parts.slice(2).join(".");
                     }
                 }
-            } catch (_) {}
+            } catch (_) { }
         }
 
         const url = `https://www.google-analytics.com/mp/collect?measurement_id=${measurementId}`;
@@ -587,8 +587,8 @@ function applySinglePostMetadata(singleBlog, isClimbing, metadata, req) {
     const mimeType = ogImageUrl.includes(".webp")
         ? "image/webp"
         : ogImageUrl.includes(".jpg") || ogImageUrl.includes(".jpeg")
-          ? "image/jpeg"
-          : "image/png";
+            ? "image/jpeg"
+            : "image/png";
 
     setOrUpdateMeta(metadata, "og:image", ogImageUrl);
     setOrUpdateMeta(metadata, "og:image:secure_url", ogImageUrl);
@@ -837,16 +837,16 @@ function buildBlogPostsPayload(isHomepage, isClimbing, params = {}, req = null, 
     const rawBlogPosts = isHomepage
         ? getCombinedHomepagePosts(currentPage, perPage, params?.query) ?? { items: [], totalPages: 1 }
         : isClimbing
-          ? getClimbingLogs(currentPage, perPage, params?.query, params?.climbType) ?? { items: [], totalPages: 1 }
-          : getBlogPosts(currentPage, perPage, params?.query) ?? { items: [], totalPages: 1 };
+            ? getClimbingLogs(currentPage, perPage, params?.query, params?.climbType) ?? { items: [], totalPages: 1 }
+            : getBlogPosts(currentPage, perPage, params?.query) ?? { items: [], totalPages: 1 };
     const totalPages = rawBlogPosts?.totalPages || 1;
 
     const viewData = prepareBlogPostsViewData(rawBlogPosts, isHomepage, isClimbing, params, req, data);
     const pageTitle = isClimbing
         ? `The Climbing Blog | ${AUTHOR_NAME}`
         : isHomepage
-          ? SITE_NAME
-          : `The Dev Blog | ${AUTHOR_NAME}`;
+            ? SITE_NAME
+            : `The Dev Blog | ${AUTHOR_NAME}`;
 
     const climbingStats = isClimbing ? getClimbingStats() : null;
 

@@ -378,6 +378,7 @@
             action: { type: String, required: true },
             placeholder: { type: String, default: 'Search...' },
             label: { type: String, default: 'Search' },
+            loading: { type: Boolean, default: false },
         },
         emits: ['update:modelValue', 'submit', 'clear'],
         setup(props, { emit, expose }) {
@@ -417,6 +418,7 @@
                         :aria-label="label"
                         @keydown.enter.prevent="onSubmit" />
                     <div class="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1" style="right: 0.75rem;">
+                        <span v-if="loading && modelValue" class="loading loading-spinner loading-xs text-primary mr-1" aria-hidden="true"></span>
                         <button v-show="modelValue" @click="onClear"
                             class="btn btn-ghost btn-xs btn-circle opacity-70 hover:opacity-100 text-base-content"
                             type="button" aria-label="Clear search">

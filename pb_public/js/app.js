@@ -327,7 +327,10 @@
 
                 function applyPayload(data, snapshot) {
                     payload.value = data;
-                    searchQuery.value = data.rawQuery || '';
+                    const isInputFocused = typeof document !== 'undefined' && document.activeElement && document.activeElement.id === 'site-search-input';
+                    if (!isInputFocused) {
+                        searchQuery.value = data.rawQuery || '';
+                    }
                     if (snapshot) {
                         extraPosts.value = [...(snapshot.extraPosts || [])];
                         infinitePage.value = snapshot.infinitePage || data.currentPage || 1;
@@ -340,7 +343,7 @@
                     if (data.pageTitle) document.title = data.pageTitle;
 
                     nextTick(() => {
-                        if (!isHomepage.value && searchBarRef.value && isDesktop()) {
+                        if (!isHomepage.value && searchBarRef.value && isDesktop() && !isInputFocused) {
                             searchBarRef.value.focusInput({ preventScroll: true });
                         }
                         setupObserver();
@@ -390,21 +393,57 @@
                     }
                 }
 
+                let debounceTimer = null;
+
+                function performSearch(queryText, isManual = false) {
+                    if (debounceTimer) {
+                        clearTimeout(debounceTimer);
+                        debounceTimer = null;
+                    }
+                    const trimmed = (queryText || '').trim();
+                    const currentQuery = (route.query.query || '').trim();
+
+                    if (trimmed === currentQuery) return;
+
+                    const queryObj = trimmed ? { query: trimmed } : {};
+                    if (isManual) {
+                        router.push({
+                            path: basePath.value,
+                            query: queryObj,
+                        });
+                    } else {
+                        router.replace({
+                            path: basePath.value,
+                            query: queryObj,
+                        });
+                    }
+                }
+
+                function onSearchInput(val) {
+                    searchQuery.value = val;
+                    if (debounceTimer) {
+                        clearTimeout(debounceTimer);
+                    }
+                    debounceTimer = setTimeout(() => {
+                        performSearch(val, false);
+                    }, 500);
+                }
+
                 function handleSearch() {
-                    const trimmed = searchQuery.value;
-                    router.push({
-                        path: basePath.value,
-                        query: trimmed ? { query: trimmed } : {},
-                    });
+                    performSearch(searchQuery.value, true);
                 }
 
                 function clearSearch() {
+                    if (debounceTimer) {
+                        clearTimeout(debounceTimer);
+                        debounceTimer = null;
+                    }
                     searchQuery.value = '';
                     if (searchBarRef.value && isDesktop()) {
                         searchBarRef.value.focusInput();
                     }
                     if (route.query.query) {
-                        router.push({ path: basePath.value });
+                        router.replace({ path: basePath.value });
                     }
                 }
 
@@ -425,6 +464,10 @@
                 onBeforeUnmount(() => {
                     disconnectObserver();
                     if (activeController) activeController.abort();
+                    if (debounceTimer) {
+                        clearTimeout(debounceTimer);
+                        debounceTimer = null;
+                    }
                 });
 
                 return {
@@ -447,6 +490,7 @@
                     allGridPosts,
                     loadingMore,
                     hasMore,
+                    onSearchInput,
                     handleSearch,
                     clearSearch,
                     pageLocation,
@@ -473,15 +517,18 @@
                                     </p>
                                     <search-bar
                                         ref="searchBarRef"
-                                        v-model="searchQuery"
+                                        :model-value="searchQuery"
+                                        @update:model-value="onSearchInput"
                                         :action="basePath"
+                                        :loading="loading"
                                         :placeholder="isClimbing ? 'Search climbs or locations...' : 'Search blogs...'"
                                         :label="isClimbing ? 'Search climbing logs' : 'Search blog posts'"
                                         @submit="handleSearch"
                                         @clear="clearSearch"
                                     />
                                     <div v-if="!hasSearchQuery" class="my-8 w-full">
-                                        <div v-if="isClimbing && currentPage === 1 && payload?.climbingStats" class="mb-8 w-full grid grid-cols-2 sm:grid-cols-4 gap-3 text-left">
+                                        <div v-if="isClimbing && !isHomepage && !hasSearchQuery && currentPage === 1 && payload && payload.climbingStats"
+                                            class="mb-8 w-full grid grid-cols-2 sm:grid-cols-4 gap-3 text-left">
                                             <div class="stat bg-base-200/70 backdrop-blur-md rounded-2xl p-4 border border-base-content/10">
                                                 <div class="stat-title text-xs font-semibold text-base-content/70">Total Logs</div>
                                                 <div class="stat-value text-2xl text-primary font-bold">{{ payload.climbingStats.totalClimbs }}</div>
@@ -772,7 +819,7 @@
                         }
                         event.preventDefault();
                         router.push(url.pathname + url.search + url.hash);
-                    } catch (_) {}
+                    } catch (_) { }
                 }
 
                 watch(
@@ -1100,7 +1147,7 @@
                         return updateDone;
                     });
                     if (transition && transition.finished) {
-                        transition.finished.catch(() => {});
+                        transition.finished.catch(() => { });
                     }
                 } catch (_) {
                     clearTimeout(startTimer);
