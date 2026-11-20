@@ -58,15 +58,24 @@
                             <%= blogView.backLabel %>
                         </a>
                     </div>
-                    <div class="text-right">
-                        <%= blogView.dateLabel %>:
-                        <% if (blogView.dateIso) { %>
-                            <time datetime="<%= blogView.dateIso %>"><strong><%= blogView.formattedDate %></strong></time>
-                        <% } else { %>
-                            <strong><%= blogView.formattedDate %></strong>
-                        <% } %>
+                    <div class="text-right flex flex-col items-end gap-1">
+                        <div>
+                            <%= blogView.dateLabel %>:
+                            <% if (blogView.dateIso) { %>
+                                <time datetime="<%= blogView.dateIso %>"><strong><%= blogView.formattedDate %></strong></time>
+                            <% } else { %>
+                                <strong><%= blogView.formattedDate %></strong>
+                            <% } %>
+                            <% if (blogView.readingTime) { %>
+                                <span class="mx-1 text-base-content/40">•</span>
+                                <span class="inline-flex items-center gap-1 text-xs opacity-75">
+                                    <%- include('icon.ejs', { name: 'clock' }) %>
+                                    <%= blogView.readingTime %>
+                                </span>
+                            <% } %>
+                        </div>
                         <% if (blogView.formattedUpdated) { %>
-                            <div class="text-right">
+                            <div class="text-xs text-base-content/70">
                                 Updated:
                                 <% if (blogView.updatedIso) { %>
                                     <time datetime="<%= blogView.updatedIso %>"><strong><%= blogView.formattedUpdated %></strong></time>
@@ -90,6 +99,39 @@
                     </div>
                 <% } %>
             </div>
+
+            <!-- Previous & Next Post Navigation -->
+            <% if (blogView.prevPost || blogView.nextPost) { %>
+                <nav aria-label="Adjacent Posts" class="w-full mt-10 pt-8 border-t border-base-content/10 grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <% if (blogView.prevPost) { %>
+                        <a href="<%= blogView.prevPost.link %>" class="card bg-base-100 hover:bg-base-200 border border-base-content/10 p-5 rounded-xl no-underline transition-all duration-200 group flex flex-col justify-between">
+                            <span class="text-xs font-semibold uppercase tracking-wider text-accent flex items-center gap-1.5 mb-2">
+                                <%- include('icon.ejs', { name: 'back' }) %>
+                                Older <%= blogView.isClimbing ? 'Log' : 'Post' %>
+                            </span>
+                            <span class="text-base font-bold text-base-content group-hover:text-primary transition-colors duration-200 line-clamp-2">
+                                <%= blogView.prevPost.title %>
+                            </span>
+                            <span class="text-xs text-base-content/60 mt-3"><%= blogView.prevPost.formattedDate %></span>
+                        </a>
+                    <% } else { %>
+                        <div class="hidden sm:block"></div>
+                    <% } %>
+
+                    <% if (blogView.nextPost) { %>
+                        <a href="<%= blogView.nextPost.link %>" class="card bg-base-100 hover:bg-base-200 border border-base-content/10 p-5 rounded-xl no-underline transition-all duration-200 group flex flex-col justify-between sm:text-right">
+                            <span class="text-xs font-semibold uppercase tracking-wider text-accent flex items-center gap-1.5 sm:justify-end mb-2">
+                                Newer <%= blogView.isClimbing ? 'Log' : 'Post' %>
+                                <%- include('icon.ejs', { name: 'next' }) %>
+                            </span>
+                            <span class="text-base font-bold text-base-content group-hover:text-primary transition-colors duration-200 line-clamp-2">
+                                <%= blogView.nextPost.title %>
+                            </span>
+                            <span class="text-xs text-base-content/60 mt-3"><%= blogView.nextPost.formattedDate %></span>
+                        </a>
+                    <% } %>
+                </nav>
+            <% } %>
         </div>
     </article>
 <% } %>

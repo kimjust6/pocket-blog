@@ -34,12 +34,33 @@
   }
 
   const allPosts = [...devPosts, ...climbingPosts].sort((a, b) => b.date.getTime() - a.date.getTime())
-
   const baseUrl = getBaseUrl()
-  const buildDate = new Date().toUTCString()
-  const description = `${SITE_NAME} - Software engineering lessons, personal mistakes, and climbing notes by ${AUTHOR_NAME}.`
 
-  const items = allPosts.map(({ record: post, isClimbing, date }) => {
+  const topicParam = String(params?.topic || params?.section || '').toLowerCase()
+  const filterDevOnly = topicParam === 'blog' || topicParam === 'dev' || topicParam === 'posts'
+  const filterClimbOnly = topicParam === 'climbing' || topicParam === 'climb'
+
+  let activePosts = allPosts
+  let feedTitle = SITE_NAME
+  let feedLink = baseUrl
+  let selfLink = `${baseUrl}/rss.xml`
+
+  if (filterDevOnly) {
+    activePosts = devPosts
+    feedTitle = `${SITE_NAME} - Software Development`
+    feedLink = `${baseUrl}/blog/posts`
+    selfLink = `${baseUrl}/rss.xml?topic=dev`
+  } else if (filterClimbOnly) {
+    activePosts = climbingPosts
+    feedTitle = `${SITE_NAME} - Climbing Journal`
+    feedLink = `${baseUrl}/climbing`
+    selfLink = `${baseUrl}/rss.xml?topic=climbing`
+  }
+
+  const buildDate = new Date().toUTCString()
+  const description = `${feedTitle} - Software engineering lessons, personal mistakes, and climbing notes by ${AUTHOR_NAME}.`
+
+  const items = activePosts.map(({ record: post, isClimbing, date }) => {
     const pubDate = date.toUTCString()
     const title = post.getString('title') || 'Untitled'
     const slug = slugifyTitle(title)
@@ -100,8 +121,8 @@ ${categoriesXml}
      xmlns:dc="http://purl.org/dc/elements/1.1/"
      xmlns:media="http://search.yahoo.com/mrss/">
   <channel>
-    <title>${escapeXml(SITE_NAME)}</title>
-    <link>${escapeXml(baseUrl)}</link>
+    <title>${escapeXml(feedTitle)}</title>
+    <link>${escapeXml(feedLink)}</link>
     <description>${escapeXml(description)}</description>
     <language>en-ca</language>
     <lastBuildDate>${escapeXml(buildDate)}</lastBuildDate>
@@ -109,14 +130,15 @@ ${categoriesXml}
     <webMaster>${escapeXml(AUTHOR_NAME)}</webMaster>
     <image>
       <url>${escapeXml(baseUrl)}/icon-192.png</url>
-      <title>${escapeXml(SITE_NAME)}</title>
-      <link>${escapeXml(baseUrl)}</link>
+      <title>${escapeXml(feedTitle)}</title>
+      <link>${escapeXml(feedLink)}</link>
     </image>
-    <atom:link href="${escapeXml(baseUrl)}/rss.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="${escapeXml(selfLink)}" rel="self" type="application/rss+xml" />
 ${items}
   </channel>
 </rss>`
 
   response.header('Content-Type', 'application/xml; charset=utf-8')
+  response.header('Cache-Control', 'public, max-age=1800, stale-while-revalidate=86400')
   response.write(rss)
 </script>

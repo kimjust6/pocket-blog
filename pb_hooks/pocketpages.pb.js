@@ -16,7 +16,9 @@ routerUse((e) => {
             cleanPath !== "_" &&
             !cleanPath.startsWith("_/") &&
             !cleanPath.startsWith("api/") &&
-            !cleanPath.startsWith("clippy/")
+            !cleanPath.startsWith("clippy/") &&
+            cleanPath !== "blog/rss.xml" &&
+            cleanPath !== "climbing/rss.xml"
         ) {
             render404 = true;
             // Static files in pb_public pass through if they exist

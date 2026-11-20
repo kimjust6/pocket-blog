@@ -66,6 +66,27 @@
                 </form>
                 <% if (!hasSearchQuery) { %>
                     <div class="my-8 w-full">
+                        <% if (isClimbing && !isHomepage && !hasSearchQuery && currentPage === 1 && postsPayload.climbingStats) { %>
+                            <% const stats = postsPayload.climbingStats; %>
+                            <div class="mb-8 w-full grid grid-cols-2 sm:grid-cols-4 gap-3 text-left">
+                                <div class="stat bg-base-200/70 backdrop-blur-md rounded-2xl p-4 border border-base-content/10">
+                                    <div class="stat-title text-xs font-semibold text-base-content/70">Total Logs</div>
+                                    <div class="stat-value text-2xl text-primary font-bold"><%= stats.totalClimbs %></div>
+                                </div>
+                                <div class="stat bg-base-200/70 backdrop-blur-md rounded-2xl p-4 border border-base-content/10">
+                                    <div class="stat-title text-xs font-semibold text-base-content/70">Sends</div>
+                                    <div class="stat-value text-2xl text-accent font-bold"><%= stats.totalSends %></div>
+                                </div>
+                                <div class="stat bg-base-200/70 backdrop-blur-md rounded-2xl p-4 border border-base-content/10">
+                                    <div class="stat-title text-xs font-semibold text-base-content/70">Flashes & Onsights</div>
+                                    <div class="stat-value text-2xl text-secondary font-bold"><%= (stats.flashes || 0) + (stats.onsights || 0) %></div>
+                                </div>
+                                <div class="stat bg-base-200/70 backdrop-blur-md rounded-2xl p-4 border border-base-content/10">
+                                    <div class="stat-title text-xs font-semibold text-base-content/70">Locations</div>
+                                    <div class="stat-value text-2xl text-info font-bold"><%= stats.uniqueLocations %></div>
+                                </div>
+                            </div>
+                        <% } %>
                         <div class="flex justify-end w-full">
                             <a href="/" class="btn btn-accent btn-sm gap-2 transition-all duration-200 rounded-xl">
                                 <%- include('icon.ejs', { name: 'back' }) %>
@@ -111,9 +132,16 @@
                             <p class="text-lg text-base-content mt-4 line-clamp-4">
                                 <%= heroPost.previewText %>
                             </p>
-                            <span class="text-sm text-base-content/60 block">
-                                <%= heroPost.formattedDate %>
-                            </span>
+                            <div class="text-sm text-base-content/60 flex items-center gap-2 mt-2">
+                                <span><%= heroPost.formattedDate %></span>
+                                <% if (heroPost.readingTime) { %>
+                                    <span>•</span>
+                                    <span class="inline-flex items-center gap-1 opacity-75">
+                                        <%- include('icon.ejs', { name: 'clock' }) %>
+                                        <%= heroPost.readingTime %>
+                                    </span>
+                                <% } %>
+                            </div>
                         </div>
                     </div>
                 </a>
@@ -183,9 +211,13 @@
                                 <p class="text-sm text-base-content line-clamp-3">
                                     <%= blog.previewText %>
                                 </p>
-                                <span class="text-xs text-base-content/60 mt-2">
-                                    <%= blog.formattedDate %>
-                                </span>
+                                <div class="text-xs text-base-content/60 mt-2 flex items-center gap-1.5">
+                                    <span><%= blog.formattedDate %></span>
+                                    <% if (blog.readingTime) { %>
+                                        <span>•</span>
+                                        <span class="opacity-75"><%= blog.readingTime %></span>
+                                    <% } %>
+                                </div>
                             </div>
                         </div>
                     </a>

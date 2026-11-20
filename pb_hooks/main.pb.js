@@ -1,20 +1,33 @@
 /// <reference path="../pb_data/types.d.ts" />
 
-// Middleware to set HTTP Cache-Control headers for images and static media
+// Middleware to set HTTP Cache-Control headers for images and static media, plus defensive security headers
 routerUse((e) => {
     try {
+        const header = e.response.header();
+        header.set("X-Content-Type-Options", "nosniff");
+        header.set("X-Frame-Options", "SAMEORIGIN");
+        header.set("Referrer-Policy", "strict-origin-when-cross-origin");
+
         const path = String(e?.request?.url?.path || e?.request?.url || "");
         if (
             path.startsWith("/api/files/") ||
             /\.(webp|png|jpg|jpeg|gif|svg|ico|woff2)$/i.test(path)
         ) {
-            e.response.header().set("Cache-Control", "public, max-age=31536000, immutable");
+            header.set("Cache-Control", "public, max-age=31536000, immutable");
         }
     } catch (_) {}
     return e.next();
 });
 
-routerAdd("GET", "/api/collection-schedule", (e) => {
+// Topic-specific RSS feed aliases redirecting to /rss.xml with query filters
+routerAdd("GET", "/blog/rss.xml", (e) => e.redirect(301, "/rss.xml?topic=blog"));
+routerAdd("GET", "/climbing/rss.xml", (e) => e.redirect(301, "/rss.xml?topic=climbing"));
+
+/**
+ * Shared helper to resolve Toronto collection schedule, format data, and send Discord alert.
+ * Invoked by /api/collection-schedule endpoint and by weekly native cron job.
+ */
+function fetchAndNotifyCollectionSchedule(locationOverride = "") {
     const {
         COLLECTION_CONFIG_URL,
         COLLECTION_CALENDAR_URL,
@@ -28,25 +41,13 @@ routerAdd("GET", "/api/collection-schedule", (e) => {
         DISCORD_ID_JUSTIN,
         COLLECTION_ENDPOINT_BASE_URL,
         COLLECTION_SUGGEST_URL,
-        POCKET_ADMIN_COLLECTION_CRON_SECRET,
         POCKET_ADMIN_COLLECTION_ADDRESS,
     } = require(`${__hooks}/pages/utils/constants.js`);
 
     const {
         sendDiscordMessage2,
         getAdminSetting,
-        verifyConfiguredSecret,
     } = require(`${__hooks}/pages/utils/common.js`);
-
-    const auth = verifyConfiguredSecret(
-        e,
-        "COLLECTION_CRON_SECRET",
-        POCKET_ADMIN_COLLECTION_CRON_SECRET,
-        ["X-Cron-Secret", "X-Webhook-Secret"]
-    );
-    if (!auth.authorized) {
-        return e.json(401, { error: "Unauthorized" });
-    }
 
     const buildEndpointFromKeyString = (keyString) => {
         return `${COLLECTION_ENDPOINT_BASE_URL}?f=json&keyString=${encodeURIComponent(keyString)}&unit=%25&areaTypeCode1=RESW&areaTypeCode2=CITW`;
@@ -64,71 +65,93 @@ routerAdd("GET", "/api/collection-schedule", (e) => {
         }
     };
 
+    const envLocation =
+        typeof process !== "undefined" ? String(process?.env?.COLLECTION_SCHEDULE_ADDRESS || "").trim() : "";
+    const dbLocation = String(getAdminSetting(POCKET_ADMIN_COLLECTION_ADDRESS) || "").trim();
+    let location = String(locationOverride || "").trim() || envLocation || dbLocation || "5 o'meara court";
+
+    location = location
+        .replace(/\bcourt\b/gi, "crt")
+        .replace(/\bct\b/gi, "crt")
+        .replace(/\bstreet\b/gi, "st")
+        .replace(/\broad\b/gi, "rd")
+        .replace(/\bavenue\b/gi, "ave")
+        .replace(/\bdrive\b/gi, "dr")
+        .replace(/\bboulevard\b/gi, "blvd")
+        .replace(/\bplace\b/gi, "pl")
+        .replace(/\bcrescent\b/gi, "cres");
+
+    const suggestUrl = `${COLLECTION_SUGGEST_URL}?f=json&matchAddress=1&matchPlaceName=1&matchPostalCode=1&addressOnly=0&retRowLimit=100&searchString=${encodeURIComponent(location)}&filter=5`;
+    const suggestResponse = sendHttpOrThrowLocal("Toronto suggest", {
+        url: suggestUrl,
+        headers: COLLECTION_ENDPOINT_HEADERS,
+    });
+    const suggestJson = getHttpJson(suggestResponse);
+    const suggestRows = suggestJson?.result?.rows;
+
+    let geocoderUrl = buildEndpointFromLocation(location);
+    if (Array.isArray(suggestRows) && suggestRows.length > 0) {
+        const keyString = suggestRows[0]?.KEYSTRING ?? suggestRows[0]?.keyString;
+        if (keyString) {
+            geocoderUrl = buildEndpointFromKeyString(String(keyString));
+        }
+    }
+
+    const geocoderResponse = sendHttpOrThrowLocal("Toronto geocoder", {
+        url: geocoderUrl,
+        headers: COLLECTION_ENDPOINT_HEADERS,
+    });
+    const configResponse = sendHttpOrThrowLocal("Collection config", {
+        url: COLLECTION_CONFIG_URL,
+        headers: { Accept: "application/json" },
+    });
+    const calendarCsvResponse = sendHttpOrThrowLocal("Collection calendar", {
+        url: COLLECTION_CALENDAR_URL,
+    });
+
+    const scheduleResponse = buildCollectionScheduleResponse(
+        geocoderResponse,
+        configResponse,
+        calendarCsvResponse,
+    );
+    const response = {
+        statusCode: geocoderResponse.statusCode,
+        json: scheduleResponse,
+    };
+
+    sendDiscordMessage2(formatCollectionDiscordMessage(response), DISCORD_ID_JUSTIN);
+
+    return response;
+}
+
+routerAdd("GET", "/api/collection-schedule", (e) => {
+    const {
+        DISCORD_ID_JUSTIN,
+        POCKET_ADMIN_COLLECTION_CRON_SECRET,
+    } = require(`${__hooks}/pages/utils/constants.js`);
+
+    const {
+        sendDiscordMessage2,
+        verifyConfiguredSecret,
+    } = require(`${__hooks}/pages/utils/common.js`);
+
+    const auth = verifyConfiguredSecret(
+        e,
+        "COLLECTION_CRON_SECRET",
+        POCKET_ADMIN_COLLECTION_CRON_SECRET,
+        ["X-Cron-Secret", "X-Webhook-Secret"]
+    );
+    if (!auth.authorized) {
+        return e.json(401, { error: "Unauthorized" });
+    }
+
     try {
-        const resolveCollectionEndpointUrlLocal = () => {
-            let queryLocation = "";
-            try {
-                queryLocation = String(e.requestInfo()?.query?.location || "").trim();
-            } catch (_) {}
-            const envLocation =
-                typeof process !== "undefined" ? String(process?.env?.COLLECTION_SCHEDULE_ADDRESS || "").trim() : "";
-            const dbLocation = String(getAdminSetting(POCKET_ADMIN_COLLECTION_ADDRESS) || "").trim();
-            let location = queryLocation || envLocation || dbLocation || "5 o'meara court";
+        let queryLocation = "";
+        try {
+            queryLocation = String(e.requestInfo()?.query?.location || "").trim();
+        } catch (_) {}
 
-            // Normalize common address suffixes to Toronto geocoder abbreviations
-            location = location
-                .replace(/\bcourt\b/gi, "crt")
-                .replace(/\bct\b/gi, "crt")
-                .replace(/\bstreet\b/gi, "st")
-                .replace(/\broad\b/gi, "rd")
-                .replace(/\bavenue\b/gi, "ave")
-                .replace(/\bdrive\b/gi, "dr")
-                .replace(/\bboulevard\b/gi, "blvd")
-                .replace(/\bplace\b/gi, "pl")
-                .replace(/\bcrescent\b/gi, "cres");
-
-            const suggestUrl = `${COLLECTION_SUGGEST_URL}?f=json&matchAddress=1&matchPlaceName=1&matchPostalCode=1&addressOnly=0&retRowLimit=100&searchString=${encodeURIComponent(location)}&filter=5`;
-            const suggestResponse = sendHttpOrThrowLocal("Toronto suggest", {
-                url: suggestUrl,
-                headers: COLLECTION_ENDPOINT_HEADERS,
-            });
-            const suggestJson = getHttpJson(suggestResponse);
-            const suggestRows = suggestJson?.result?.rows;
-            if (Array.isArray(suggestRows) && suggestRows.length > 0) {
-                const keyString = suggestRows[0]?.KEYSTRING ?? suggestRows[0]?.keyString;
-                if (keyString) {
-                    return buildEndpointFromKeyString(String(keyString));
-                }
-            }
-
-            return buildEndpointFromLocation(location);
-        };
-
-        const geocoderUrl = resolveCollectionEndpointUrlLocal();
-        const geocoderResponse = sendHttpOrThrowLocal("Toronto geocoder", {
-            url: geocoderUrl,
-            headers: COLLECTION_ENDPOINT_HEADERS,
-        });
-        const configResponse = sendHttpOrThrowLocal("Collection config", {
-            url: COLLECTION_CONFIG_URL,
-            headers: {
-                Accept: "application/json",
-            },
-        });
-        const calendarCsvResponse = sendHttpOrThrowLocal("Collection calendar", {
-            url: COLLECTION_CALENDAR_URL,
-        });
-        const scheduleResponse = buildCollectionScheduleResponse(
-            geocoderResponse,
-            configResponse,
-            calendarCsvResponse,
-        );
-        const response = {
-            statusCode: geocoderResponse.statusCode,
-            json: scheduleResponse,
-        };
-
-        sendDiscordMessage2(formatCollectionDiscordMessage(response), DISCORD_ID_JUSTIN);
+        const response = fetchAndNotifyCollectionSchedule(queryLocation);
 
         return e.json(response.statusCode, {
             status: response.statusCode,
@@ -277,4 +300,29 @@ onRecordAfterCreateSuccess((e) => {
         handleSendMessage(data, new Date(e.record.get("created")));
     }
 
-}, "zendesk_tickets")
+}, "zendesk_tickets");
+
+// Weekly autonomous Toronto collection schedule check (runs every Monday at 22:00 UTC)
+cronAdd("toronto_collection_weekly", "0 22 * * 1", () => {
+    try {
+        $app.logger().info("[CRON] Running scheduled Toronto collection schedule check");
+        fetchAndNotifyCollectionSchedule();
+    } catch (err) {
+        $app.logger().error("[CRON] Failed scheduled Toronto collection check", "error", err);
+    }
+});
+
+// Weekly maintenance cron: prune Zendesk webhook payload records older than 90 days (runs Sunday 03:00 UTC)
+cronAdd("purge_old_zendesk_tickets", "0 3 * * 0", () => {
+    try {
+        const cutoffDate = new Date(Date.now() - 90 * 24 * 60 * 60 * 1000);
+        const cutoffIso = cutoffDate.toISOString().replace("T", " ");
+        $app.db()
+            .newQuery("DELETE FROM zendesk_tickets WHERE created < {:cutoff}")
+            .bind({ cutoff: cutoffIso })
+            .execute();
+        $app.logger().info("[CRON] Successfully pruned old zendesk_tickets records older than 90 days", "cutoff", cutoffIso);
+    } catch (err) {
+        $app.logger().error("[CRON] Error pruning old zendesk_tickets records", "error", err);
+    }
+});

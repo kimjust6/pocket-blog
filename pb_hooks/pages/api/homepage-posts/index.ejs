@@ -12,6 +12,7 @@
   )
 
   response.header('Content-Type', 'application/json')
+  response.header('Cache-Control', 'public, max-age=120, stale-while-revalidate=600')
   response.write(JSON.stringify({
       items: formattedItems,
       page: result.page,

@@ -370,3 +370,11 @@ iframe {
     border-radius: 0.75rem;
 }
 
+/* Code block styling with copy button padding */
+.prose pre {
+    border-radius: 0.75rem;
+    position: relative;
+    padding-top: 2.25rem !important;
+}
+
+

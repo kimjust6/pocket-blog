@@ -106,12 +106,37 @@ const getBlogPosts = (page = 1, perPage = 6, query = '') => {
     const sqlConditions = []
 
     if (query) {
-        filterClauses.push("(title ~ {:query} || tags ~ {:query} || content1 ~ {:query} || content2 ~ {:query})")
-        filterParams.query = query
-        sqlConditions.push({
-            expr: "(title LIKE {:query} OR tags LIKE {:query} OR content1 LIKE {:query} OR content2 LIKE {:query})",
-            params: { query: `%${query}%` },
-        })
+        const words = String(query).trim().split(/\s+/).filter(Boolean)
+        if (words.length > 1) {
+            const subClauses = words.map((w, i) => {
+                const paramKey = `qw_${i}`
+                filterParams[paramKey] = w
+                return `(title ~ {:${paramKey}} || tags ~ {:${paramKey}} || content1 ~ {:${paramKey}} || content2 ~ {:${paramKey}})`
+            })
+            filterClauses.push(`(${subClauses.join(' && ')})`)
+
+            const sqlParts = words.map((w, i) => {
+                const paramKey = `qw_${i}`
+                return {
+                    part: `(title LIKE {:${paramKey}} OR tags LIKE {:${paramKey}} OR content1 LIKE {:${paramKey}} OR content2 LIKE {:${paramKey}})`,
+                    paramKey,
+                    val: `%${w}%`
+                }
+            })
+            const sqlParams = {}
+            sqlParts.forEach(sp => { sqlParams[sp.paramKey] = sp.val })
+            sqlConditions.push({
+                expr: `(${sqlParts.map(sp => sp.part).join(' AND ')})`,
+                params: sqlParams,
+            })
+        } else {
+            filterClauses.push("(title ~ {:query} || tags ~ {:query} || content1 ~ {:query} || content2 ~ {:query})")
+            filterParams.query = query
+            sqlConditions.push({
+                expr: "(title LIKE {:query} OR tags LIKE {:query} OR content1 LIKE {:query} OR content2 LIKE {:query})",
+                params: { query: `%${query}%` },
+            })
+        }
     }
 
     return getPaginatedRecords({
@@ -163,8 +188,13 @@ function isClimbingRecord(record) {
 function getCombinedHomepagePosts(page = 1, perPage = 6, query = '') {
     const safePage = Math.max(1, parseInt(page, 10) || 1)
     const safePerPage = Math.max(1, parseInt(perPage, 10) || 6)
-    const devPostsResult = getBlogPosts(1, 100, query)
-    const climbingPostsResult = getClimbingLogs(1, 100, query)
+
+    // Calculate dynamic upper bound needed for requested page with buffer so older posts never get capped
+    const neededOffset = safePage === 1 ? 7 : 7 + (safePage - 1) * safePerPage
+    const fetchLimit = Math.max(60, neededOffset + safePerPage * 2)
+
+    const devPostsResult = getBlogPosts(1, fetchLimit, query)
+    const climbingPostsResult = getClimbingLogs(1, fetchLimit, query)
 
     const allItems = [...(devPostsResult?.items || []), ...(climbingPostsResult?.items || [])]
 
@@ -176,7 +206,7 @@ function getCombinedHomepagePosts(page = 1, perPage = 6, query = '') {
         return bDate - aDate
     })
 
-    const totalItems = allItems.length
+    const totalItems = (devPostsResult?.totalItems || 0) + (climbingPostsResult?.totalItems || 0)
     let offset = 0
     let limit = safePerPage
 
@@ -213,12 +243,37 @@ function getClimbingLogs(page = 1, perPage = 6, query = '', climbType = '') {
     const sqlConditions = []
 
     if (query) {
-        filterClauses.push("(title ~ {:query} || location ~ {:query} || content ~ {:query} || climbType ~ {:query} || grade ~ {:query} || style ~ {:query})")
-        filterParams.query = query
-        sqlConditions.push({
-            expr: "(title LIKE {:query} OR location LIKE {:query} OR content LIKE {:query} OR climbType LIKE {:query} OR grade LIKE {:query} OR style LIKE {:query})",
-            params: { query: `%${query}%` },
-        })
+        const words = String(query).trim().split(/\s+/).filter(Boolean)
+        if (words.length > 1) {
+            const subClauses = words.map((w, i) => {
+                const paramKey = `qw_${i}`
+                filterParams[paramKey] = w
+                return `(title ~ {:${paramKey}} || location ~ {:${paramKey}} || content ~ {:${paramKey}} || climbType ~ {:${paramKey}} || grade ~ {:${paramKey}} || style ~ {:${paramKey}})`
+            })
+            filterClauses.push(`(${subClauses.join(' && ')})`)
+
+            const sqlParts = words.map((w, i) => {
+                const paramKey = `qw_${i}`
+                return {
+                    part: `(title LIKE {:${paramKey}} OR location LIKE {:${paramKey}} OR content LIKE {:${paramKey}} OR climbType LIKE {:${paramKey}} OR grade LIKE {:${paramKey}} OR style LIKE {:${paramKey}})`,
+                    paramKey,
+                    val: `%${w}%`
+                }
+            })
+            const sqlParams = {}
+            sqlParts.forEach(sp => { sqlParams[sp.paramKey] = sp.val })
+            sqlConditions.push({
+                expr: `(${sqlParts.map(sp => sp.part).join(' AND ')})`,
+                params: sqlParams,
+            })
+        } else {
+            filterClauses.push("(title ~ {:query} || location ~ {:query} || content ~ {:query} || climbType ~ {:query} || grade ~ {:query} || style ~ {:query})")
+            filterParams.query = query
+            sqlConditions.push({
+                expr: "(title LIKE {:query} OR location LIKE {:query} OR content LIKE {:query} OR climbType LIKE {:query} OR grade LIKE {:query} OR style LIKE {:query})",
+                params: { query: `%${query}%` },
+            })
+        }
     }
     if (climbType) {
         filterClauses.push("climbType = {:climbType}")
@@ -272,6 +327,103 @@ function getAllClimbingLogs(sort = "-date") {
     ) || []
 }
 
+/**
+ * Get adjacent (previous older and next newer) post records relative to a post
+ * @param {Record} currentRecord
+ * @param {boolean} isClimbing
+ * @returns {{ prev: Record|null, next: Record|null }}
+ */
+function getAdjacentPosts(currentRecord, isClimbing = false) {
+    if (!currentRecord) return { prev: null, next: null };
+    const collection = isClimbing ? POCKET_CLIMBING_POSTS : POCKET_BLOGPOSTS;
+    const sortField = isClimbing ? 'date' : 'manualPublishDate';
+    const dateVal = currentRecord.getString(sortField) || currentRecord.getString('created');
+    const currentCreated = currentRecord.getString('created');
+    const currentId = currentRecord.id;
+
+    let prev = null;
+    let next = null;
+
+    try {
+        // Older post (prev)
+        const older = $app.findRecordsByFilter(
+            collection,
+            `isDeleted = false && id != {:id} && (${sortField} < {:date} || (${sortField} = {:date} && created < {:created}))`,
+            `-${sortField},-created`,
+            1,
+            0,
+            { id: currentId, date: dateVal, created: currentCreated }
+        );
+        if (older && older.length > 0) prev = older[0];
+    } catch (_) {}
+
+    try {
+        // Newer post (next)
+        const newer = $app.findRecordsByFilter(
+            collection,
+            `isDeleted = false && id != {:id} && (${sortField} > {:date} || (${sortField} = {:date} && created > {:created}))`,
+            `+${sortField},+created`,
+            1,
+            0,
+            { id: currentId, date: dateVal, created: currentCreated }
+        );
+        if (newer && newer.length > 0) next = newer[0];
+    } catch (_) {}
+
+    return { prev, next };
+}
+
+/**
+ * Calculate aggregate climbing statistics for the climbing overview
+ * @returns {object}
+ */
+function getClimbingStats() {
+    try {
+        const records = getAllClimbingLogs("-date");
+        const totalClimbs = records.length;
+        let sends = 0;
+        let flashes = 0;
+        let onsights = 0;
+        let projects = 0;
+        const typeCounts = {};
+        const locations = new Set();
+
+        records.forEach((r) => {
+            const style = r.getString("style");
+            if (style === "Send") sends++;
+            else if (style === "Flash") flashes++;
+            else if (style === "Onsight") onsights++;
+            else if (style === "Project") projects++;
+
+            const type = r.getString("climbType") || "Other";
+            typeCounts[type] = (typeCounts[type] || 0) + 1;
+
+            const loc = r.getString("location");
+            if (loc && loc.trim()) locations.add(loc.trim());
+        });
+
+        return {
+            totalClimbs,
+            totalSends: sends + flashes + onsights,
+            flashes,
+            onsights,
+            projects,
+            uniqueLocations: locations.size,
+            typeCounts,
+        };
+    } catch (_) {
+        return {
+            totalClimbs: 0,
+            totalSends: 0,
+            flashes: 0,
+            onsights: 0,
+            projects: 0,
+            uniqueLocations: 0,
+            typeCounts: {},
+        };
+    }
+}
+
 module.exports = {
     getBlogPostById,
     getClimbingPostById,
@@ -285,4 +437,6 @@ module.exports = {
     POCKET_CLIMBING_POSTS,
     isClimbingRecord,
     getCombinedHomepagePosts,
+    getAdjacentPosts,
+    getClimbingStats,
 }

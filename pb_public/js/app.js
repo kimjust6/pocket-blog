@@ -481,6 +481,24 @@
                                         @clear="clearSearch"
                                     />
                                     <div v-if="!hasSearchQuery" class="my-8 w-full">
+                                        <div v-if="isClimbing && currentPage === 1 && payload?.climbingStats" class="mb-8 w-full grid grid-cols-2 sm:grid-cols-4 gap-3 text-left">
+                                            <div class="stat bg-base-200/70 backdrop-blur-md rounded-2xl p-4 border border-base-content/10">
+                                                <div class="stat-title text-xs font-semibold text-base-content/70">Total Logs</div>
+                                                <div class="stat-value text-2xl text-primary font-bold">{{ payload.climbingStats.totalClimbs }}</div>
+                                            </div>
+                                            <div class="stat bg-base-200/70 backdrop-blur-md rounded-2xl p-4 border border-base-content/10">
+                                                <div class="stat-title text-xs font-semibold text-base-content/70">Sends</div>
+                                                <div class="stat-value text-2xl text-accent font-bold">{{ payload.climbingStats.totalSends }}</div>
+                                            </div>
+                                            <div class="stat bg-base-200/70 backdrop-blur-md rounded-2xl p-4 border border-base-content/10">
+                                                <div class="stat-title text-xs font-semibold text-base-content/70">Flashes & Onsights</div>
+                                                <div class="stat-value text-2xl text-secondary font-bold">{{ (payload.climbingStats.flashes || 0) + (payload.climbingStats.onsights || 0) }}</div>
+                                            </div>
+                                            <div class="stat bg-base-200/70 backdrop-blur-md rounded-2xl p-4 border border-base-content/10">
+                                                <div class="stat-title text-xs font-semibold text-base-content/70">Locations</div>
+                                                <div class="stat-value text-2xl text-info font-bold">{{ payload.climbingStats.uniqueLocations }}</div>
+                                            </div>
+                                        </div>
                                         <div class="flex justify-end w-full">
                                             <router-link to="/" class="btn btn-accent btn-sm gap-2 transition-all duration-200 rounded-xl">
                                                 <app-icon name="back" />
@@ -525,9 +543,16 @@
                                                 <p class="text-lg text-base-content mt-4 line-clamp-4">
                                                     {{ heroPost.previewText }}
                                                 </p>
-                                                <span class="text-sm text-base-content/60 block">
-                                                    {{ heroPost.formattedDate }}
-                                                </span>
+                                                <div class="text-sm text-base-content/60 flex items-center gap-2 mt-2">
+                                                    <span>{{ heroPost.formattedDate }}</span>
+                                                    <template v-if="heroPost.readingTime">
+                                                        <span>•</span>
+                                                        <span class="inline-flex items-center gap-1 opacity-75">
+                                                            <app-icon name="clock" />
+                                                            {{ heroPost.readingTime }}
+                                                        </span>
+                                                    </template>
+                                                </div>
                                             </div>
                                         </div>
                                     </router-link>
@@ -659,6 +684,7 @@
                         post.value = json.post;
                         notFound.value = false;
                         if (json.pageTitle) document.title = json.pageTitle;
+                        enhanceCodeBlocks();
 
                         if (
                             json.canonicalPath &&
@@ -677,6 +703,46 @@
                             activeController = null;
                         }
                     }
+                }
+
+                function enhanceCodeBlocks() {
+                    Vue.nextTick(() => {
+                        const container = document.querySelector('.hero-content .prose');
+                        if (!container) return;
+                        const pres = container.querySelectorAll('pre');
+                        pres.forEach((pre) => {
+                            if (pre.dataset.copyEnhanced) return;
+                            pre.dataset.copyEnhanced = 'true';
+                            pre.style.position = 'relative';
+
+                            const copyBtn = document.createElement('button');
+                            copyBtn.type = 'button';
+                            copyBtn.className = 'btn btn-ghost btn-xs btn-circle absolute top-2 right-2 text-base-content/70 hover:text-base-content bg-base-200/80 hover:bg-base-200 transition-all';
+                            copyBtn.setAttribute('aria-label', 'Copy code to clipboard');
+                            copyBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>';
+
+                            copyBtn.addEventListener('click', (e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                const codeEl = pre.querySelector('code');
+                                const text = codeEl ? codeEl.innerText : pre.innerText;
+                                if (navigator.clipboard) {
+                                    navigator.clipboard.writeText(text).then(() => {
+                                        copyBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-success"><polyline points="20 6 9 17 4 12"/></svg>';
+                                        setTimeout(() => {
+                                            copyBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>';
+                                        }, 2000);
+                                    });
+                                }
+                            });
+
+                            pre.appendChild(copyBtn);
+                        });
+
+                        if (window.Prism && typeof window.Prism.highlightAllUnder === 'function') {
+                            window.Prism.highlightAllUnder(container);
+                        }
+                    });
                 }
 
                 function goBack() {
@@ -768,12 +834,20 @@
                                         {{ post.backLabel }}
                                     </router-link>
                                 </div>
-                                <div class="text-right">
-                                    {{ post.dateLabel }}:
-                                    <strong>{{ post.formattedDate }}</strong>
-                                    <div v-if="post.formattedUpdated" class="text-right">
-                                        Updated:
-                                        <strong>{{ post.formattedUpdated }}</strong>
+                                <div class="text-right flex flex-col items-end gap-1">
+                                    <div>
+                                        {{ post.dateLabel }}:
+                                        <strong>{{ post.formattedDate }}</strong>
+                                        <template v-if="post.readingTime">
+                                            <span class="mx-1 text-base-content/40">•</span>
+                                            <span class="inline-flex items-center gap-1 text-xs opacity-75">
+                                                <app-icon name="clock" />
+                                                {{ post.readingTime }}
+                                            </span>
+                                        </template>
+                                    </div>
+                                    <div v-if="post.formattedUpdated" class="text-xs text-base-content/70">
+                                        Updated: <strong>{{ post.formattedUpdated }}</strong>
                                     </div>
                                 </div>
                             </div>
@@ -786,6 +860,32 @@
                                 class="prose max-w-none text-base-content mt-6 min-w-0 w-full font-normal leading-relaxed"
                                 v-html="post.cleanContent2"></div>
                         </div>
+
+                        <!-- Previous & Next Post Navigation -->
+                        <nav v-if="post.prevPost || post.nextPost" aria-label="Adjacent Posts" class="w-full mt-10 pt-8 border-t border-base-content/10 grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <router-link v-if="post.prevPost" :to="post.prevPost.link" class="card bg-base-100 hover:bg-base-200 border border-base-content/10 p-5 rounded-xl no-underline transition-all duration-200 group flex flex-col justify-between">
+                                <span class="text-xs font-semibold uppercase tracking-wider text-accent flex items-center gap-1.5 mb-2">
+                                    <app-icon name="back" />
+                                    Older {{ post.isClimbing ? 'Log' : 'Post' }}
+                                </span>
+                                <span class="text-base font-bold text-base-content group-hover:text-primary transition-colors duration-200 line-clamp-2">
+                                    {{ post.prevPost.title }}
+                                </span>
+                                <span class="text-xs text-base-content/60 mt-3">{{ post.prevPost.formattedDate }}</span>
+                            </router-link>
+                            <div v-else class="hidden sm:block"></div>
+
+                            <router-link v-if="post.nextPost" :to="post.nextPost.link" class="card bg-base-100 hover:bg-base-200 border border-base-content/10 p-5 rounded-xl no-underline transition-all duration-200 group flex flex-col justify-between sm:text-right">
+                                <span class="text-xs font-semibold uppercase tracking-wider text-accent flex items-center gap-1.5 sm:justify-end mb-2">
+                                    Newer {{ post.isClimbing ? 'Log' : 'Post' }}
+                                    <app-icon name="next" />
+                                </span>
+                                <span class="text-base font-bold text-base-content group-hover:text-primary transition-colors duration-200 line-clamp-2">
+                                    {{ post.nextPost.title }}
+                                </span>
+                                <span class="text-xs text-base-content/60 mt-3">{{ post.nextPost.formattedDate }}</span>
+                            </router-link>
+                        </nav>
                     </div>
                 </div>
             `,

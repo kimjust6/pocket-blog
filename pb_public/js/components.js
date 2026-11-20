@@ -126,6 +126,50 @@
             defaultClass: 'w-4 h-4 inline-block',
             paths: '<path d="M4 11a9 9 0 0 1 9 9"/><path d="M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1"/>',
         },
+        clock: {
+            width: '14',
+            height: '14',
+            viewBox: '0 0 24 24',
+            fill: 'none',
+            stroke: 'currentColor',
+            strokeWidth: '2',
+            strokeLinecap: 'round',
+            strokeLinejoin: 'round',
+            paths: '<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>',
+        },
+        next: {
+            width: '16',
+            height: '16',
+            viewBox: '0 0 24 24',
+            fill: 'none',
+            stroke: 'currentColor',
+            strokeWidth: '2',
+            strokeLinecap: 'round',
+            strokeLinejoin: 'round',
+            paths: '<path d="m12 5 7 7-7 7"/><path d="M5 12h14"/>',
+        },
+        copy: {
+            width: '16',
+            height: '16',
+            viewBox: '0 0 24 24',
+            fill: 'none',
+            stroke: 'currentColor',
+            strokeWidth: '2',
+            strokeLinecap: 'round',
+            strokeLinejoin: 'round',
+            paths: '<rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>',
+        },
+        check: {
+            width: '16',
+            height: '16',
+            viewBox: '0 0 24 24',
+            fill: 'none',
+            stroke: 'currentColor',
+            strokeWidth: '2',
+            strokeLinecap: 'round',
+            strokeLinejoin: 'round',
+            paths: '<polyline points="20 6 9 17 4 12"/>',
+        },
     };
 
     const AppIcon = {
@@ -252,7 +296,13 @@
                             :stop-propagation="true"
                         />
                         <p class="text-sm text-base-content line-clamp-3">{{ blog.previewText }}</p>
-                        <span class="text-xs text-base-content/60 mt-2">{{ blog.formattedDate }}</span>
+                        <div class="text-xs text-base-content/60 mt-2 flex items-center gap-1.5">
+                            <span>{{ blog.formattedDate }}</span>
+                            <template v-if="blog.readingTime">
+                                <span>•</span>
+                                <span class="opacity-75">{{ blog.readingTime }}</span>
+                            </template>
+                        </div>
                     </div>
                 </div>
             </router-link>

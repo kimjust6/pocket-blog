@@ -7,5 +7,6 @@
     const reqObj = typeof request !== 'undefined' ? request : null
 
     const payload = buildBlogPostsPayload(isHomepage, isClimbing, params, reqObj, data)
+    response.header('Cache-Control', 'public, max-age=120, stale-while-revalidate=600')
     response.json(200, payload)
 </script>

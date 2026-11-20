@@ -1,0 +1,34 @@
+<script server>
+  const { getSitemapData, escapeXml } = require(`${__hooks}/pages/utils/common.js`)
+  const sitemapData = getSitemapData()
+  const postsBlog = sitemapData.blogposts || []
+  const siteBaseUrl = sitemapData.baseUrl
+
+  response.header('Content-Type', 'application/xml; charset=utf-8')
+  response.header('Cache-Control', 'public, max-age=3600, stale-while-revalidate=86400')
+
+  const safeIsoDate = (rawDate) => {
+    if (!rawDate) return new Date().toISOString().split('.')[0] + 'Z'
+    try {
+      const d = new Date(rawDate)
+      if (isNaN(d.getTime())) return new Date().toISOString().split('.')[0] + 'Z'
+      return d.toISOString().split('.')[0] + 'Z'
+    } catch (_) {
+      return new Date().toISOString().split('.')[0] + 'Z'
+    }
+  }
+
+  const latestUpdate = (postsBlog && postsBlog.length > 0)
+    ? safeIsoDate(postsBlog[0].getString('updated') || postsBlog[0].getString('created'))
+    : safeIsoDate()
+
+  const xml = `<?xml version="1.0" encoding="UTF-8"?>
+<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <sitemap>
+    <loc>${escapeXml(siteBaseUrl)}/sitemap.xml</loc>
+    <lastmod>${escapeXml(latestUpdate)}</lastmod>
+  </sitemap>
+</sitemapindex>`
+
+  response.write(xml)
+</script>

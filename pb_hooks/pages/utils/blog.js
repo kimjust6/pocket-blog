@@ -19,6 +19,8 @@ const {
     getAllBlogPosts,
     getAllClimbingLogs,
     isClimbingRecord,
+    getAdjacentPosts,
+    getClimbingStats,
 } = require("./pocket.js");
 
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
@@ -329,6 +331,12 @@ function formatPostViewModel(post, isHomepage = false, isClimbing = false) {
     const rawText = (itemIsClimbing ? post.getString("content") : post.getString("content1")) || "";
     const previewText = extractPreviewText(rawText);
 
+    const rawContentAll = (itemIsClimbing ? post.getString("content") : `${post.getString("content1") || ""} ${post.getString("content2") || ""}`) || "";
+    const cleanFull = extractPreviewText(rawContentAll);
+    const wordCount = cleanFull ? cleanFull.trim().split(/\s+/).filter(Boolean).length : 0;
+    const readMinutes = Math.max(1, Math.ceil(wordCount / 200));
+    const readingTime = `${readMinutes} min read`;
+
     const heroImageUrl = resolvePostImage(post, itemIsClimbing, "800x0");
     const gridImageUrl = resolvePostImage(post, itemIsClimbing, "350x0");
 
@@ -352,6 +360,8 @@ function formatPostViewModel(post, isHomepage = false, isClimbing = false) {
         heroImageUrl,
         gridImageUrl,
         formattedDate,
+        readingTime,
+        wordCount,
         itemIsClimbing,
         badges,
         location: itemIsClimbing ? post.getString("location") : null,
@@ -713,6 +723,30 @@ function prepareBlogSingleViewData(singleBlog, isClimbing, params = {}, data = {
     const dateIso = dateRaw ? new Date(dateRaw).toISOString() : null;
     const updatedIso = updatedRaw ? new Date(updatedRaw).toISOString() : null;
 
+    const rawContentAll = (isClimbing ? singleBlog.getString("content") : `${singleBlog.getString("content1") || ""} ${singleBlog.getString("content2") || ""}`) || "";
+    const cleanFull = extractPreviewText(rawContentAll);
+    const wordCount = cleanFull ? cleanFull.trim().split(/\s+/).filter(Boolean).length : 0;
+    const readMinutes = Math.max(1, Math.ceil(wordCount / 200));
+    const readingTime = `${readMinutes} min read`;
+
+    const adjacent = getAdjacentPosts(singleBlog, isClimbing);
+    const formatAdjacent = (p) => {
+        if (!p) return null;
+        const t = p.getString("title") || "";
+        const s = slugifyTitle(t);
+        const l = isClimbing ? `/climbing/${encodeURIComponent(s)}/${p.id}` : `/blog/posts/${encodeURIComponent(s)}/${p.id}`;
+        const d = isClimbing ? p.getString("date") || p.getString("created") : p.getString("manualPublishDate") || p.getString("created");
+        return {
+            id: p.id,
+            title: t,
+            slug: s,
+            link: l,
+            formattedDate: formatDateTime(new Date(d)),
+        };
+    };
+    const prevPost = formatAdjacent(adjacent.prev);
+    const nextPost = formatAdjacent(adjacent.next);
+
     return {
         id: singleBlog.id,
         rawBlog: singleBlog,
@@ -727,6 +761,10 @@ function prepareBlogSingleViewData(singleBlog, isClimbing, params = {}, data = {
         updatedIso,
         cleanContent,
         cleanContent2,
+        readingTime,
+        wordCount,
+        prevPost,
+        nextPost,
         backLink: isClimbing ? "/climbing" : "/blog/posts",
         backLabel: isClimbing ? "More Climbing" : "More Dev Posts",
         dateLabel: isClimbing ? "Logged" : "Posted",
@@ -781,6 +819,8 @@ function serializePostCard(vm) {
         heroImageUrl: vm.heroImageUrl,
         gridImageUrl: vm.gridImageUrl,
         formattedDate: vm.formattedDate,
+        readingTime: vm.readingTime || null,
+        wordCount: vm.wordCount || 0,
         itemIsClimbing: vm.itemIsClimbing,
         badges: vm.badges || [],
         location: vm.location || null,
@@ -808,6 +848,8 @@ function buildBlogPostsPayload(isHomepage, isClimbing, params = {}, req = null, 
           ? SITE_NAME
           : `The Dev Blog | ${AUTHOR_NAME}`;
 
+    const climbingStats = isClimbing ? getClimbingStats() : null;
+
     return {
         type: "posts-list",
         isHomepage: !!isHomepage,
@@ -824,6 +866,7 @@ function buildBlogPostsPayload(isHomepage, isClimbing, params = {}, req = null, 
         pageTitle,
         heroPost: serializePostCard(viewData.heroPost),
         gridPosts: (viewData.gridPosts || []).map(serializePostCard),
+        climbingStats,
     };
 }
 
@@ -859,8 +902,12 @@ function serializeSinglePostPayload(view, isClimbing) {
             isClimbing: !!view.isClimbing,
             formattedDate: view.formattedDate,
             formattedUpdated: view.formattedUpdated,
+            readingTime: view.readingTime || null,
+            wordCount: view.wordCount || 0,
             cleanContent: view.cleanContent,
             cleanContent2: view.cleanContent2,
+            prevPost: view.prevPost || null,
+            nextPost: view.nextPost || null,
             backLink: view.backLink,
             backLabel: view.backLabel,
             dateLabel: view.dateLabel,
@@ -881,6 +928,19 @@ function buildSinglePostPayload(isClimbing, params = {}, req = null, data = {}) 
  * Shared route controller for `/blog/posts/[title]/[id]` and `/climbing/[title]/[id]`.
  */
 function handleSinglePostRoute(isClimbing, params = {}, data = {}, req = null, api = {}, redirectFn = null) {
+    if (!params.id && (params.title === "rss.xml" || params.title === "rss")) {
+        if (typeof redirectFn === "function") {
+            redirectFn(`/rss.xml?topic=${isClimbing ? "climbing" : "blog"}`, 301);
+            return {
+                isClimbing: !!isClimbing,
+                isListView: false,
+                isLegacyPost: true,
+                isCanonicalPost: false,
+                singleBlogView: null,
+            };
+        }
+    }
+
     const isListView = !params.id && (!params.title || params.title === "index");
     const isLegacyPost = !params.id && Boolean(params.title) && params.title !== "index";
     const isCanonicalPost = Boolean(params.id);
@@ -965,5 +1025,7 @@ module.exports = {
     serializeSinglePostPayload,
     buildBlogPostsPayload,
     buildSinglePostPayload,
+    getAdjacentPosts,
+    getClimbingStats,
 };
 

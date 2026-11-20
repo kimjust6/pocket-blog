@@ -5,5 +5,8 @@
     const reqObj = typeof request !== 'undefined' ? request : null
 
     const payload = buildSinglePostPayload(isClimbing, params, reqObj, data)
+    if (payload.found) {
+        response.header('Cache-Control', 'public, max-age=300, stale-while-revalidate=1800')
+    }
     response.json(payload.found ? 200 : 404, payload)
 </script>

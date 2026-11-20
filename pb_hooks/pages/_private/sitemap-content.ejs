@@ -7,6 +7,7 @@
   const siteBaseUrl = sitemapData.baseUrl
 
   response.header('Content-Type', 'application/xml; charset=utf-8')
+  response.header('Cache-Control', 'public, max-age=3600, stale-while-revalidate=86400')
 
   const safeIsoDate = (rawDate) => {
     if (!rawDate) return new Date().toISOString().split('.')[0] + 'Z'
