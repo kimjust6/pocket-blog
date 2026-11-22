@@ -527,25 +527,6 @@
                                         @clear="clearSearch"
                                     />
                                     <div v-if="!hasSearchQuery" class="my-8 w-full">
-                                        <div v-if="isClimbing && !isHomepage && !hasSearchQuery && currentPage === 1 && payload && payload.climbingStats"
-                                            class="mb-8 w-full grid grid-cols-2 sm:grid-cols-4 gap-3 text-left">
-                                            <div class="stat bg-base-200/70 backdrop-blur-md rounded-2xl p-4 border border-base-content/10">
-                                                <div class="stat-title text-xs font-semibold text-base-content/70">Total Logs</div>
-                                                <div class="stat-value text-2xl text-primary font-bold">{{ payload.climbingStats.totalClimbs }}</div>
-                                            </div>
-                                            <div class="stat bg-base-200/70 backdrop-blur-md rounded-2xl p-4 border border-base-content/10">
-                                                <div class="stat-title text-xs font-semibold text-base-content/70">Sends</div>
-                                                <div class="stat-value text-2xl text-accent font-bold">{{ payload.climbingStats.totalSends }}</div>
-                                            </div>
-                                            <div class="stat bg-base-200/70 backdrop-blur-md rounded-2xl p-4 border border-base-content/10">
-                                                <div class="stat-title text-xs font-semibold text-base-content/70">Flashes & Onsights</div>
-                                                <div class="stat-value text-2xl text-secondary font-bold">{{ (payload.climbingStats.flashes || 0) + (payload.climbingStats.onsights || 0) }}</div>
-                                            </div>
-                                            <div class="stat bg-base-200/70 backdrop-blur-md rounded-2xl p-4 border border-base-content/10">
-                                                <div class="stat-title text-xs font-semibold text-base-content/70">Locations</div>
-                                                <div class="stat-value text-2xl text-info font-bold">{{ payload.climbingStats.uniqueLocations }}</div>
-                                            </div>
-                                        </div>
                                         <div class="flex justify-end w-full">
                                             <router-link to="/" class="btn btn-accent btn-sm gap-2 transition-all duration-200 rounded-xl">
                                                 <app-icon name="back" />
@@ -559,7 +540,6 @@
                             <div v-if="loading && !payload" class="py-16 flex justify-center">
                                 <span class="loading loading-spinner loading-lg text-accent" role="status" aria-label="Loading posts"></span>
                             </div>
-
                             <template v-else-if="payload">
                                 <!-- Hero Post -->
                                 <div v-if="heroPost" class="mb-24">
