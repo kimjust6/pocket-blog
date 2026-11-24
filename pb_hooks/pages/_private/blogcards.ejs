@@ -230,7 +230,7 @@
 
                             <% for (let i=1; i <=totalPages; i++) { %>
                                 <a href="?page=<%= i %><%= fullParams %>"
-                                    class="join-item btn btn-sm <%= currentPage === i ? 'btn-active' : '' %>" <% if
+                                    class="join-item btn btn-sm <%= currentPage === i ? 'btn-active btn-accent text-accent-content font-bold shadow-md dark:shadow-accent/30' : '' %>" <% if
                                     (currentPage===i) { %>aria-current="page"<% } %>
                                         aria-label="Page <%= i %>">
                                             <%= i %>

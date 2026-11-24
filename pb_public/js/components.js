@@ -464,7 +464,8 @@
                         aria-label="Previous page">«</router-link>
 
                     <router-link v-for="i in totalPages" :key="i" :to="pageLocation(i)"
-                        class="join-item btn btn-sm" :class="{ 'btn-active': currentPage === i }"
+                        class="join-item btn btn-sm"
+                        :class="{ 'btn-active btn-accent text-accent-content font-bold shadow-md dark:shadow-accent/30': currentPage === i }"
                         :aria-current="currentPage === i ? 'page' : null"
                         :aria-label="'Page ' + i">
                         {{ i }}
