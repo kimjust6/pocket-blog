@@ -124,56 +124,6 @@ function getZendeskUrl(data) {
 }
 
 /**
- * Execute a function after a random delay (0..maxSeconds).
- * @param {Function} fn
- * @param {number} maxSeconds
- */
-function runAfterRandomDelay(fn, maxSeconds = 1) {
-    try {
-        if (typeof fn !== "function") {
-            $app.logger().error("runAfterRandomDelay: fn must be a function");
-            return;
-        }
-        let windowSec = parseFloat(maxSeconds);
-        if (isNaN(windowSec) || windowSec < 0) {
-            windowSec = 1;
-        }
-        const delayInSeconds = Math.random() * windowSec;
-        runAfterDelay(fn, delayInSeconds);
-    } catch (err) {
-        $app.logger().error("runAfterRandomDelay setup failed", "error", err);
-    }
-}
-
-/**
- * Execute a function after a delay in seconds.
- * @param {Function} fn
- * @param {number} delayInSeconds
- */
-function runAfterDelay(fn, delayInSeconds = 4) {
-    try {
-        const delayMs = delayInSeconds * 1000;
-        if (typeof setTimeout === "function") {
-            setTimeout(() => {
-                try {
-                    fn();
-                } catch (err) {
-                    $app.logger().error("runAfterDelay execution error", "error", err);
-                }
-            }, delayMs);
-        } else {
-            try {
-                fn();
-            } catch (err) {
-                $app.logger().error("runAfterDelay immediate fallback error", "error", err);
-            }
-        }
-    } catch (err) {
-        $app.logger().error("runAfterDelay setup failed", "error", err);
-    }
-}
-
-/**
  * Persist an incoming Zendesk webhook payload to PocketBase.
  * @param {Object} data
  */
@@ -200,62 +150,6 @@ function saveZendeskRecord(data) {
     record.set("updated", Date.now());
 
     $app.save(record);
-}
-
-/**
- * Find the most recent stored ticket record matching `ticketId`.
- * @param {number|Object} data
- * @param {number} timeInSeconds
- * @returns {Record|null}
- */
-function findRecentTicketByTicketNumber(data, timeInSeconds = 10) {
-    const ticketId = typeof data !== "number" ? getTicketId(data) : data;
-    if (!ticketId) {
-        return null;
-    }
-
-    const record = new Record();
-    $app.recordQuery(POCKET_COLLECTION_ZENDESK_TICKETS)
-        .andWhere($dbx.hashExp({ ticketId }))
-        .andWhere($dbx.rangeExp("created", Date.now() - timeInSeconds * 1000, Date.now()))
-        .orderBy("created DESC")
-        .limit(1)
-        .one(record);
-
-    if (record) {
-        const createdTime = new Date(record.get("created")).getTime();
-        const timeDiff = Date.now() - createdTime;
-        if (timeDiff && timeDiff <= timeInSeconds * 1000) {
-            return record;
-        }
-    }
-    return null;
-}
-
-/**
- * Find recent ticket records by numeric ticket ID within `timeInSeconds`.
- * @param {number|Object} data
- * @param {number} timeInSeconds
- * @returns {Array}
- */
-function findRecentTicketsByTicketNumber(data, timeInSeconds = 10) {
-    const ticketId = typeof data !== "number" ? getTicketId(data) : data;
-    if (!ticketId) {
-        return [];
-    }
-
-    const now = Date.now();
-    const dateStart = now - timeInSeconds * 1000;
-    const records = $app.findRecordsByFilter(
-        POCKET_COLLECTION_ZENDESK_TICKETS,
-        "ticketId = {:ticketId} && created >= {:dateStart} && created <= {:dateEnd}",
-        "created",
-        20,
-        0,
-        { ticketId, dateStart, dateEnd: now }
-    );
-
-    return records || [];
 }
 
 /**
@@ -365,27 +259,25 @@ function getOrganizationName(data) {
     return getOrganizationById(id);
 }
 
-function generateNormalTicketMessage(data) {
-    const organizationName = getOrganizationName(data) ?? "Updated";
+function formatTicketMessage(prefix, fallbackPrefix, data) {
     const title = getTicketTitle(data);
     const id = getTicketId(data);
     const url = getZendeskUrl(data);
     if (url && id && title) {
-        return ` ${organizationName} | ${id}: [${title}](${url})`;
+        return ` ${prefix} | ${id}: [${title}](${url})`;
     }
-    return `Your ticket has been updated: ${url ?? "No URL available"}`;
+    return `${fallbackPrefix}: ${url ?? "No URL available"}`;
+}
+
+function generateNormalTicketMessage(data) {
+    const organizationName = getOrganizationName(data) ?? "Updated";
+    return formatTicketMessage(organizationName, "Your ticket has been updated", data);
 }
 
 function generateSlaBreachingSoonMessage(data) {
     const org = getOrganizationName(data);
     const organizationName = org ? `Check SLA ${org}` : "Check SLA";
-    const title = getTicketTitle(data);
-    const id = getTicketId(data);
-    const url = getZendeskUrl(data);
-    if (url && id && title) {
-        return ` ${organizationName} | ${id}: [${title}](${url})`;
-    }
-    return `SLA breaching soon: ${url ?? "No URL available"}`;
+    return formatTicketMessage(organizationName, "SLA breaching soon", data);
 }
 
 function getDiscordIdfromData(data) {
@@ -422,13 +314,9 @@ module.exports = {
     getTicketType,
     getAssigneeId,
     getActorId,
-    runAfterRandomDelay,
-    runAfterDelay,
     privateGetBody,
     privateIsStatusChangedEvent,
     saveZendeskRecord,
-    findRecentTicketByTicketNumber,
-    findRecentTicketsByTicketNumber,
     findRecentTicketsByTicketNumber2,
     getDiscordIdByAssigneeId,
     getOrganizationById,

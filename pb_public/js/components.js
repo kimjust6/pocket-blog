@@ -587,6 +587,7 @@
     const StaticPageView = {
         name: 'StaticPageView',
         props: {
+            heading: { type: String, default: '' },
             text: { type: String, required: true },
             siteName: { type: String, default: 'The Justin Blog' },
             onEnter: { type: Function, default: null },
@@ -604,13 +605,89 @@
         },
         template: `
             <div class="mx-auto max-w-4xl px-4 py-12">
-                {{ text }}
+                <h1 v-if="heading" class="text-3xl font-bold mb-6 text-accent">{{ heading }}</h1>
+                <p class="text-base-content">{{ text }}</p>
             </div>
         `,
     };
 
+    const ClimbingStats = {
+        name: 'ClimbingStats',
+        props: {
+            stats: { type: Object, required: true },
+        },
+        template: `
+            <div class="mb-8 w-full grid grid-cols-2 sm:grid-cols-4 gap-3 text-left">
+                <div class="stat bg-base-200/70 backdrop-blur-md rounded-2xl p-4 border border-base-content/10">
+                    <div class="stat-title text-xs font-semibold text-base-content/70">Total Logs</div>
+                    <div class="stat-value text-2xl text-primary font-bold">{{ stats.totalClimbs }}</div>
+                </div>
+                <div class="stat bg-base-200/70 backdrop-blur-md rounded-2xl p-4 border border-base-content/10">
+                    <div class="stat-title text-xs font-semibold text-base-content/70">Sends</div>
+                    <div class="stat-value text-2xl text-accent font-bold">{{ stats.totalSends }}</div>
+                </div>
+                <div class="stat bg-base-200/70 backdrop-blur-md rounded-2xl p-4 border border-base-content/10">
+                    <div class="stat-title text-xs font-semibold text-base-content/70">Flashes & Onsights</div>
+                    <div class="stat-value text-2xl text-secondary font-bold">{{ (stats.flashes || 0) + (stats.onsights || 0) }}</div>
+                </div>
+                <div class="stat bg-base-200/70 backdrop-blur-md rounded-2xl p-4 border border-base-content/10">
+                    <div class="stat-title text-xs font-semibold text-base-content/70">Locations</div>
+                    <div class="stat-value text-2xl text-info font-bold">{{ stats.uniqueLocations }}</div>
+                </div>
+            </div>
+        `,
+    };
+
+    function renderIconSvg(name, extraClass) {
+        const def = ICON_DEFS[name];
+        if (!def) return '';
+        const cls = extraClass ? ` class="${extraClass}"` : '';
+        return `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="${def.viewBox}" fill="${def.fill || 'none'}" stroke="${def.stroke || 'currentColor'}" stroke-width="${def.strokeWidth || '2'}" stroke-linecap="round" stroke-linejoin="round"${cls}>${def.paths}</svg>`;
+    }
+
+    function enhanceCodeBlocks(container) {
+        const root = container || (typeof document !== 'undefined' ? document.querySelector('main.prose') : null);
+        if (!root) return;
+        const copySvg = renderIconSvg('copy');
+        const checkSvg = renderIconSvg('check', 'text-success');
+
+        root.querySelectorAll('pre').forEach((pre) => {
+            if (pre.dataset.copyEnhanced) return;
+            pre.dataset.copyEnhanced = 'true';
+            pre.style.position = 'relative';
+
+            const copyBtn = document.createElement('button');
+            copyBtn.type = 'button';
+            copyBtn.className = 'btn btn-ghost btn-xs btn-circle absolute top-2 right-2 text-base-content/70 hover:text-base-content bg-base-200/80 hover:bg-base-200 transition-all';
+            copyBtn.setAttribute('aria-label', 'Copy code to clipboard');
+            copyBtn.innerHTML = copySvg;
+
+            copyBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                const codeEl = pre.querySelector('code');
+                const text = codeEl ? codeEl.innerText : pre.innerText;
+                if (navigator.clipboard) {
+                    navigator.clipboard.writeText(text).then(() => {
+                        copyBtn.innerHTML = checkSvg;
+                        setTimeout(() => {
+                            copyBtn.innerHTML = copySvg;
+                        }, 2000);
+                    });
+                }
+            });
+
+            pre.appendChild(copyBtn);
+        });
+    }
+
+    if (typeof document !== 'undefined') {
+        document.addEventListener('DOMContentLoaded', () => enhanceCodeBlocks());
+    }
+
     window.BlogComponents = {
         trackPostClick,
+        enhanceCodeBlocks,
         AppIcon,
         PostBadgeList,
         PostGridCard,
@@ -622,6 +699,7 @@
         SiteFooter,
         NotFoundView,
         StaticPageView,
+        ClimbingStats,
     };
 })();
 

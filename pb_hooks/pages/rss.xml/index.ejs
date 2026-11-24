@@ -1,9 +1,10 @@
 <script server>
   const { SITE_NAME, AUTHOR_NAME } = require(`${__hooks}/pages/utils/constants.js`)
   const {
-    slugifyTitle,
     getBaseUrl,
     getImageUrl,
+    getPostUrl,
+    getPostDateRaw,
     toNoCookie,
     extractPreviewText,
     escapeXml,
@@ -16,7 +17,7 @@
     devPosts = (getAllBlogPosts("-manualPublishDate,-updated") || []).map(p => ({
       record: p,
       isClimbing: false,
-      date: new Date(p.getString('manualPublishDate') || p.getString('created') || Date.now()),
+      date: new Date(getPostDateRaw(p, false) || Date.now()),
     }))
   } catch (err) {
     console.error("Error loading blog posts for RSS:", err)
@@ -27,7 +28,7 @@
     climbingPosts = (getAllClimbingLogs("-date") || []).map(p => ({
       record: p,
       isClimbing: true,
-      date: new Date(p.getString('date') || p.getString('created') || Date.now()),
+      date: new Date(getPostDateRaw(p, true) || Date.now()),
     }))
   } catch (err) {
     console.error("Error loading climbing posts for RSS:", err)
@@ -63,10 +64,7 @@
   const items = activePosts.map(({ record: post, isClimbing, date }) => {
     const pubDate = date.toUTCString()
     const title = post.getString('title') || 'Untitled'
-    const slug = slugifyTitle(title)
-    const postLink = isClimbing
-      ? `${baseUrl}/climbing/${encodeURIComponent(slug)}/${post.id}`
-      : `${baseUrl}/blog/posts/${encodeURIComponent(slug)}/${post.id}`
+    const postLink = `${baseUrl}${getPostUrl(post.id, title, isClimbing)}`
 
     const rawContent = isClimbing
       ? post.getString('content') || ''

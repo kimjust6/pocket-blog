@@ -104,6 +104,37 @@ const WEEKDAY_INDEX = {
 const COLLECTION_ENDPOINT_BASE_URL = "https://map.toronto.ca/cotgeocoder/rest/geocoder/findAddressCandidates";
 const COLLECTION_SUGGEST_URL = "https://map.toronto.ca/cotgeocoder/rest/geocoder/suggest";
 
+const POST_TYPE_CONFIG = {
+    blog: {
+        collection: POCKET_BLOGPOSTS,
+        tableName: "blog_posts",
+        sort: "-manualPublishDate,-created",
+        dateField: "manualPublishDate",
+        contentFields: ["content1", "content2"],
+        searchFields: ["title", "tags", "content1", "content2"],
+        routePrefix: "/blog/posts",
+        sectionLabel: "Software Development",
+        backLabel: "More Dev Posts",
+        dateLabel: "Posted",
+    },
+    climbing: {
+        collection: POCKET_CLIMBING_POSTS,
+        tableName: "climbing_posts",
+        sort: "-date,-created",
+        dateField: "date",
+        contentFields: ["content"],
+        searchFields: ["title", "location", "content", "climbType", "grade", "style"],
+        routePrefix: "/climbing",
+        sectionLabel: "Climbing",
+        backLabel: "More Climbing",
+        dateLabel: "Logged",
+    },
+};
+
+function getPostTypeConfig(isClimbing) {
+    return isClimbing ? POST_TYPE_CONFIG.climbing : POST_TYPE_CONFIG.blog;
+}
+
 module.exports = {
     POCKET_BLOGPOSTS,
     POCKET_CLIMBING_POSTS,
@@ -146,4 +177,6 @@ module.exports = {
     TWITTER_HANDLE,
     SITE_NAVIGATION,
     SITE_SOCIALS,
+    POST_TYPE_CONFIG,
+    getPostTypeConfig,
 };

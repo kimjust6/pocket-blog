@@ -11,7 +11,7 @@ const {
     POCKET_ADMIN_COLLECTION_ADDRESS,
 } = require("./constants.js");
 const { decodeHttpBody, getHttpJson } = require("./http.js");
-const { getAdminSetting } = require("./pocket.js");
+const { getConfigValue } = require("./pocket.js");
 const { sendDiscordMessage2 } = require("./discord.js");
 
 function parseIsoDate(dateString) {
@@ -280,7 +280,7 @@ function formatCollectionDiscordMessage(response) {
  * @param {string} locationOverride
  * @returns {{ statusCode: number, json: Object }}
  */
-function fetchAndNotifyCollectionSchedule(locationOverride = "") {
+function fetchAndNotifyCollectionSchedule(locationOverride = "", notifyFn = sendDiscordMessage2) {
     const buildEndpointFromKeyString = (keyString) => {
         return `${COLLECTION_ENDPOINT_BASE_URL}?f=json&keyString=${encodeURIComponent(keyString)}&unit=%25&areaTypeCode1=RESW&areaTypeCode2=CITW`;
     };
@@ -297,10 +297,7 @@ function fetchAndNotifyCollectionSchedule(locationOverride = "") {
         }
     };
 
-    const envLocation =
-        typeof process !== "undefined" ? String(process?.env?.COLLECTION_SCHEDULE_ADDRESS || "").trim() : "";
-    const dbLocation = String(getAdminSetting(POCKET_ADMIN_COLLECTION_ADDRESS) || "").trim();
-    let location = String(locationOverride || "").trim() || envLocation || dbLocation;
+    let location = String(locationOverride || "").trim() || getConfigValue("COLLECTION_SCHEDULE_ADDRESS", POCKET_ADMIN_COLLECTION_ADDRESS);
     if (!location) {
         throw new Error("Collection schedule address is not configured.");
     }
@@ -354,7 +351,9 @@ function fetchAndNotifyCollectionSchedule(locationOverride = "") {
         json: scheduleResponse,
     };
 
-    sendDiscordMessage2(formatCollectionDiscordMessage(response), DISCORD_ID_JUSTIN);
+    if (typeof notifyFn === "function") {
+        notifyFn(formatCollectionDiscordMessage(response), DISCORD_ID_JUSTIN);
+    }
 
     return response;
 }

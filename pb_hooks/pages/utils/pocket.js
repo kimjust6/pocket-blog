@@ -1,4 +1,9 @@
-const { POCKET_BLOGPOSTS, POCKET_CLIMBING_POSTS, POCKET_COLLECTION_ADMIN_SETTINGS } = require('./constants')
+const {
+    POCKET_BLOGPOSTS,
+    POCKET_CLIMBING_POSTS,
+    POCKET_COLLECTION_ADMIN_SETTINGS,
+    getPostTypeConfig,
+} = require('./constants')
 
 /**
  * Read a setting value from PocketBase `admin_settings` by key.
@@ -20,6 +25,30 @@ function getAdminSetting(key) {
         return null
     }
     return record.get('value') ?? null
+}
+
+/**
+ * Resolve a configuration value from environment variables first, falling back to `admin_settings`.
+ * @param {string} envVarName
+ * @param {string} [adminSettingKey]
+ * @returns {string}
+ */
+function getConfigValue(envVarName, adminSettingKey = '') {
+    try {
+        if (envVarName && typeof process !== 'undefined' && process?.env?.[envVarName]) {
+            const trimmed = String(process.env[envVarName]).trim()
+            if (trimmed) return trimmed
+        }
+    } catch (_) {}
+
+    if (adminSettingKey) {
+        try {
+            const dbVal = getAdminSetting(adminSettingKey)
+            if (dbVal) return String(dbVal).trim()
+        } catch (_) {}
+    }
+
+    return ''
 }
 
 /**
@@ -73,47 +102,56 @@ const getPaginatedRecords = ({
     }
 }
 
+const getPostById = (collection, id) => {
+    return $app.findFirstRecordByFilter(
+        collection,
+        "id = {:id} && isDeleted = false",
+        { id }
+    )
+}
+
+const getPostsByTitlePrefix = (collection, sort, titlePrefix) => {
+    return $app.findRecordsByFilter(
+        collection,
+        "title ~ {:titlePrefix} && isDeleted = false",
+        sort,
+        0,
+        0,
+        { titlePrefix }
+    ) || []
+}
+
+const getAllPosts = (collection, sort) => {
+    return $app.findRecordsByFilter(
+        collection,
+        "isDeleted = false",
+        sort,
+        0,
+        0
+    ) || []
+}
+
 /**
  * Get a single blog post by ID using server-side $app
  * @param {string} id - The blog post ID
  * @returns {Record} The blog post Record object (use .getString(), .get() to access fields)
  */
-const getBlogPostById = (id) => {
-    return $app.findFirstRecordByFilter(
-        POCKET_BLOGPOSTS,
-        "id = {:id} && isDeleted = false",
-        { id }
-    )
-}
+const getBlogPostById = (id) => getPostById(POCKET_BLOGPOSTS, id)
 
 /**
  * Get a single climbing post by ID using server-side $app
  * @param {string} id - The climbing post ID
  * @returns {Record} The climbing post Record object
  */
-const getClimbingPostById = (id) => {
-    return $app.findFirstRecordByFilter(
-        POCKET_CLIMBING_POSTS,
-        "id = {:id} && isDeleted = false",
-        { id }
-    )
-}
+const getClimbingPostById = (id) => getPostById(POCKET_CLIMBING_POSTS, id)
 
 /**
  * Get blog posts by title prefix using server-side $app
  * @param {string} titlePrefix - The prefix of the title to search for
  * @returns {array} Array of blog post Record objects
  */
-const getBlogPostsByTitlePrefix = (titlePrefix) => {
-    return $app.findRecordsByFilter(
-        POCKET_BLOGPOSTS,
-        "title ~ {:titlePrefix} && isDeleted = false",
-        "-manualPublishDate,-updated",
-        0,
-        0,
-        { titlePrefix }
-    ) || []
-}
+const getBlogPostsByTitlePrefix = (titlePrefix) =>
+    getPostsByTitlePrefix(POCKET_BLOGPOSTS, "-manualPublishDate,-updated", titlePrefix)
 
 /**
  * Build matching PocketBase filter clauses and SQL COUNT conditions from a single field list,
@@ -159,12 +197,13 @@ const buildSearchFilter = (fields, query) => {
  * @returns {object} Object with items array (Record objects) and pagination info
  */
 const getBlogPosts = (page = 1, perPage = 6, query = '') => {
+    const cfg = getPostTypeConfig(false)
     const filterClauses = []
     let filterParams = {}
     const sqlConditions = []
 
     if (query) {
-        const search = buildSearchFilter(['title', 'tags', 'content1', 'content2'], query)
+        const search = buildSearchFilter(cfg.searchFields, query)
         if (search.filterClause) {
             filterClauses.push(search.filterClause)
             filterParams = Object.assign(filterParams, search.filterParams)
@@ -173,9 +212,9 @@ const getBlogPosts = (page = 1, perPage = 6, query = '') => {
     }
 
     return getPaginatedRecords({
-        collection: POCKET_BLOGPOSTS,
-        tableName: 'blog_posts',
-        sort: '-manualPublishDate,-created',
+        collection: cfg.collection,
+        tableName: cfg.tableName,
+        sort: cfg.sort,
         page,
         perPage,
         filterClauses,
@@ -189,15 +228,7 @@ const getBlogPosts = (page = 1, perPage = 6, query = '') => {
  * @param {string} sort - Sort order (e.g., "-updated", "-created")
  * @returns {array} Array of blog post Record objects
  */
-const getAllBlogPosts = (sort = "-updated") => {
-    return $app.findRecordsByFilter(
-        POCKET_BLOGPOSTS,
-        "isDeleted = false",
-        sort,
-        0,
-        0
-    ) || []
-}
+const getAllBlogPosts = (sort = "-updated") => getAllPosts(POCKET_BLOGPOSTS, sort)
 
 /**
  * Helper to determine if a record object is from climbing_posts
@@ -221,8 +252,43 @@ function isClimbingRecord(record) {
 function getCombinedHomepagePosts(page = 1, perPage = 6, query = '') {
     const safePage = Math.max(1, parseInt(page, 10) || 1)
     const safePerPage = Math.max(1, parseInt(perPage, 10) || 6)
+    const offset = safePage === 1 ? 0 : 7 + (safePage - 2) * safePerPage
+    const limit = safePage === 1 ? 7 : safePerPage
 
-    // Calculate dynamic upper bound needed for requested page with buffer so older posts never get capped
+    if (!String(query || '').trim()) {
+        const unionSql = `
+            SELECT id, 'blog_posts' AS col, COALESCE(NULLIF(manualPublishDate, ''), created) AS sortDate
+            FROM blog_posts WHERE isDeleted = 0
+            UNION ALL
+            SELECT id, 'climbing_posts' AS col, COALESCE(NULLIF(date, ''), created) AS sortDate
+            FROM climbing_posts WHERE isDeleted = 0
+        `
+        const countRows = arrayOf(new DynamicModel({ total: 0 }))
+        $app.db().newQuery(`SELECT COUNT(*) AS total FROM (${unionSql})`).all(countRows)
+        const totalItems = countRows[0]?.total || 0
+
+        const pageRows = arrayOf(new DynamicModel({ id: '', col: '', sortDate: '' }))
+        $app.db()
+            .newQuery(`${unionSql} ORDER BY sortDate DESC LIMIT {:limit} OFFSET {:offset}`)
+            .bind({ limit, offset })
+            .all(pageRows)
+
+        const blogIds = pageRows.filter((r) => r.col === 'blog_posts').map((r) => r.id)
+        const climbIds = pageRows.filter((r) => r.col === 'climbing_posts').map((r) => r.id)
+
+        const recordMap = new Map()
+        if (blogIds.length > 0) {
+            ($app.findRecordsByIds(POCKET_BLOGPOSTS, blogIds) || []).forEach((r) => recordMap.set(`blog_posts:${r.id}`, r))
+        }
+        if (climbIds.length > 0) {
+            ($app.findRecordsByIds(POCKET_CLIMBING_POSTS, climbIds) || []).forEach((r) => recordMap.set(`climbing_posts:${r.id}`, r))
+        }
+
+        const items = pageRows.map((r) => recordMap.get(`${r.col}:${r.id}`)).filter(Boolean)
+        const totalPages = totalItems <= 7 ? 1 : 1 + Math.ceil((totalItems - 7) / safePerPage)
+        return { items, totalItems, totalPages, page: safePage }
+    }
+
     const neededOffset = safePage === 1 ? 7 : 7 + (safePage - 1) * safePerPage
     const fetchLimit = Math.max(60, neededOffset + safePerPage * 2)
 
@@ -240,17 +306,6 @@ function getCombinedHomepagePosts(page = 1, perPage = 6, query = '') {
     })
 
     const totalItems = (devPostsResult?.totalItems || 0) + (climbingPostsResult?.totalItems || 0)
-    let offset = 0
-    let limit = safePerPage
-
-    if (safePage === 1) {
-        offset = 0
-        limit = 7 // 1 featured/hero post + 6 grid posts
-    } else {
-        offset = 7 + (safePage - 2) * safePerPage
-        limit = safePerPage
-    }
-
     const items = allItems.slice(offset, offset + limit)
     const totalPages = totalItems <= 7 ? 1 : (1 + Math.ceil((totalItems - 7) / safePerPage))
 
@@ -271,12 +326,13 @@ function getCombinedHomepagePosts(page = 1, perPage = 6, query = '') {
  * @returns {object} Object with items array (Record objects) and pagination info
  */
 function getClimbingLogs(page = 1, perPage = 6, query = '', climbType = '') {
+    const cfg = getPostTypeConfig(true)
     const filterClauses = []
     let filterParams = {}
     const sqlConditions = []
 
     if (query) {
-        const search = buildSearchFilter(['title', 'location', 'content', 'climbType', 'grade', 'style'], query)
+        const search = buildSearchFilter(cfg.searchFields, query)
         if (search.filterClause) {
             filterClauses.push(search.filterClause)
             filterParams = Object.assign(filterParams, search.filterParams)
@@ -293,9 +349,9 @@ function getClimbingLogs(page = 1, perPage = 6, query = '', climbType = '') {
     }
 
     return getPaginatedRecords({
-        collection: POCKET_CLIMBING_POSTS,
-        tableName: 'climbing_posts',
-        sort: '-date,-created',
+        collection: cfg.collection,
+        tableName: cfg.tableName,
+        sort: cfg.sort,
         page,
         perPage,
         filterClauses,
@@ -310,14 +366,7 @@ function getClimbingLogs(page = 1, perPage = 6, query = '', climbType = '') {
  * @returns {array} Array of climbing log Record objects
  */
 function getClimbingLogsByTitlePrefix(titlePrefix) {
-    return $app.findRecordsByFilter(
-        POCKET_CLIMBING_POSTS,
-        "title ~ {:titlePrefix} && isDeleted = false",
-        "-date,-created",
-        0,
-        0,
-        { titlePrefix }
-    ) || []
+    return getPostsByTitlePrefix(POCKET_CLIMBING_POSTS, "-date,-created", titlePrefix)
 }
 
 /**
@@ -326,13 +375,7 @@ function getClimbingLogsByTitlePrefix(titlePrefix) {
  * @returns {array} Array of climbing log Record objects
  */
 function getAllClimbingLogs(sort = "-date") {
-    return $app.findRecordsByFilter(
-        POCKET_CLIMBING_POSTS,
-        "isDeleted = false",
-        sort,
-        0,
-        0
-    ) || []
+    return getAllPosts(POCKET_CLIMBING_POSTS, sort)
 }
 
 /**
@@ -449,4 +492,5 @@ module.exports = {
     getAdjacentPosts,
     getClimbingStats,
     getAdminSetting,
+    getConfigValue,
 }

@@ -1,84 +1,18 @@
 const {
-    POCKET_COLLECTION_ADMIN_SETTINGS,
     POCKET_ADMIN_DISCORD_BOT_TOKEN,
     DISCORD_API_ENDPOINT,
     DISCORD_ID_JUSTIN,
 } = require("./constants.js");
-const { decodeHttpBody } = require("./http.js");
-const { getAdminSetting } = require("./pocket.js");
-
-/**
- * Compare two strings in constant time to avoid timing leaks on shared secrets.
- * @param {string} a
- * @param {string} b
- * @returns {boolean}
- */
-function constantTimeEqual(a, b) {
-    if (typeof a !== "string" || typeof b !== "string") return false;
-    const len = Math.max(a.length, b.length);
-    let diff = a.length ^ b.length;
-    for (let i = 0; i < len; i++) {
-        diff |= (a.charCodeAt(i) || 0) ^ (b.charCodeAt(i) || 0);
-    }
-    return diff === 0;
-}
-
-/**
- * Verify a shared secret from env or `admin_settings` via request headers.
- * Fails closed when no secret is configured, and never accepts secrets in query strings.
- * @param {Object} e PocketBase request event
- * @param {string} envVarName
- * @param {string} adminSettingKey
- * @param {string[]} headerNames
- * @returns {{ configured: boolean, authorized: boolean }}
- */
-function verifyConfiguredSecret(e, envVarName, adminSettingKey, headerNames = ["X-Webhook-Secret"]) {
-    const envSecret = typeof process !== "undefined" ? process?.env?.[envVarName]?.trim() : "";
-    const dbSecret = !envSecret && adminSettingKey ? String(getAdminSetting(adminSettingKey) || "").trim() : "";
-    const expected = envSecret || dbSecret;
-    if (!expected) {
-        return { configured: false, authorized: false };
-    }
-
-    let reqInfo = null;
-    try {
-        reqInfo = typeof e?.requestInfo === "function" ? e.requestInfo() : null;
-    } catch (_) {}
-
-    const headers = reqInfo?.headers || {};
-    const candidates = [];
-
-    headerNames.forEach((name) => {
-        const lower = name.toLowerCase();
-        if (headers[lower]) candidates.push(String(headers[lower]));
-        if (headers[name]) candidates.push(String(headers[name]));
-        try {
-            const direct = e?.request?.header?.get?.(name);
-            if (direct) candidates.push(String(direct));
-        } catch (_) {}
-    });
-
-    const authHeader = headers.authorization || headers.Authorization || "";
-    if (typeof authHeader === "string" && authHeader.toLowerCase().startsWith("bearer ")) {
-        candidates.push(authHeader.slice(7).trim());
-    }
-
-    const authorized = candidates.some((val) => constantTimeEqual(val.trim(), expected));
-    return { configured: true, authorized };
-}
+const { decodeHttpBody, verifyConfiguredSecret } = require("./http.js");
+const { getAdminSetting, getConfigValue } = require("./pocket.js");
 
 /**
  * Retrieve the Discord bot token from env or PocketBase `admin_settings`.
  * @returns {string|null}
  */
 function getDiscordBotToken() {
-    const envToken = typeof process !== "undefined" ? process?.env?.DISCORD_BOT_TOKEN : "";
-    const envTokenTrimmed = envToken ? envToken.trim() : "";
-    if (envTokenTrimmed) {
-        return envTokenTrimmed;
-    }
-    const dbToken = getAdminSetting(POCKET_ADMIN_DISCORD_BOT_TOKEN);
-    return dbToken ? dbToken.trim() : null;
+    const token = getConfigValue("DISCORD_BOT_TOKEN", POCKET_ADMIN_DISCORD_BOT_TOKEN);
+    return token || null;
 }
 
 /**
@@ -133,6 +67,43 @@ function sendDiscordMessage2(message, userId = DISCORD_ID_JUSTIN) {
     }
 }
 
+function parseDiscordJson(raw) {
+    const txt = decodeHttpBody(raw);
+    if (!txt.trim()) return null;
+    try {
+        return JSON.parse(txt);
+    } catch (err) {
+        return { _raw: txt.slice(0, 300), _parseError: err.message };
+    }
+}
+
+function discordRequest(url, token, body, phase, errorReasons, hasValidPayload) {
+    const res = $http.send({
+        url,
+        method: "POST",
+        headers: { Authorization: "Bot " + token, "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+    });
+    const status = res?.status ?? res?.statusCode ?? res?.code ?? null;
+    const json = parseDiscordJson(res?.body);
+    const diag = {
+        status,
+        keys: Object.keys(res || {}),
+        preview: decodeHttpBody(res?.body).slice(0, 120),
+        parsedHasId: !!json?.id,
+        parseError: json?._parseError,
+    };
+    const ok = status === 200 || (!status && hasValidPayload(json));
+    if (!ok) {
+        const reason = errorReasons[status] || `HTTP ${status}`;
+        return { ok: false, error: `${phase} failed: ${reason}`, diag, json };
+    }
+    if (!json || json._parseError) {
+        return { ok: false, error: `${phase} parse error`, diag, json };
+    }
+    return { ok: true, diag, json };
+}
+
 /**
  * Send a direct message via Discord REST v10 using the configured bot token.
  * @param {string} message
@@ -145,85 +116,45 @@ function sendDiscordMessage(message, userId = DISCORD_ID_JUSTIN) {
         return { ok: false, error: "Missing Discord bot token", diagnostics: {} };
     }
 
-    const parseJson = (raw) => {
-        const txt = decodeHttpBody(raw);
-        if (!txt.trim()) return null;
-        try {
-            return JSON.parse(txt);
-        } catch (err) {
-            return { _raw: txt.slice(0, 300), _parseError: err.message };
-        }
-    };
-    const readStatus = (res) => res?.status ?? res?.statusCode ?? res?.code ?? null;
-    const mkError = (phase, status, extra) => `${phase} failed: ${extra || "HTTP " + status}`;
-
     const diagnostics = {};
     try {
         // 1. Create DM channel
-        const dmRes = $http.send({
-            url: "https://discord.com/api/v10/users/@me/channels",
-            method: "POST",
-            headers: { Authorization: "Bot " + token, "Content-Type": "application/json" },
-            body: JSON.stringify({ recipient_id: userId }),
-        });
-        const dmStatus = readStatus(dmRes);
-        const dmJson = parseJson(dmRes.body);
-        diagnostics.dm = {
-            status: dmStatus,
-            keys: Object.keys(dmRes || {}),
-            preview: decodeHttpBody(dmRes.body).slice(0, 120),
-            parsedHasId: !!dmJson?.id,
-            parseError: dmJson?._parseError,
-        };
-        const dmOk = dmStatus === 200 || (!dmStatus && dmJson?.id);
-        if (!dmOk) {
-            const reason =
-                dmStatus === 401
-                    ? "unauthorized (token)"
-                    : dmStatus === 403
-                      ? "forbidden (privacy / no mutual server)"
-                      : dmStatus === 429
-                        ? "rate limited"
-                        : "HTTP " + dmStatus;
-            return { ok: false, error: mkError("channel create", dmStatus, reason), diagnostics };
-        }
-        if (!dmJson || dmJson._parseError || !dmJson.id) {
-            return { ok: false, error: "channel create parse error", diagnostics };
+        const dmResult = discordRequest(
+            "https://discord.com/api/v10/users/@me/channels",
+            token,
+            { recipient_id: userId },
+            "channel create",
+            {
+                401: "unauthorized (token)",
+                403: "forbidden (privacy / no mutual server)",
+                429: "rate limited",
+            },
+            (json) => !!json?.id
+        );
+        diagnostics.dm = dmResult.diag;
+        if (!dmResult.ok || !dmResult.json?.id) {
+            return { ok: false, error: dmResult.error || "channel create parse error", diagnostics };
         }
 
         // 2. Send message
-        const msgRes = $http.send({
-            url: `https://discord.com/api/v10/channels/${dmJson.id}/messages`,
-            method: "POST",
-            headers: { Authorization: "Bot " + token, "Content-Type": "application/json" },
-            body: JSON.stringify({ content: message }),
-        });
-        const msgStatus = readStatus(msgRes);
-        const msgJson = parseJson(msgRes.body);
-        diagnostics.send = {
-            status: msgStatus,
-            keys: Object.keys(msgRes || {}),
-            preview: decodeHttpBody(msgRes.body).slice(0, 120),
-            parsedHasId: !!msgJson?.id,
-            parseError: msgJson?._parseError,
-        };
-        const msgOk = msgStatus === 200 || (!msgStatus && (msgJson?.id || msgJson?.message?.id));
-        if (!msgOk) {
-            const reason =
-                msgStatus === 401
-                    ? "unauthorized (scope)"
-                    : msgStatus === 403
-                      ? "forbidden (channel)"
-                      : msgStatus === 429
-                        ? "rate limited"
-                        : "HTTP " + msgStatus;
-            return { ok: false, error: mkError("message send", msgStatus, reason), diagnostics };
-        }
-        if (!msgJson || msgJson._parseError) {
-            return { ok: false, error: "message parse error", diagnostics };
+        const msgResult = discordRequest(
+            `https://discord.com/api/v10/channels/${dmResult.json.id}/messages`,
+            token,
+            { content: message },
+            "message send",
+            {
+                401: "unauthorized (scope)",
+                403: "forbidden (channel)",
+                429: "rate limited",
+            },
+            (json) => !!(json?.id || json?.message?.id)
+        );
+        diagnostics.send = msgResult.diag;
+        if (!msgResult.ok) {
+            return { ok: false, error: msgResult.error, diagnostics };
         }
 
-        return { ok: true, channel: dmJson, message: msgJson, diagnostics };
+        return { ok: true, channel: dmResult.json, message: msgResult.json, diagnostics };
     } catch (err) {
         return { ok: false, error: err?.message || String(err), diagnostics };
     }

@@ -1,13 +1,9 @@
 const {
-    GA_MEASUREMENT_ID,
-    POCKET_ADMIN_GA_API_SECRET,
     SITE_NAME,
     SITE_DESCRIPTION,
-    DEFAULT_BASE_URL,
     AUTHOR_NAME,
     AUTHOR_SHORT_NAME,
-    AUTHOR_URL,
-    TWITTER_HANDLE,
+    getPostTypeConfig,
 } = require("./constants.js");
 const {
     getBlogPostById,
@@ -22,332 +18,34 @@ const {
     isClimbingRecord,
     getAdjacentPosts,
     getClimbingStats,
-    getAdminSetting,
 } = require("./pocket.js");
+const format = require("./format.js");
+const analytics = require("./analytics.js");
+const seo = require("./seo.js");
 
-const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+const {
+    formatDateTime,
+    getBaseUrl,
+    getImageUrl,
+    slugifyTitle,
+    getPostUrl,
+    getPostDateRaw,
+    extractPreviewText,
+    getReadingStats,
+    toNoCookie,
+    extractPostBadges,
+    resolvePostImage,
+} = format;
 
-function formatDateTime(date) {
-    const month = MONTHS[date.getMonth()];
-    const day = date.getDate().toString().padStart(2, "0");
-    const year = date.getFullYear();
-    return `${month} ${day}, ${year}`;
-}
-
-function getBaseUrl() {
-    try {
-        if (typeof $app !== "undefined" && $app?.settings) {
-            const meta = $app.settings()?.meta;
-            const appUrl = meta?.appURL || meta?.appUrl;
-            if (appUrl) {
-                return appUrl.replace(/\/+$/, "");
-            }
-        }
-    } catch (err) {
-        if (typeof $app !== "undefined" && $app?.logger) {
-            $app.logger().error("Error getting appURL from settings", "error", err);
-        }
-    }
-    return DEFAULT_BASE_URL;
-}
-
-/**
- * Build the PocketBase file URL for a record's cover image, or `null`.
- * @param {Object} blog
- * @returns {string|null}
- */
-function getImageUrl(blog) {
-    if (!blog) return null;
-
-    if (typeof blog.getString === "function") {
-        const coverImage = blog.getString("coverImage");
-        const collectionId = blog.collectionId || blog.getString("collectionId") || blog.collection?.()?.id;
-        const id = blog.id;
-
-        if (coverImage && collectionId && id) {
-            return `${getBaseUrl()}/api/files/${collectionId}/${id}/${coverImage}`;
-        }
-        return null;
-    }
-
-    if (blog.coverImage && blog.collectionId && blog.id) {
-        return `${getBaseUrl()}/api/files/${blog.collectionId}/${blog.id}/${blog.coverImage}`;
-    }
-    return null;
-}
-
-/**
- * Convert a post title to a URL-safe slug.
- * @param {string} title
- * @returns {string}
- */
-function slugifyTitle(title) {
-    if (!title) return "";
-    return title
-        .replace(/[^a-zA-Z0-9]+/g, "-")
-        .replace(/^-+|-+$/g, "")
-        .toLowerCase();
-}
-
-/**
- * Escape special XML characters for safe embedding outside CDATA.
- * @param {string} value
- * @returns {string}
- */
-function escapeXml(value) {
-    return String(value ?? "")
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&apos;");
-}
-
-/**
- * Safely embed arbitrary text/HTML inside an XML CDATA section by splitting `]]>`.
- * @param {string} value
- * @returns {string}
- */
-function escapeCdata(value) {
-    return String(value ?? "").replace(/\]\]>/g, "]]]]><![CDATA[>");
-}
-
-/**
- * Sanitize search terms to prevent tracking sensitive data, credentials, URLs, or malicious payloads.
- * @param {string} term
- * @returns {string}
- */
-function sanitizeSearchTerm(term) {
-    if (!term || typeof term !== "string") return "";
-    const clean = term.trim().replace(/<[^>]*>/g, "");
-    if (/@|\b(https?|ftp|file):\/\/|password|token|secret/i.test(clean)) {
-        return "";
-    }
-    return clean.slice(0, 100);
-}
-
-/**
- * Resolve the GA4 Measurement Protocol API secret from env or admin_settings.
- * @returns {string}
- */
-function getGaApiSecret() {
-    try {
-        if (typeof process !== "undefined" && process?.env?.GA_API_SECRET) {
-            return String(process.env.GA_API_SECRET).trim();
-        }
-    } catch (_) {}
-    try {
-        const dbSecret = getAdminSetting(POCKET_ADMIN_GA_API_SECRET);
-        if (dbSecret) {
-            return String(dbSecret).trim();
-        }
-    } catch (_) {}
-    return "";
-}
-
-/**
- * Send an event to Google Analytics 4 Measurement Protocol from the server.
- * @param {string} eventName
- * @param {Object} eventParams
- * @param {Object|null} req
- */
-function trackGAEvent(eventName, eventParams = {}, req = null) {
-    try {
-        const measurementId = GA_MEASUREMENT_ID || "G-6P8M4DJNQL";
-        const apiSecret = getGaApiSecret();
-        if (!apiSecret) {
-            return;
-        }
-
-        let clientId = "pb_server_client";
-        if (req) {
-            try {
-                let cookies = null;
-                if (typeof req.cookies === "function") {
-                    cookies = req.cookies();
-                } else if (req.cookies) {
-                    cookies = req.cookies;
-                }
-                if (cookies && cookies._ga) {
-                    const gaVal = cookies._ga.value || cookies._ga;
-                    const parts = String(gaVal).split(".");
-                    if (parts.length >= 4) {
-                        clientId = parts.slice(2).join(".");
-                    }
-                }
-            } catch (_) { }
-        }
-
-        const url = `https://www.google-analytics.com/mp/collect?measurement_id=${encodeURIComponent(measurementId)}&api_secret=${encodeURIComponent(apiSecret)}`;
-        const payload = {
-            client_id: clientId,
-            events: [
-                {
-                    name: eventName,
-                    params: Object.assign({}, eventParams, {
-                        anonymize_ip: true,
-                        allow_google_signals: false,
-                    }),
-                },
-            ],
-        };
-
-        const sendRequest = () => {
-            try {
-                if (typeof $http !== "undefined" && $http.send) {
-                    $http.send({
-                        url,
-                        method: "POST",
-                        body: JSON.stringify(payload),
-                        timeout: 3,
-                        headers: {
-                            "Content-Type": "application/json",
-                        },
-                    });
-                }
-            } catch (err) {
-                if (typeof $app !== "undefined" && $app.logger) {
-                    $app.logger().error("Failed to send GA event from backend", "error", err);
-                }
-            }
-        };
-
-        if (typeof setTimeout === "function") {
-            setTimeout(sendRequest, 0);
-        } else {
-            sendRequest();
-        }
-    } catch (err) {
-        if (typeof $app !== "undefined" && $app.logger) {
-            $app.logger().error("Failed to prepare GA event tracking", "error", err);
-        }
-    }
-}
-
-/**
- * Rewrite YouTube embeds to youtube-nocookie with responsive aspect-ratio styles.
- * @param {string} s
- * @returns {string}
- */
-function toNoCookie(s) {
-    if (!s || typeof s !== "string") return "";
-    return s
-        .replace(/https?:\/\/(www\.)?youtube\.com\/embed\//g, "https://www.youtube-nocookie.com/embed/")
-        .replace(/<iframe([^>]*?)>/gi, (match, attrs) => {
-            const isYT = /youtube(-nocookie)?\.com\/embed\//.test(match);
-            if (!isYT) return match;
-
-            let cleanAttrs = attrs.replace(/\s+sandbox="[^"]*"/gi, "");
-
-            const wMatch = cleanAttrs.match(/\bwidth=["']?(\d+)/i);
-            const hMatch = cleanAttrs.match(/\bheight=["']?(\d+)/i);
-            const width = wMatch ? parseInt(wMatch[1], 10) : null;
-            const height = hMatch ? parseInt(hMatch[1], 10) : null;
-
-            let isVertical = false;
-            let aspectRatio = "16 / 9";
-            if (width && height && height > width) {
-                isVertical = true;
-                aspectRatio = `${width} / ${height}`;
-            } else if (width && height) {
-                aspectRatio = `${width} / ${height}`;
-            }
-
-            if (!/\btitle=/i.test(cleanAttrs)) {
-                cleanAttrs = ' title="YouTube video player"' + cleanAttrs;
-            }
-            if (!/\ballow=/i.test(cleanAttrs)) {
-                cleanAttrs +=
-                    ' allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"';
-            }
-            if (!/\ballowfullscreen\b/i.test(cleanAttrs)) {
-                cleanAttrs += " allowfullscreen";
-            }
-            if (!/\bloading=/i.test(cleanAttrs)) {
-                cleanAttrs += ' loading="lazy"';
-            }
-
-            const styleMatch = cleanAttrs.match(/\bstyle=["']([^"']*)["']/i);
-            let styleContent = styleMatch ? styleMatch[1].trim() : "";
-            if (styleContent && !styleContent.endsWith(";")) styleContent += ";";
-
-            styleContent = styleContent
-                .replace(/(?:^|;)\s*display:[^;]+;?/gi, ";")
-                .replace(/(?:^|;)\s*margin-left:[^;]+;?/gi, ";")
-                .replace(/(?:^|;)\s*margin-right:[^;]+;?/gi, ";")
-                .replace(/(?:^|;)\s*max-width:[^;]+;?/gi, ";")
-                .replace(/(?:^|;)\s*width:[^;]+;?/gi, ";")
-                .replace(/(?:^|;)\s*height:[^;]+;?/gi, ";")
-                .replace(/(?:^|;)\s*aspect-ratio:[^;]+;?/gi, ";")
-                .replace(/;+/g, ";")
-                .trim();
-            if (styleContent.startsWith(";")) styleContent = styleContent.slice(1).trim();
-
-            const maxWidthVal = isVertical ? `min(100%, ${width || 400}px)` : "100%";
-            const responsiveStyles = `max-width: ${maxWidthVal}; width: 100%; height: auto; aspect-ratio: ${aspectRatio}; display: block; margin-left: auto; margin-right: auto;`;
-            const finalStyle = styleContent ? `${styleContent} ${responsiveStyles}` : responsiveStyles;
-
-            if (styleMatch) {
-                cleanAttrs = cleanAttrs.replace(/\bstyle=["'][^"']*["']/i, `style="${finalStyle}"`);
-            } else {
-                cleanAttrs += ` style="${finalStyle}"`;
-            }
-
-            return `<iframe${cleanAttrs}>`;
-        });
-}
-
-/**
- * Extract structured tag/attribute badges from a blog post or climbing log record.
- * @param {Record} record
- * @param {boolean} itemIsClimbing
- * @param {boolean} includeLocation
- * @returns {Array<{text: string, query: string, isLocation?: boolean}>}
- */
-function extractPostBadges(record, itemIsClimbing, includeLocation = false) {
-    const badges = [];
-    if (itemIsClimbing) {
-        ["climbType", "grade", "style"].forEach((field) => {
-            const val = record.getString(field);
-            if (val && val.trim()) {
-                badges.push({ text: val, query: val.trim() });
-            }
-        });
-        if (includeLocation) {
-            const location = record.getString("location");
-            if (location && location.trim()) {
-                badges.push({ text: location, query: location.trim(), isLocation: true });
-            }
-        }
-    } else {
-        const blogTags = record.getString("tags");
-        if (blogTags && blogTags.length > 0) {
-            blogTags.split(";").forEach((tag) => {
-                const t = tag.trim();
-                if (t) badges.push({ text: t, query: t });
-            });
-        }
-    }
-    return badges;
-}
-
-/**
- * Resolve a thumbnail or full-size image URL for a post record.
- * @param {Record} record
- * @param {boolean} itemIsClimbing
- * @param {string} thumbSpec
- * @returns {string|null}
- */
-function resolvePostImage(record, itemIsClimbing, thumbSpec) {
-    const rawImg = getImageUrl(record);
-    if (rawImg) {
-        return `${rawImg}?thumb=${thumbSpec}`;
-    }
-    return itemIsClimbing ? "/background.webp" : record.getString("coverImageAlt") || null;
-}
+const { sanitizeSearchTerm, trackGAEvent } = analytics;
+const { setOrUpdateMeta, applySectionMeta, applyStaticPageMetadata, applySinglePostMetadata } = seo;
 
 /**
  * Format a post record into a view-model object for cards (hero & grid).
+ * @param {Object} post
+ * @param {boolean} isHomepage
+ * @param {boolean} isClimbing
+ * @returns {Object|null}
  */
 function formatPostViewModel(post, isHomepage = false, isClimbing = false) {
     if (!post) return null;
@@ -356,24 +54,12 @@ function formatPostViewModel(post, isHomepage = false, isClimbing = false) {
     const slug = slugifyTitle(title);
     const rawText = (itemIsClimbing ? post.getString("content") : post.getString("content1")) || "";
     const previewText = extractPreviewText(rawText);
-
-    const rawContentAll = (itemIsClimbing ? post.getString("content") : `${post.getString("content1") || ""} ${post.getString("content2") || ""}`) || "";
-    const cleanFull = extractPreviewText(rawContentAll);
-    const wordCount = cleanFull ? cleanFull.trim().split(/\s+/).filter(Boolean).length : 0;
-    const readMinutes = Math.max(1, Math.ceil(wordCount / 200));
-    const readingTime = `${readMinutes} min read`;
+    const { wordCount, readingTime } = getReadingStats(post, itemIsClimbing);
 
     const heroImageUrl = resolvePostImage(post, itemIsClimbing, "800x0");
     const gridImageUrl = resolvePostImage(post, itemIsClimbing, "350x0");
-
-    const postId = post.id;
-    const link = itemIsClimbing
-        ? `/climbing/${encodeURIComponent(slug)}/${postId}`
-        : `/blog/posts/${encodeURIComponent(slug)}/${postId}`;
-
-    const dateRaw = itemIsClimbing
-        ? post.getString("date") || post.getString("created")
-        : post.getString("manualPublishDate") || post.getString("created");
+    const link = getPostUrl(post.id, title, itemIsClimbing);
+    const dateRaw = getPostDateRaw(post, itemIsClimbing);
     const formattedDate = formatDateTime(new Date(dateRaw));
     const badges = extractPostBadges(post, itemIsClimbing, false);
 
@@ -393,99 +79,6 @@ function formatPostViewModel(post, isHomepage = false, isClimbing = false) {
         location: itemIsClimbing ? post.getString("location") : null,
         rawRecord: post,
     };
-}
-
-/**
- * Update an existing metadata entry or append a new one.
- */
-function setOrUpdateMeta(metadata, name, content) {
-    if (!metadata || !Array.isArray(metadata) || content === undefined || content === null) return;
-    const existing = metadata.find((m) => m.name === name);
-    if (existing) {
-        existing.content = String(content);
-    } else {
-        metadata.push({ name, content: String(content) });
-    }
-}
-
-/**
- * Apply shared list-section Open Graph / Twitter / document metadata.
- */
-function applySectionMeta(metadata, { title, ogTitle, description, url, siteName }) {
-    const ogImg = `${getBaseUrl()}/og-image.png`;
-    setOrUpdateMeta(metadata, "title", title);
-    setOrUpdateMeta(metadata, "og:title", ogTitle);
-    setOrUpdateMeta(metadata, "twitter:title", ogTitle);
-    setOrUpdateMeta(metadata, "description", description);
-    setOrUpdateMeta(metadata, "og:description", description);
-    setOrUpdateMeta(metadata, "twitter:description", description);
-    setOrUpdateMeta(metadata, "url", url);
-    setOrUpdateMeta(metadata, "og:url", url);
-    setOrUpdateMeta(metadata, "twitter:url", url);
-    setOrUpdateMeta(metadata, "og:image", ogImg);
-    setOrUpdateMeta(metadata, "twitter:image", ogImg);
-    setOrUpdateMeta(metadata, "og:site_name", siteName);
-    setOrUpdateMeta(metadata, "og:type", "website");
-}
-
-/**
- * Apply metadata for static and error pages (FAQ, Privacy, Terms, Not Found).
- * @param {Array<Object>} metadata
- * @param {string} pageType - 'faq' | 'privacy' | 'terms' | 'notfound'
- */
-function applyStaticPageMetadata(metadata, pageType) {
-    if (!metadata || !Array.isArray(metadata)) return;
-    const baseUrl = getBaseUrl();
-
-    switch (pageType) {
-        case "faq": {
-            const title = `Frequently Asked Questions (FAQ) | ${SITE_NAME}`;
-            const desc = `Frequently asked questions about ${AUTHOR_NAME}'s software development work, tech stack, and climbing journal.`;
-            const url = `${baseUrl}/faq`;
-            applySectionMeta(metadata, {
-                title,
-                ogTitle: `Frequently Asked Questions | ${SITE_NAME}`,
-                description: desc,
-                url,
-                siteName: SITE_NAME,
-            });
-            break;
-        }
-        case "privacy": {
-            const title = `Privacy Policy | ${SITE_NAME}`;
-            const desc = `Privacy Policy and data protection details for ${SITE_NAME}.`;
-            const url = `${baseUrl}/privacy`;
-            applySectionMeta(metadata, {
-                title,
-                ogTitle: title,
-                description: desc,
-                url,
-                siteName: SITE_NAME,
-            });
-            break;
-        }
-        case "terms": {
-            const title = `Terms of Service | ${SITE_NAME}`;
-            const desc = `Terms of Service and conditions of use for ${SITE_NAME}.`;
-            const url = `${baseUrl}/terms`;
-            applySectionMeta(metadata, {
-                title,
-                ogTitle: title,
-                description: desc,
-                url,
-                siteName: SITE_NAME,
-            });
-            break;
-        }
-        case "notfound": {
-            const title = `404 - Page Not Found | ${SITE_NAME}`;
-            setOrUpdateMeta(metadata, "title", title);
-            setOrUpdateMeta(metadata, "og:title", title);
-            setOrUpdateMeta(metadata, "twitter:title", title);
-            setOrUpdateMeta(metadata, "robots", "noindex, nofollow");
-            break;
-        }
-    }
 }
 
 /**
@@ -557,138 +150,6 @@ function prepareBlogPostsViewData(blogposts, isHomepage, isClimbing, params = {}
 }
 
 /**
- * Populate metadata and analytics for a resolved single post or climbing log.
- */
-function applySinglePostMetadata(singleBlog, isClimbing, metadata, req) {
-    const postTitle = singleBlog.getString("title") || "";
-    const slug = slugifyTitle(postTitle);
-    const baseUrl = getBaseUrl();
-    const canonicalPath = isClimbing
-        ? `/climbing/${encodeURIComponent(slug)}/${singleBlog.id}`
-        : `/blog/posts/${encodeURIComponent(slug)}/${singleBlog.id}`;
-    const canonicalUrl = `${baseUrl}${canonicalPath}`;
-
-    const pageTitle = isClimbing ? `${postTitle} | Climbing Blog` : `${postTitle} | ${SITE_NAME}`;
-    setOrUpdateMeta(metadata, "title", pageTitle);
-    setOrUpdateMeta(metadata, "og:title", postTitle);
-    setOrUpdateMeta(metadata, "twitter:title", postTitle);
-
-    const rawContent = singleBlog.getString(isClimbing ? "content" : "content1") || "";
-    const extraContent = !isClimbing ? singleBlog.getString("content2") || "" : "";
-    const fullArticleText = extractPreviewText(`${rawContent} ${extraContent}`);
-    const words = fullArticleText ? fullArticleText.trim().split(/\s+/).filter(Boolean).length : 0;
-    if (words > 0) {
-        const readMinutes = Math.max(1, Math.ceil(words / 200));
-        setOrUpdateMeta(metadata, "article:word_count", String(words));
-        setOrUpdateMeta(metadata, "article:reading_time", `PT${readMinutes}M`);
-        setOrUpdateMeta(metadata, "twitter:label1", "Reading time");
-        setOrUpdateMeta(metadata, "twitter:data1", `${readMinutes} min read`);
-    }
-
-    let metaDescription = extractPreviewText(rawContent);
-    if (metaDescription.length > 155) {
-        metaDescription = metaDescription.slice(0, 155).replace(/\s+\S*$/, "") + "...";
-    }
-    if (!metaDescription) {
-        metaDescription = isClimbing
-            ? `Climbing journal log by ${AUTHOR_NAME}.`
-            : `Blog post by ${AUTHOR_NAME}.`;
-    }
-
-    setOrUpdateMeta(metadata, "description", metaDescription);
-    setOrUpdateMeta(metadata, "og:description", metaDescription);
-    setOrUpdateMeta(metadata, "twitter:description", metaDescription);
-
-    setOrUpdateMeta(metadata, "url", canonicalUrl);
-    setOrUpdateMeta(metadata, "og:url", canonicalUrl);
-    setOrUpdateMeta(metadata, "twitter:url", canonicalUrl);
-
-    setOrUpdateMeta(metadata, "og:type", "article");
-    setOrUpdateMeta(metadata, "og:site_name", isClimbing ? "The Climbing Blog" : SITE_NAME);
-    setOrUpdateMeta(metadata, "og:locale", "en_CA");
-
-    const rawImgUrl = getImageUrl(singleBlog);
-    const ogImageUrl = rawImgUrl ? `${rawImgUrl}?thumb=1200x630` : `${baseUrl}/og-image.png`;
-    const coverAlt = singleBlog.getString("coverImageAlt") || postTitle || "Blog post cover image";
-    const mimeType = ogImageUrl.includes(".webp")
-        ? "image/webp"
-        : ogImageUrl.includes(".jpg") || ogImageUrl.includes(".jpeg")
-            ? "image/jpeg"
-            : "image/png";
-
-    setOrUpdateMeta(metadata, "og:image", ogImageUrl);
-    setOrUpdateMeta(metadata, "og:image:secure_url", ogImageUrl);
-    setOrUpdateMeta(metadata, "og:image:type", mimeType);
-    setOrUpdateMeta(metadata, "twitter:image", ogImageUrl);
-    setOrUpdateMeta(metadata, "og:image:alt", coverAlt);
-    setOrUpdateMeta(metadata, "og:image:width", "1200");
-    setOrUpdateMeta(metadata, "og:image:height", "630");
-
-    setOrUpdateMeta(metadata, "robots", "index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1");
-    setOrUpdateMeta(metadata, "twitter:card", "summary_large_image");
-    setOrUpdateMeta(metadata, "twitter:site", TWITTER_HANDLE);
-    setOrUpdateMeta(metadata, "twitter:creator", TWITTER_HANDLE);
-
-    setOrUpdateMeta(metadata, "author", AUTHOR_NAME);
-    setOrUpdateMeta(metadata, "article:author", AUTHOR_URL);
-    setOrUpdateMeta(metadata, "article:author:name", AUTHOR_NAME);
-    setOrUpdateMeta(metadata, "article:publisher", `${AUTHOR_URL}/`);
-    setOrUpdateMeta(metadata, "article:section", isClimbing ? "Climbing" : "Software Development");
-
-    const publishedDate = isClimbing
-        ? singleBlog.getString("date") || singleBlog.getString("created")
-        : singleBlog.getString("manualPublishDate") || singleBlog.getString("created");
-    if (publishedDate) {
-        setOrUpdateMeta(metadata, "article:published_time", new Date(publishedDate).toISOString());
-    }
-
-    const updatedDate = singleBlog.getString("updated");
-    if (updatedDate) {
-        setOrUpdateMeta(metadata, "article:modified_time", new Date(updatedDate).toISOString());
-    }
-
-    for (let i = metadata.length - 1; i >= 0; i--) {
-        if (metadata[i].name === "article:tag") {
-            metadata.splice(i, 1);
-        }
-    }
-
-    let tagsList = [];
-    if (isClimbing) {
-        tagsList = ["climbType", "grade", "style", "location"]
-            .map((f) => singleBlog.getString(f))
-            .filter(Boolean);
-    } else {
-        const blogTags = singleBlog.getString("tags");
-        if (blogTags && blogTags.length > 0) {
-            tagsList = blogTags
-                .split(";")
-                .map((t) => t.trim())
-                .filter(Boolean);
-        }
-    }
-
-    tagsList.forEach((tag) => {
-        metadata.push({ name: "article:tag", content: tag });
-    });
-    if (tagsList.length > 0) {
-        setOrUpdateMeta(metadata, "keywords", tagsList.join(", "));
-    }
-
-    trackGAEvent(
-        "view_item",
-        {
-            event_category: isClimbing ? "climbing_engagement" : "blog_engagement",
-            item_id: singleBlog.id,
-            item_name: postTitle,
-            item_category: isClimbing ? singleBlog.getString("climbType") || "" : singleBlog.getString("tags") || "",
-            author: AUTHOR_SHORT_NAME,
-        },
-        req
-    );
-}
-
-/**
  * Prepare single blog view data on the server, including metadata updates and GA view_item tracking.
  */
 function prepareBlogSingleViewData(singleBlog, isClimbing, params = {}, data = {}, req = null) {
@@ -724,59 +185,61 @@ function prepareBlogSingleViewData(singleBlog, isClimbing, params = {}, data = {
 
     if (data?.metadata) {
         try {
-            applySinglePostMetadata(singleBlog, isClimbing, data.metadata, req);
+            applySinglePostMetadata(singleBlog, isClimbing, data.metadata);
         } catch (err) {
             console.error("Error preparing single blog view metadata: ", err);
         }
     }
 
+    const postTitle = singleBlog.getString("title") || "";
+    trackGAEvent(
+        "view_item",
+        {
+            event_category: isClimbing ? "climbing_engagement" : "blog_engagement",
+            item_id: singleBlog.id,
+            item_name: postTitle,
+            item_category: isClimbing ? singleBlog.getString("climbType") || "" : singleBlog.getString("tags") || "",
+            author: AUTHOR_SHORT_NAME,
+        },
+        req
+    );
+
+    const cfg = getPostTypeConfig(isClimbing);
     const imageUrl = resolvePostImage(singleBlog, isClimbing, "1000x0");
     const badges = extractPostBadges(singleBlog, isClimbing, true);
 
-    const dateRaw = isClimbing
-        ? singleBlog.getString("date") || singleBlog.getString("created")
-        : singleBlog.getString("manualPublishDate") || singleBlog.getString("created");
+    const dateRaw = getPostDateRaw(singleBlog, isClimbing);
     const formattedDate = formatDateTime(new Date(dateRaw));
 
     const updatedRaw = singleBlog.getString("updated");
     const formattedUpdated = updatedRaw ? formatDateTime(new Date(updatedRaw)) : null;
 
-    const cleanContent = toNoCookie(isClimbing ? singleBlog.getString("content") : singleBlog.getString("content1"));
+    const cleanContent = toNoCookie(singleBlog.getString(isClimbing ? "content" : "content1"));
     const cleanContent2 =
         !isClimbing && singleBlog.getString("content2") ? toNoCookie(singleBlog.getString("content2")) : null;
 
-    const coverImageAlt = singleBlog.getString("coverImageAlt") || singleBlog.getString("title") || null;
+    const coverImageAlt = singleBlog.getString("coverImageAlt") || postTitle || null;
     const dateIso = dateRaw ? new Date(dateRaw).toISOString() : null;
     const updatedIso = updatedRaw ? new Date(updatedRaw).toISOString() : null;
-
-    const rawContentAll = (isClimbing ? singleBlog.getString("content") : `${singleBlog.getString("content1") || ""} ${singleBlog.getString("content2") || ""}`) || "";
-    const cleanFull = extractPreviewText(rawContentAll);
-    const wordCount = cleanFull ? cleanFull.trim().split(/\s+/).filter(Boolean).length : 0;
-    const readMinutes = Math.max(1, Math.ceil(wordCount / 200));
-    const readingTime = `${readMinutes} min read`;
+    const { wordCount, readingTime } = getReadingStats(singleBlog, isClimbing);
 
     const adjacent = getAdjacentPosts(singleBlog, isClimbing);
     const formatAdjacent = (p) => {
         if (!p) return null;
         const t = p.getString("title") || "";
-        const s = slugifyTitle(t);
-        const l = isClimbing ? `/climbing/${encodeURIComponent(s)}/${p.id}` : `/blog/posts/${encodeURIComponent(s)}/${p.id}`;
-        const d = isClimbing ? p.getString("date") || p.getString("created") : p.getString("manualPublishDate") || p.getString("created");
         return {
             id: p.id,
             title: t,
-            slug: s,
-            link: l,
-            formattedDate: formatDateTime(new Date(d)),
+            slug: slugifyTitle(t),
+            link: getPostUrl(p.id, t, isClimbing),
+            formattedDate: formatDateTime(new Date(getPostDateRaw(p, isClimbing))),
         };
     };
-    const prevPost = formatAdjacent(adjacent.prev);
-    const nextPost = formatAdjacent(adjacent.next);
 
     return {
         id: singleBlog.id,
         rawBlog: singleBlog,
-        title: singleBlog.getString("title"),
+        title: postTitle,
         imageUrl,
         coverImageAlt,
         badges,
@@ -789,46 +252,12 @@ function prepareBlogSingleViewData(singleBlog, isClimbing, params = {}, data = {
         cleanContent2,
         readingTime,
         wordCount,
-        prevPost,
-        nextPost,
-        backLink: isClimbing ? "/climbing" : "/blog/posts",
-        backLabel: isClimbing ? "More Climbing" : "More Dev Posts",
-        dateLabel: isClimbing ? "Logged" : "Posted",
+        prevPost: formatAdjacent(adjacent.prev),
+        nextPost: formatAdjacent(adjacent.next),
+        backLink: cfg.routePrefix,
+        backLabel: cfg.backLabel,
+        dateLabel: cfg.dateLabel,
     };
-}
-
-/**
- * Clean HTML for card previews and meta descriptions.
- * @param {string} html
- * @returns {string}
- */
-function extractPreviewText(html) {
-    if (!html || typeof html !== "string") return "";
-
-    let clean = html;
-    let prev = "";
-    while (clean !== prev) {
-        prev = clean;
-        clean = clean.replace(/^\s*<h[1-6][^>]*>[\s\S]*?<\/h[1-6]>/gi, "");
-        clean = clean.replace(
-            /^\s*(?:<p[^>]*>\s*)?(?:<strong[^>]*>[\s\S]*?<\/strong>|<b[^>]*>[\s\S]*?<\/b>)\s*:?\s*/gi,
-            ""
-        );
-    }
-
-    clean = clean.replace(/<[^>]*>/g, "");
-
-    clean = clean
-        .replace(/&nbsp;/gi, " ")
-        .replace(/&#160;/g, " ")
-        .replace(/&amp;/gi, "&")
-        .replace(/&lt;/gi, "<")
-        .replace(/&gt;/gi, ">")
-        .replace(/&quot;/gi, '"')
-        .replace(/&#39;/g, "'")
-        .replace(/&[a-z0-9#]+;/gi, " ");
-
-    return clean.replace(/\s+/g, " ").trim();
 }
 
 /**
@@ -909,10 +338,7 @@ function serializeSinglePostPayload(view, isClimbing) {
     }
 
     const postTitle = view.title || "";
-    const slug = slugifyTitle(postTitle);
-    const canonicalPath = isClimbing
-        ? `/climbing/${encodeURIComponent(slug)}/${view.id}`
-        : `/blog/posts/${encodeURIComponent(slug)}/${view.id}`;
+    const canonicalPath = getPostUrl(view.id, postTitle, isClimbing);
     const pageTitle = isClimbing ? `${postTitle} | Climbing Blog` : `${postTitle} | ${SITE_NAME}`;
 
     return {
@@ -978,9 +404,7 @@ function handleSinglePostRoute(isClimbing, params = {}, data = {}, req = null, a
         viewForRedirect = prepareBlogSingleViewData(null, !!isClimbing, params, data, req);
         if (viewForRedirect && viewForRedirect.rawBlog && typeof redirectFn === "function") {
             const rawBlog = viewForRedirect.rawBlog;
-            const newSlug = slugifyTitle(rawBlog.getString("title"));
-            const prefix = isClimbing ? "/climbing" : "/blog/posts";
-            redirectFn(`${prefix}/${encodeURIComponent(newSlug)}/${rawBlog.id}`, 301);
+            redirectFn(getPostUrl(rawBlog.id, rawBlog.getString("title"), isClimbing), 301);
         }
     } else if (isCanonicalPost) {
         singleBlogView = prepareBlogSingleViewData(null, !!isClimbing, params, data, req);
@@ -1027,31 +451,22 @@ function getSitemapData() {
     };
 }
 
-module.exports = {
-    formatDateTime,
-    getBaseUrl,
-    getImageUrl,
-    slugifyTitle,
-    escapeXml,
-    escapeCdata,
-    trackGAEvent,
-    prepareBlogPostsViewData,
-    prepareBlogSingleViewData,
-    handleSinglePostRoute,
-    getSitemapData,
-    sanitizeSearchTerm,
-    extractPreviewText,
-    extractPostBadges,
-    toNoCookie,
-    formatPostViewModel,
-    setOrUpdateMeta,
-    applySectionMeta,
-    applyStaticPageMetadata,
-    serializePostCard,
-    serializeSinglePostPayload,
-    buildBlogPostsPayload,
-    buildSinglePostPayload,
-    getAdjacentPosts,
-    getClimbingStats,
-};
-
+module.exports = Object.assign(
+    {},
+    format,
+    analytics,
+    seo,
+    {
+        prepareBlogPostsViewData,
+        prepareBlogSingleViewData,
+        handleSinglePostRoute,
+        getSitemapData,
+        formatPostViewModel,
+        serializePostCard,
+        serializeSinglePostPayload,
+        buildBlogPostsPayload,
+        buildSinglePostPayload,
+        getAdjacentPosts,
+        getClimbingStats,
+    }
+);

@@ -1,5 +1,5 @@
 // Justin Blog Service Worker - Static Asset & Image Caching Only (HTML/Theme is never cached)
-const CACHE_VERSION = 'v8';
+const CACHE_VERSION = 'v9';
 const STATIC_CACHE = `justin-static-${CACHE_VERSION}`;
 const IMAGES_CACHE = `justin-images-${CACHE_VERSION}`;
 

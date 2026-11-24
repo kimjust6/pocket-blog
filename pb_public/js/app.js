@@ -78,6 +78,7 @@
 
         const {
             trackPostClick,
+            enhanceCodeBlocks: enhanceCodeBlocksDom,
             AppIcon,
             PostBadgeList,
             PostGridCard,
@@ -89,6 +90,7 @@
             SiteFooter,
             NotFoundView,
             StaticPageView,
+            ClimbingStats,
         } = window.BlogComponents;
 
         let initialPayload = readJsonScript('initial-route-data', null);
@@ -210,6 +212,7 @@
                 SearchBar,
                 PaginationNav,
                 AppIcon,
+                ClimbingStats,
             },
             props: {
                 section: { type: String, required: true },
@@ -528,6 +531,8 @@
                                         @clear="clearSearch"
                                     />
                                     <div v-if="!hasSearchQuery" class="my-8 w-full">
+                                        <climbing-stats v-if="isClimbing && !isHomepage && currentPage === 1 && payload?.climbingStats"
+                                            :stats="payload.climbingStats" />
                                         <div class="flex justify-end w-full">
                                             <router-link to="/" class="btn btn-accent btn-sm gap-2 transition-all duration-200 rounded-xl">
                                                 <app-icon name="back" />
@@ -737,36 +742,9 @@
                     Vue.nextTick(() => {
                         const container = document.querySelector('.hero-content .prose');
                         if (!container) return;
-                        const pres = container.querySelectorAll('pre');
-                        pres.forEach((pre) => {
-                            if (pre.dataset.copyEnhanced) return;
-                            pre.dataset.copyEnhanced = 'true';
-                            pre.style.position = 'relative';
-
-                            const copyBtn = document.createElement('button');
-                            copyBtn.type = 'button';
-                            copyBtn.className = 'btn btn-ghost btn-xs btn-circle absolute top-2 right-2 text-base-content/70 hover:text-base-content bg-base-200/80 hover:bg-base-200 transition-all';
-                            copyBtn.setAttribute('aria-label', 'Copy code to clipboard');
-                            copyBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>';
-
-                            copyBtn.addEventListener('click', (e) => {
-                                e.preventDefault();
-                                e.stopPropagation();
-                                const codeEl = pre.querySelector('code');
-                                const text = codeEl ? codeEl.innerText : pre.innerText;
-                                if (navigator.clipboard) {
-                                    navigator.clipboard.writeText(text).then(() => {
-                                        copyBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-success"><polyline points="20 6 9 17 4 12"/></svg>';
-                                        setTimeout(() => {
-                                            copyBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>';
-                                        }, 2000);
-                                    });
-                                }
-                            });
-
-                            pre.appendChild(copyBtn);
-                        });
-
+                        if (typeof enhanceCodeBlocksDom === 'function') {
+                            enhanceCodeBlocksDom(container);
+                        }
                         if (window.Prism && typeof window.Prism.highlightAllUnder === 'function') {
                             window.Prism.highlightAllUnder(container);
                         }
@@ -933,19 +911,19 @@
                 path: '/faq',
                 name: 'faq',
                 component: StaticPageView,
-                props: { text: 'faq', siteName: siteTitle, onEnter: () => consumeInitialPayload('static-page') },
+                props: { heading: 'Frequently Asked Questions', text: 'faq', siteName: siteTitle, onEnter: () => consumeInitialPayload('static-page') },
             },
             {
                 path: '/privacy',
                 name: 'privacy',
                 component: StaticPageView,
-                props: { text: 'privacy', siteName: siteTitle, onEnter: () => consumeInitialPayload('static-page') },
+                props: { heading: 'Privacy Policy', text: 'privacy', siteName: siteTitle, onEnter: () => consumeInitialPayload('static-page') },
             },
             {
                 path: '/terms',
                 name: 'terms',
                 component: StaticPageView,
-                props: { text: 'terms of service', siteName: siteTitle, onEnter: () => consumeInitialPayload('static-page') },
+                props: { heading: 'Terms of Service', text: 'terms of service', siteName: siteTitle, onEnter: () => consumeInitialPayload('static-page') },
             },
             {
                 path: '/pagenotfound',
