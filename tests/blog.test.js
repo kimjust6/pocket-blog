@@ -84,6 +84,12 @@ describe("blog format & view-model helpers", () => {
         const emptySearch = prepareBlogPostsViewData({ items: [] }, false, true, { query: "v10" }, null, { metadata: searchMeta });
         assert.equal(emptySearch.hasNoSearchResults, true);
         assert.equal(searchMeta.find((m) => m.name === "robots")?.content, "noindex, follow");
+        assert.equal(searchMeta.find((m) => m.name === "og:site_name")?.content, "The Climbing Blog");
+        assert.equal(searchMeta.find((m) => m.name === "title")?.content, 'Search: "v10" | The Climbing Blog');
+
+        const devMeta = [];
+        prepareBlogPostsViewData({ items: [p1] }, false, false, {}, null, { metadata: devMeta });
+        assert.equal(devMeta.find((m) => m.name === "og:title")?.content, "The Development Blog");
     });
 
     it("applies single post metadata cleanly without duplicate article:tag entries", () => {

@@ -116,6 +116,11 @@ const POST_TYPE_CONFIG = {
         sectionLabel: "Software Development",
         backLabel: "More Dev Posts",
         dateLabel: "Posted",
+        listTitle: `The Dev Blog | ${AUTHOR_NAME}`,
+        ogTitle: "The Development Blog",
+        listDescription: SITE_DESCRIPTION,
+        listSiteName: SITE_NAME,
+        searchSiteName: SITE_NAME,
     },
     climbing: {
         collection: POCKET_CLIMBING_POSTS,
@@ -128,6 +133,11 @@ const POST_TYPE_CONFIG = {
         sectionLabel: "Climbing",
         backLabel: "More Climbing",
         dateLabel: "Logged",
+        listTitle: `The Climbing Blog | ${AUTHOR_NAME}`,
+        ogTitle: "The Climbing Blog",
+        listDescription: "A personal record of my falls, projects, and sends (on rock and in the gym).",
+        listSiteName: "The Climbing Blog",
+        searchSiteName: "The Climbing Blog",
     },
 };
 

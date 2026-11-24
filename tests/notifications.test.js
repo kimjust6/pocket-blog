@@ -13,8 +13,9 @@ const {
     privateIsStatusChangedEvent,
     generateNormalTicketMessage,
     generateSlaBreachingSoonMessage,
+    processZendeskTicketEvent,
 } = require("../pb_hooks/pages/utils/zendesk.js");
-const { ZENDESK_ASSIGNEE_ID_JUSTIN } = require("../pb_hooks/pages/utils/constants.js");
+const { ZENDESK_ASSIGNEE_ID_JUSTIN, DISCORD_ID_JUSTIN } = require("../pb_hooks/pages/utils/constants.js");
 
 describe("webhook secret verification", () => {
     const envKey = "TEST_WEBHOOK_SECRET_UNIT";
@@ -159,5 +160,75 @@ describe("Zendesk helpers", () => {
             generateSlaBreachingSoonMessage(createdPayload),
             " Check SLA | 99: [Login broken](https://yaksa.zendesk.com/agent/tickets/99)"
         );
+    });
+
+    it("routes ticket created, SLA breach, and normal updates via processZendeskTicketEvent", () => {
+        const origApp = global.$app;
+        global.$app = {
+            logger: () => ({ info() {}, warn() {}, error() {} }),
+            findRecordsByFilter: () => [{ get: () => "discord_assignee_1" }],
+            recordQuery: () => ({ andWhere() { return this; }, limit() { return this; }, one() {} }),
+        };
+
+        try {
+            const sent = [];
+            const mockNotify = (msg, userId) => sent.push({ msg, userId });
+
+            // 1. Ticket created
+            processZendeskTicketEvent(
+                { type: "zen:event-type:ticket.created", detail: { id: 10, subject: "New bug" } },
+                new Date(),
+                { sendDiscordMessage: mockNotify }
+            );
+            assert.equal(sent.length, 1);
+            assert.match(sent[0].msg, /^New Ticket: /);
+
+            // 2. SLA breaching notifies assignee and Justin when different
+            sent.length = 0;
+            processZendeskTicketEvent(
+                {
+                    detail: { id: 11, subject: "SLA soon", assignee_id: "999" },
+                    event: { tags_added: ["nearing_sla_breach_notified"] },
+                },
+                new Date(),
+                { sendDiscordMessage: mockNotify }
+            );
+            assert.equal(sent.length, 2);
+            assert.equal(sent[0].userId, "discord_assignee_1");
+            assert.equal(sent[1].userId, undefined);
+
+            // 3. Normal update skips when actor === assignee or ticket is closed
+            sent.length = 0;
+            processZendeskTicketEvent(
+                { detail: { id: 12, subject: "Self update", assignee_id: "5", actor_id: "5" } },
+                new Date(),
+                { sendDiscordMessage: mockNotify, getAdminSetting: () => "10", findRecentTickets: () => [] }
+            );
+            assert.equal(sent.length, 0);
+
+            processZendeskTicketEvent(
+                {
+                    type: "zen:event-type:ticket.status_changed",
+                    detail: { id: 13, subject: "Closed", status: "CLOSED", assignee_id: "5", actor_id: "6" },
+                },
+                new Date(),
+                { sendDiscordMessage: mockNotify, getAdminSetting: () => "10", findRecentTickets: () => [] }
+            );
+            assert.equal(sent.length, 0);
+
+            // 4. Normal update sends when actor !== assignee and not duplicate
+            processZendeskTicketEvent(
+                { detail: { id: 14, subject: "Customer reply", assignee_id: "5", actor_id: "6" } },
+                new Date(),
+                { sendDiscordMessage: mockNotify, getAdminSetting: () => "10", findRecentTickets: () => [] }
+            );
+            assert.equal(sent.length, 1);
+            assert.equal(sent[0].userId, "discord_assignee_1");
+            assert.match(sent[0].msg, /Customer reply/);
+            assert.ok(DISCORD_ID_JUSTIN);
+        } finally {
+            if (origApp === undefined) delete global.$app;
+            else global.$app = origApp;
+        }
     });
 });

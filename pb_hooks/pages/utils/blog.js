@@ -108,26 +108,19 @@ function prepareBlogPostsViewData(blogposts, isHomepage, isClimbing, params = {}
 
     if (data?.metadata) {
         try {
-            if (isClimbing) {
+            const cfg = getPostTypeConfig(isClimbing);
+            if (isClimbing || !isHomepage) {
                 applySectionMeta(data.metadata, {
-                    title: `The Climbing Blog | ${AUTHOR_NAME}`,
-                    ogTitle: "The Climbing Blog",
-                    description: "A personal record of my falls, projects, and sends (on rock and in the gym).",
-                    url: `${getBaseUrl()}/climbing`,
-                    siteName: "The Climbing Blog",
-                });
-            } else if (!isHomepage) {
-                applySectionMeta(data.metadata, {
-                    title: `The Dev Blog | ${AUTHOR_NAME}`,
-                    ogTitle: "The Development Blog",
-                    description: SITE_DESCRIPTION,
-                    url: `${getBaseUrl()}/blog/posts`,
-                    siteName: SITE_NAME,
+                    title: cfg.listTitle,
+                    ogTitle: cfg.ogTitle,
+                    description: cfg.listDescription,
+                    url: `${getBaseUrl()}${cfg.routePrefix}`,
+                    siteName: cfg.listSiteName,
                 });
             }
 
             if (hasSearchQuery) {
-                const searchTitle = `Search: "${query}" | ${isClimbing ? "The Climbing Blog" : SITE_NAME}`;
+                const searchTitle = `Search: "${query}" | ${cfg.searchSiteName}`;
                 setOrUpdateMeta(data.metadata, "title", searchTitle);
                 setOrUpdateMeta(data.metadata, "og:title", searchTitle);
                 setOrUpdateMeta(data.metadata, "twitter:title", searchTitle);
@@ -297,11 +290,7 @@ function buildBlogPostsPayload(isHomepage, isClimbing, params = {}, req = null, 
     const totalPages = rawBlogPosts?.totalPages || 1;
 
     const viewData = prepareBlogPostsViewData(rawBlogPosts, isHomepage, isClimbing, params, req, data);
-    const pageTitle = isClimbing
-        ? `The Climbing Blog | ${AUTHOR_NAME}`
-        : isHomepage
-            ? SITE_NAME
-            : `The Dev Blog | ${AUTHOR_NAME}`;
+    const pageTitle = isHomepage ? SITE_NAME : getPostTypeConfig(isClimbing).listTitle;
 
     const climbingStats = isClimbing ? getClimbingStats() : null;
 

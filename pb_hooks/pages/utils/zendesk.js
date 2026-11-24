@@ -8,7 +8,11 @@ const {
     ZENDESK_STATUS_CHANGED_TYPE,
     ZENDESK_CLOSED_STATUS,
     ZENDESK_TICKET_CREATED,
+    POCKET_ADMIN_IGNORE_DUPLICATE_ZENDESK_CALLBACK_IN_SECONDS,
+    DISCORD_ID_JUSTIN,
 } = require("./constants.js");
+const { sendDiscordMessage } = require("./discord.js");
+const { getAdminSetting } = require("./pocket.js");
 
 /**
  * Unwrap webhook or stored Zendesk event body shapes.
@@ -306,6 +310,67 @@ function isTicketCreated(data) {
     return body?.type === ZENDESK_TICKET_CREATED;
 }
 
+/**
+ * Route an incoming Zendesk ticket event to the appropriate Discord notification handler.
+ * Accepts injectable dependencies for unit testing.
+ * @param {Object} data
+ * @param {Date} [createdDate]
+ * @param {Object} [deps]
+ */
+function processZendeskTicketEvent(data, createdDate = new Date(), deps = {}) {
+    const notify = deps.sendDiscordMessage || sendDiscordMessage;
+    const readSetting = deps.getAdminSetting || getAdminSetting;
+    const findRecent = deps.findRecentTickets || findRecentTicketsByTicketNumber2;
+    const logger = deps.logger || (typeof $app !== "undefined" && $app?.logger ? $app.logger() : console);
+
+    if (isTicketCreated(data)) {
+        const myMessage = generateNormalTicketMessage(data);
+        notify(`New Ticket: ${myMessage}`);
+        return;
+    }
+
+    if (isSlaBreaching(data)) {
+        const discordId = getDiscordIdfromData(data);
+        const myMessage = generateSlaBreachingSoonMessage(data);
+        if (discordId) {
+            notify(myMessage, discordId);
+        }
+        if (discordId !== DISCORD_ID_JUSTIN) {
+            notify(myMessage);
+        }
+        return;
+    }
+
+    const discordId = getDiscordIdfromData(data);
+    if (!discordId) {
+        return;
+    }
+
+    let myMessage = "";
+    try {
+        const settingRaw = readSetting(POCKET_ADMIN_IGNORE_DUPLICATE_ZENDESK_CALLBACK_IN_SECONDS) ?? "10";
+        const appsettingsDelaySeconds = parseInt(settingRaw, 10);
+        const timeInSeconds = isNaN(appsettingsDelaySeconds) ? 10 : appsettingsDelaySeconds;
+
+        const actorId = getActorId(data);
+        const assigneeId = getAssigneeId(data);
+        const recentTickets = findRecent(data, timeInSeconds, actorId);
+
+        if (actorId === assigneeId || isTicketClosed(data)) {
+            return;
+        }
+
+        if (recentTickets.length > 1 && new Date(recentTickets[0]?.get("created")) < createdDate) {
+            return;
+        }
+
+        myMessage = generateNormalTicketMessage(data);
+        notify(myMessage, discordId);
+    } catch (error) {
+        logger.error(`Error sending ticket update message: ${myMessage || "unknown"}.`, "error", error);
+    }
+}
+
 module.exports = {
     getZendeskUrl,
     isJustinsTicket,
@@ -325,5 +390,6 @@ module.exports = {
     isTicketClosed,
     getDiscordIdfromData,
     isTicketCreated,
+    processZendeskTicketEvent,
 };
 
