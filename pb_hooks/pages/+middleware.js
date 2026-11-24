@@ -21,7 +21,9 @@ module.exports = function (api) {
             cookieValue = cookiesMap.theme.value || cookiesMap.theme;
         }
     } catch (e) {
-        console.log('Error reading cookies:', e);
+        if (typeof $app !== 'undefined' && $app.logger) {
+            $app.logger().warn('Error reading cookies', 'error', e);
+        }
     }
 
     let pathname = '/';
@@ -35,9 +37,6 @@ module.exports = function (api) {
         if (api.response?.header) {
             api.response.header('Cache-Control', 'no-cache, private, must-revalidate');
             api.response.header('Vary', 'Cookie');
-            api.response.header('X-Content-Type-Options', 'nosniff');
-            api.response.header('X-Frame-Options', 'SAMEORIGIN');
-            api.response.header('Referrer-Policy', 'strict-origin-when-cross-origin');
             api.response.header('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
         }
     } catch (_) {}

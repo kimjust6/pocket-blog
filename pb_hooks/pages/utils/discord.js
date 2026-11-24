@@ -5,29 +5,7 @@ const {
     DISCORD_ID_JUSTIN,
 } = require("./constants.js");
 const { decodeHttpBody } = require("./http.js");
-
-/**
- * Read a setting value from PocketBase `admin_settings` by key.
- * @param {string} key
- * @returns {string|null}
- */
-function getAdminSetting(key) {
-    if (!key) {
-        return null;
-    }
-    const record = new Record();
-    try {
-        $app.recordQuery(POCKET_COLLECTION_ADMIN_SETTINGS)
-            .andWhere($dbx.hashExp({ key }))
-            .limit(1)
-            .one(record);
-    } catch (err) {
-        $app.logger().error("Error querying admin settings:", "error", err);
-        return null;
-    }
-
-    return record.get("value") ?? null;
-}
+const { getAdminSetting } = require("./pocket.js");
 
 /**
  * Compare two strings in constant time to avoid timing leaks on shared secrets.
@@ -46,9 +24,8 @@ function constantTimeEqual(a, b) {
 }
 
 /**
- * Verify an optional shared secret from env or `admin_settings`.
- * When no secret is configured, returns `{ configured: false, authorized: true }` so existing
- * integrations without a configured secret continue functioning.
+ * Verify a shared secret from env or `admin_settings` via request headers.
+ * Fails closed when no secret is configured, and never accepts secrets in query strings.
  * @param {Object} e PocketBase request event
  * @param {string} envVarName
  * @param {string} adminSettingKey
@@ -60,7 +37,7 @@ function verifyConfiguredSecret(e, envVarName, adminSettingKey, headerNames = ["
     const dbSecret = !envSecret && adminSettingKey ? String(getAdminSetting(adminSettingKey) || "").trim() : "";
     const expected = envSecret || dbSecret;
     if (!expected) {
-        return { configured: false, authorized: true };
+        return { configured: false, authorized: false };
     }
 
     let reqInfo = null;
@@ -85,9 +62,6 @@ function verifyConfiguredSecret(e, envVarName, adminSettingKey, headerNames = ["
     if (typeof authHeader === "string" && authHeader.toLowerCase().startsWith("bearer ")) {
         candidates.push(authHeader.slice(7).trim());
     }
-
-    if (reqInfo?.query?.token) candidates.push(String(reqInfo.query.token));
-    if (reqInfo?.query?.secret) candidates.push(String(reqInfo.query.secret));
 
     const authorized = candidates.some((val) => constantTimeEqual(val.trim(), expected));
     return { configured: true, authorized };

@@ -1,5 +1,5 @@
 // Justin Blog Service Worker - Static Asset & Image Caching Only (HTML/Theme is never cached)
-const CACHE_VERSION = 'v7';
+const CACHE_VERSION = 'v8';
 const STATIC_CACHE = `justin-static-${CACHE_VERSION}`;
 const IMAGES_CACHE = `justin-images-${CACHE_VERSION}`;
 
@@ -61,10 +61,28 @@ self.addEventListener('fetch', (event) => {
         return;
     }
 
-    // 1. Static Assets (CSS, JS, Fonts, Icons, Manifest) -> Cache-First
+    // 1. Mutable Static Assets (CSS, JS) -> Stale-While-Revalidate so deploys update cleanly
+    if (url.pathname.endsWith('.css') || url.pathname.endsWith('.js')) {
+        event.respondWith(
+            caches.open(STATIC_CACHE).then((cache) => {
+                return cache.match(request).then((cached) => {
+                    const networkFetch = fetch(request)
+                        .then((networkResponse) => {
+                            if (networkResponse && networkResponse.status === 200) {
+                                cache.put(request, networkResponse.clone());
+                            }
+                            return networkResponse;
+                        })
+                        .catch(() => cached);
+                    return cached || networkFetch;
+                });
+            })
+        );
+        return;
+    }
+
+    // 2. Immutable Static Assets (Fonts, Icons, Manifest) -> Cache-First
     if (
-        url.pathname.endsWith('.css') ||
-        url.pathname.endsWith('.js') ||
         url.pathname.endsWith('.woff2') ||
         url.pathname.endsWith('.svg') ||
         url.pathname.endsWith('.ico') ||

@@ -5,8 +5,14 @@ const {
     COLLECTION_TYPE_METADATA,
     COLLECTION_DAY_NAMES,
     WEEKDAY_INDEX,
+    DISCORD_ID_JUSTIN,
+    COLLECTION_ENDPOINT_BASE_URL,
+    COLLECTION_SUGGEST_URL,
+    POCKET_ADMIN_COLLECTION_ADDRESS,
 } = require("./constants.js");
 const { decodeHttpBody, getHttpJson } = require("./http.js");
+const { getAdminSetting } = require("./pocket.js");
+const { sendDiscordMessage2 } = require("./discord.js");
 
 function parseIsoDate(dateString) {
     const [year, month, day] = dateString.split("-").map((value) => parseInt(value, 10));
@@ -244,8 +250,16 @@ function formatCollectionDiscordMessage(response) {
 
     const items = events.map(event => `- ${event.title}`).join("\n");
 
+    const hasGarbage = events.some(event => event.collectionType === "Garbage");
+    const hasRecycling = events.some(event => event.collectionType === "Recycling");
+    const scheduleTitle = hasGarbage
+        ? "Garbage Collection Schedule"
+        : hasRecycling
+            ? "Recycle Collection Schedule"
+            : "Waste Collection Schedule";
+
     const messageLines = [
-        `**Waste Collection Schedule**`,
+        `**${scheduleTitle}**`,
         `**Address**: ${address}${areaDesc ? ` (${areaDesc})` : ""}`,
         `**Next Pickup Date**: ${humanDate}`,
         ``,
@@ -260,12 +274,102 @@ function formatCollectionDiscordMessage(response) {
     return messageLines.join("\n");
 }
 
+/**
+ * Resolve Toronto collection schedule, format data, and send Discord alert.
+ * Invoked by /api/collection-schedule endpoint and by weekly native cron job.
+ * @param {string} locationOverride
+ * @returns {{ statusCode: number, json: Object }}
+ */
+function fetchAndNotifyCollectionSchedule(locationOverride = "") {
+    const buildEndpointFromKeyString = (keyString) => {
+        return `${COLLECTION_ENDPOINT_BASE_URL}?f=json&keyString=${encodeURIComponent(keyString)}&unit=%25&areaTypeCode1=RESW&areaTypeCode2=CITW`;
+    };
+
+    const buildEndpointFromLocation = (location) => {
+        return `${COLLECTION_ENDPOINT_BASE_URL}?f=json&singleLine=${encodeURIComponent(location)}&unit=%25&areaTypeCode1=RESW&areaTypeCode2=CITW`;
+    };
+
+    const sendHttpOrThrowLocal = (label, requestOptions) => {
+        try {
+            return $http.send(requestOptions);
+        } catch (_) {
+            throw new Error(`${label} request failed.`);
+        }
+    };
+
+    const envLocation =
+        typeof process !== "undefined" ? String(process?.env?.COLLECTION_SCHEDULE_ADDRESS || "").trim() : "";
+    const dbLocation = String(getAdminSetting(POCKET_ADMIN_COLLECTION_ADDRESS) || "").trim();
+    let location = String(locationOverride || "").trim() || envLocation || dbLocation;
+    if (!location) {
+        throw new Error("Collection schedule address is not configured.");
+    }
+
+    location = location
+        .replace(/\bcourt\b/gi, "crt")
+        .replace(/\bct\b/gi, "crt")
+        .replace(/\bstreet\b/gi, "st")
+        .replace(/\broad\b/gi, "rd")
+        .replace(/\bavenue\b/gi, "ave")
+        .replace(/\bdrive\b/gi, "dr")
+        .replace(/\bboulevard\b/gi, "blvd")
+        .replace(/\bplace\b/gi, "pl")
+        .replace(/\bcrescent\b/gi, "cres");
+
+    const suggestUrl = `${COLLECTION_SUGGEST_URL}?f=json&matchAddress=1&matchPlaceName=1&matchPostalCode=1&addressOnly=0&retRowLimit=100&searchString=${encodeURIComponent(location)}&filter=5`;
+    const suggestResponse = sendHttpOrThrowLocal("Toronto suggest", {
+        url: suggestUrl,
+        headers: COLLECTION_ENDPOINT_HEADERS,
+    });
+    const suggestJson = getHttpJson(suggestResponse);
+    const suggestRows = suggestJson?.result?.rows;
+
+    let geocoderUrl = buildEndpointFromLocation(location);
+    if (Array.isArray(suggestRows) && suggestRows.length > 0) {
+        const keyString = suggestRows[0]?.KEYSTRING ?? suggestRows[0]?.keyString;
+        if (keyString) {
+            geocoderUrl = buildEndpointFromKeyString(String(keyString));
+        }
+    }
+
+    const geocoderResponse = sendHttpOrThrowLocal("Toronto geocoder", {
+        url: geocoderUrl,
+        headers: COLLECTION_ENDPOINT_HEADERS,
+    });
+    const configResponse = sendHttpOrThrowLocal("Collection config", {
+        url: COLLECTION_CONFIG_URL,
+        headers: { Accept: "application/json" },
+    });
+    const calendarCsvResponse = sendHttpOrThrowLocal("Collection calendar", {
+        url: COLLECTION_CALENDAR_URL,
+    });
+
+    const scheduleResponse = buildCollectionScheduleResponse(
+        geocoderResponse,
+        configResponse,
+        calendarCsvResponse,
+    );
+    const response = {
+        statusCode: geocoderResponse.statusCode,
+        json: scheduleResponse,
+    };
+
+    sendDiscordMessage2(formatCollectionDiscordMessage(response), DISCORD_ID_JUSTIN);
+
+    return response;
+}
+
 module.exports = {
     COLLECTION_CONFIG_URL,
     COLLECTION_CALENDAR_URL,
     COLLECTION_ENDPOINT_HEADERS,
     buildCollectionScheduleResponse,
     formatCollectionDiscordMessage,
+    fetchAndNotifyCollectionSchedule,
+    parseIsoDate,
+    formatIsoDate,
+    parseCsv,
+    buildCollectionEvent,
     getHttpJson,
     getHttpText,
 };

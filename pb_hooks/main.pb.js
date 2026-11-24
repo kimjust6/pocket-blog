@@ -19,110 +19,11 @@ routerUse((e) => {
     return e.next();
 });
 
-// Topic-specific RSS feed aliases redirecting to /rss.xml with query filters
+// Topic-specific RSS feed aliases and canonical sitemap redirects
 routerAdd("GET", "/blog/rss.xml", (e) => e.redirect(301, "/rss.xml?topic=blog"));
 routerAdd("GET", "/climbing/rss.xml", (e) => e.redirect(301, "/rss.xml?topic=climbing"));
-
-/**
- * Shared helper to resolve Toronto collection schedule, format data, and send Discord alert.
- * Invoked by /api/collection-schedule endpoint and by weekly native cron job.
- */
-function fetchAndNotifyCollectionSchedule(locationOverride = "") {
-    const {
-        COLLECTION_CONFIG_URL,
-        COLLECTION_CALENDAR_URL,
-        COLLECTION_ENDPOINT_HEADERS,
-        buildCollectionScheduleResponse,
-        formatCollectionDiscordMessage,
-        getHttpJson,
-    } = require(`${__hooks}/pages/utils/collection.js`);
-
-    const {
-        DISCORD_ID_JUSTIN,
-        COLLECTION_ENDPOINT_BASE_URL,
-        COLLECTION_SUGGEST_URL,
-        POCKET_ADMIN_COLLECTION_ADDRESS,
-    } = require(`${__hooks}/pages/utils/constants.js`);
-
-    const {
-        sendDiscordMessage2,
-        getAdminSetting,
-    } = require(`${__hooks}/pages/utils/common.js`);
-
-    const buildEndpointFromKeyString = (keyString) => {
-        return `${COLLECTION_ENDPOINT_BASE_URL}?f=json&keyString=${encodeURIComponent(keyString)}&unit=%25&areaTypeCode1=RESW&areaTypeCode2=CITW`;
-    };
-
-    const buildEndpointFromLocation = (location) => {
-        return `${COLLECTION_ENDPOINT_BASE_URL}?f=json&singleLine=${encodeURIComponent(location)}&unit=%25&areaTypeCode1=RESW&areaTypeCode2=CITW`;
-    };
-
-    const sendHttpOrThrowLocal = (label, requestOptions) => {
-        try {
-            return $http.send(requestOptions);
-        } catch (_) {
-            throw new Error(`${label} request failed.`);
-        }
-    };
-
-    const envLocation =
-        typeof process !== "undefined" ? String(process?.env?.COLLECTION_SCHEDULE_ADDRESS || "").trim() : "";
-    const dbLocation = String(getAdminSetting(POCKET_ADMIN_COLLECTION_ADDRESS) || "").trim();
-    let location = String(locationOverride || "").trim() || envLocation || dbLocation || "5 o'meara court";
-
-    location = location
-        .replace(/\bcourt\b/gi, "crt")
-        .replace(/\bct\b/gi, "crt")
-        .replace(/\bstreet\b/gi, "st")
-        .replace(/\broad\b/gi, "rd")
-        .replace(/\bavenue\b/gi, "ave")
-        .replace(/\bdrive\b/gi, "dr")
-        .replace(/\bboulevard\b/gi, "blvd")
-        .replace(/\bplace\b/gi, "pl")
-        .replace(/\bcrescent\b/gi, "cres");
-
-    const suggestUrl = `${COLLECTION_SUGGEST_URL}?f=json&matchAddress=1&matchPlaceName=1&matchPostalCode=1&addressOnly=0&retRowLimit=100&searchString=${encodeURIComponent(location)}&filter=5`;
-    const suggestResponse = sendHttpOrThrowLocal("Toronto suggest", {
-        url: suggestUrl,
-        headers: COLLECTION_ENDPOINT_HEADERS,
-    });
-    const suggestJson = getHttpJson(suggestResponse);
-    const suggestRows = suggestJson?.result?.rows;
-
-    let geocoderUrl = buildEndpointFromLocation(location);
-    if (Array.isArray(suggestRows) && suggestRows.length > 0) {
-        const keyString = suggestRows[0]?.KEYSTRING ?? suggestRows[0]?.keyString;
-        if (keyString) {
-            geocoderUrl = buildEndpointFromKeyString(String(keyString));
-        }
-    }
-
-    const geocoderResponse = sendHttpOrThrowLocal("Toronto geocoder", {
-        url: geocoderUrl,
-        headers: COLLECTION_ENDPOINT_HEADERS,
-    });
-    const configResponse = sendHttpOrThrowLocal("Collection config", {
-        url: COLLECTION_CONFIG_URL,
-        headers: { Accept: "application/json" },
-    });
-    const calendarCsvResponse = sendHttpOrThrowLocal("Collection calendar", {
-        url: COLLECTION_CALENDAR_URL,
-    });
-
-    const scheduleResponse = buildCollectionScheduleResponse(
-        geocoderResponse,
-        configResponse,
-        calendarCsvResponse,
-    );
-    const response = {
-        statusCode: geocoderResponse.statusCode,
-        json: scheduleResponse,
-    };
-
-    sendDiscordMessage2(formatCollectionDiscordMessage(response), DISCORD_ID_JUSTIN);
-
-    return response;
-}
+routerAdd("GET", "/sitemap", (e) => e.redirect(301, "/sitemap.xml"));
+routerAdd("GET", "/sitemap_index.xml", (e) => e.redirect(301, "/sitemap-index.xml"));
 
 routerAdd("GET", "/api/collection-schedule", (e) => {
     const {
@@ -134,6 +35,10 @@ routerAdd("GET", "/api/collection-schedule", (e) => {
         sendDiscordMessage2,
         verifyConfiguredSecret,
     } = require(`${__hooks}/pages/utils/common.js`);
+
+    const {
+        fetchAndNotifyCollectionSchedule,
+    } = require(`${__hooks}/pages/utils/collection.js`);
 
     const auth = verifyConfiguredSecret(
         e,
@@ -305,6 +210,7 @@ onRecordAfterCreateSuccess((e) => {
 // Weekly autonomous Toronto collection schedule check (runs every Monday at 22:00 UTC)
 cronAdd("toronto_collection_weekly", "0 22 * * 1", () => {
     try {
+        const { fetchAndNotifyCollectionSchedule } = require(`${__hooks}/pages/utils/collection.js`);
         $app.logger().info("[CRON] Running scheduled Toronto collection schedule check");
         fetchAndNotifyCollectionSchedule();
     } catch (err) {

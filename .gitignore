@@ -7,7 +7,10 @@
 .yarn/install-state.gz
 
 /pb_data
-/pb_migrations
+/pb_migrations/*.db
+/pb_migrations/*.db-shm
+/pb_migrations/*.db-wal
+.ftp-deploy-sync-state.json
 # testing
 /coverage
 

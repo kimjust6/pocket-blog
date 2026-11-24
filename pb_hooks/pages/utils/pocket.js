@@ -1,4 +1,26 @@
-const { POCKET_BLOGPOSTS, POCKET_CLIMBING_POSTS } = require('./constants')
+const { POCKET_BLOGPOSTS, POCKET_CLIMBING_POSTS, POCKET_COLLECTION_ADMIN_SETTINGS } = require('./constants')
+
+/**
+ * Read a setting value from PocketBase `admin_settings` by key.
+ * @param {string} key
+ * @returns {string|null}
+ */
+function getAdminSetting(key) {
+    if (!key || typeof $app === 'undefined') {
+        return null
+    }
+    const record = new Record()
+    try {
+        $app.recordQuery(POCKET_COLLECTION_ADMIN_SETTINGS)
+            .andWhere($dbx.hashExp({ key }))
+            .limit(1)
+            .one(record)
+    } catch (err) {
+        $app.logger().error('Error querying admin settings:', 'error', err)
+        return null
+    }
+    return record.get('value') ?? null
+}
 
 /**
  * Shared paginated query helper that enforces `isDeleted = false` and `page >= 1`.
@@ -94,6 +116,42 @@ const getBlogPostsByTitlePrefix = (titlePrefix) => {
 }
 
 /**
+ * Build matching PocketBase filter clauses and SQL COUNT conditions from a single field list,
+ * preventing pagination counts from drifting out of sync with record queries.
+ * @param {string[]} fields
+ * @param {string} query
+ * @returns {{ filterClause: string|null, filterParams: Object, sqlCondition: Object|null }}
+ */
+const buildSearchFilter = (fields, query) => {
+    const words = String(query || '').trim().split(/\s+/).filter(Boolean)
+    if (words.length === 0) {
+        return { filterClause: null, filterParams: {}, sqlCondition: null }
+    }
+
+    const filterParams = {}
+    const sqlParams = {}
+    const pbWordClauses = []
+    const sqlWordClauses = []
+
+    words.forEach((word, i) => {
+        const key = words.length > 1 ? `qw_${i}` : 'query'
+        filterParams[key] = word
+        sqlParams[key] = `%${word}%`
+        pbWordClauses.push(`(${fields.map((f) => `${f} ~ {:${key}}`).join(' || ')})`)
+        sqlWordClauses.push(`(${fields.map((f) => `${f} LIKE {:${key}}`).join(' OR ')})`)
+    })
+
+    return {
+        filterClause: pbWordClauses.length > 1 ? `(${pbWordClauses.join(' && ')})` : pbWordClauses[0],
+        filterParams,
+        sqlCondition: {
+            expr: sqlWordClauses.length > 1 ? `(${sqlWordClauses.join(' AND ')})` : sqlWordClauses[0],
+            params: sqlParams,
+        },
+    }
+}
+
+/**
  * Get a paginated list of blog posts using server-side $app
  * @param {number} page - Page number (1-indexed)
  * @param {number} perPage - Items per page
@@ -102,40 +160,15 @@ const getBlogPostsByTitlePrefix = (titlePrefix) => {
  */
 const getBlogPosts = (page = 1, perPage = 6, query = '') => {
     const filterClauses = []
-    const filterParams = {}
+    let filterParams = {}
     const sqlConditions = []
 
     if (query) {
-        const words = String(query).trim().split(/\s+/).filter(Boolean)
-        if (words.length > 1) {
-            const subClauses = words.map((w, i) => {
-                const paramKey = `qw_${i}`
-                filterParams[paramKey] = w
-                return `(title ~ {:${paramKey}} || tags ~ {:${paramKey}} || content1 ~ {:${paramKey}} || content2 ~ {:${paramKey}})`
-            })
-            filterClauses.push(`(${subClauses.join(' && ')})`)
-
-            const sqlParts = words.map((w, i) => {
-                const paramKey = `qw_${i}`
-                return {
-                    part: `(title LIKE {:${paramKey}} OR tags LIKE {:${paramKey}} OR content1 LIKE {:${paramKey}} OR content2 LIKE {:${paramKey}})`,
-                    paramKey,
-                    val: `%${w}%`
-                }
-            })
-            const sqlParams = {}
-            sqlParts.forEach(sp => { sqlParams[sp.paramKey] = sp.val })
-            sqlConditions.push({
-                expr: `(${sqlParts.map(sp => sp.part).join(' AND ')})`,
-                params: sqlParams,
-            })
-        } else {
-            filterClauses.push("(title ~ {:query} || tags ~ {:query} || content1 ~ {:query} || content2 ~ {:query})")
-            filterParams.query = query
-            sqlConditions.push({
-                expr: "(title LIKE {:query} OR tags LIKE {:query} OR content1 LIKE {:query} OR content2 LIKE {:query})",
-                params: { query: `%${query}%` },
-            })
+        const search = buildSearchFilter(['title', 'tags', 'content1', 'content2'], query)
+        if (search.filterClause) {
+            filterClauses.push(search.filterClause)
+            filterParams = Object.assign(filterParams, search.filterParams)
+            sqlConditions.push(search.sqlCondition)
         }
     }
 
@@ -239,40 +272,15 @@ function getCombinedHomepagePosts(page = 1, perPage = 6, query = '') {
  */
 function getClimbingLogs(page = 1, perPage = 6, query = '', climbType = '') {
     const filterClauses = []
-    const filterParams = {}
+    let filterParams = {}
     const sqlConditions = []
 
     if (query) {
-        const words = String(query).trim().split(/\s+/).filter(Boolean)
-        if (words.length > 1) {
-            const subClauses = words.map((w, i) => {
-                const paramKey = `qw_${i}`
-                filterParams[paramKey] = w
-                return `(title ~ {:${paramKey}} || location ~ {:${paramKey}} || content ~ {:${paramKey}} || climbType ~ {:${paramKey}} || grade ~ {:${paramKey}} || style ~ {:${paramKey}})`
-            })
-            filterClauses.push(`(${subClauses.join(' && ')})`)
-
-            const sqlParts = words.map((w, i) => {
-                const paramKey = `qw_${i}`
-                return {
-                    part: `(title LIKE {:${paramKey}} OR location LIKE {:${paramKey}} OR content LIKE {:${paramKey}} OR climbType LIKE {:${paramKey}} OR grade LIKE {:${paramKey}} OR style LIKE {:${paramKey}})`,
-                    paramKey,
-                    val: `%${w}%`
-                }
-            })
-            const sqlParams = {}
-            sqlParts.forEach(sp => { sqlParams[sp.paramKey] = sp.val })
-            sqlConditions.push({
-                expr: `(${sqlParts.map(sp => sp.part).join(' AND ')})`,
-                params: sqlParams,
-            })
-        } else {
-            filterClauses.push("(title ~ {:query} || location ~ {:query} || content ~ {:query} || climbType ~ {:query} || grade ~ {:query} || style ~ {:query})")
-            filterParams.query = query
-            sqlConditions.push({
-                expr: "(title LIKE {:query} OR location LIKE {:query} OR content LIKE {:query} OR climbType LIKE {:query} OR grade LIKE {:query} OR style LIKE {:query})",
-                params: { query: `%${query}%` },
-            })
+        const search = buildSearchFilter(['title', 'location', 'content', 'climbType', 'grade', 'style'], query)
+        if (search.filterClause) {
+            filterClauses.push(search.filterClause)
+            filterParams = Object.assign(filterParams, search.filterParams)
+            sqlConditions.push(search.sqlCondition)
         }
     }
     if (climbType) {
@@ -436,7 +444,9 @@ module.exports = {
     getAllClimbingLogs,
     POCKET_CLIMBING_POSTS,
     isClimbingRecord,
+    buildSearchFilter,
     getCombinedHomepagePosts,
     getAdjacentPosts,
     getClimbingStats,
+    getAdminSetting,
 }

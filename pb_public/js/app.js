@@ -279,22 +279,23 @@
                     try {
                         const nextPage = infinitePage.value + 1;
                         const activeQ = payload.value?.rawQuery || '';
-                        const url = `/api/homepage-posts?page=${nextPage}${activeQ ? '&query=' + encodeURIComponent(activeQ) : ''}`;
+                        const url = `/api/posts?section=home&page=${nextPage}${activeQ ? '&query=' + encodeURIComponent(activeQ) : ''}`;
                         const res = await fetch(url);
                         if (res.ok) {
                             const json = await res.json();
-                            if (Array.isArray(json.items) && json.items.length > 0) {
+                            const pageItems = Array.isArray(json.gridPosts) ? json.gridPosts : [];
+                            if (pageItems.length > 0) {
                                 const seenIds = new Set();
                                 if (heroPost.value && heroPost.value.id) seenIds.add(heroPost.value.id);
                                 (payload.value?.gridPosts || []).forEach((p) => p && seenIds.add(p.id));
                                 extraPosts.value.forEach((p) => p && seenIds.add(p.id));
 
-                                const freshItems = json.items.filter(
+                                const freshItems = pageItems.filter(
                                     (item) => item && item.id && !seenIds.has(item.id)
                                 );
                                 extraPosts.value.push(...freshItems);
                                 infinitePage.value = nextPage;
-                                hasMore.value = !!json.hasMore;
+                                hasMore.value = (json.currentPage || nextPage) < (json.totalPages || 1);
 
                                 const key = getListCacheKey(props.section, route.query);
                                 if (listCache.has(key)) {

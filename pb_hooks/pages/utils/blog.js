@@ -1,5 +1,6 @@
 const {
     GA_MEASUREMENT_ID,
+    POCKET_ADMIN_GA_API_SECRET,
     SITE_NAME,
     SITE_DESCRIPTION,
     DEFAULT_BASE_URL,
@@ -21,6 +22,7 @@ const {
     isClimbingRecord,
     getAdjacentPosts,
     getClimbingStats,
+    getAdminSetting,
 } = require("./pocket.js");
 
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
@@ -125,6 +127,25 @@ function sanitizeSearchTerm(term) {
 }
 
 /**
+ * Resolve the GA4 Measurement Protocol API secret from env or admin_settings.
+ * @returns {string}
+ */
+function getGaApiSecret() {
+    try {
+        if (typeof process !== "undefined" && process?.env?.GA_API_SECRET) {
+            return String(process.env.GA_API_SECRET).trim();
+        }
+    } catch (_) {}
+    try {
+        const dbSecret = getAdminSetting(POCKET_ADMIN_GA_API_SECRET);
+        if (dbSecret) {
+            return String(dbSecret).trim();
+        }
+    } catch (_) {}
+    return "";
+}
+
+/**
  * Send an event to Google Analytics 4 Measurement Protocol from the server.
  * @param {string} eventName
  * @param {Object} eventParams
@@ -133,6 +154,10 @@ function sanitizeSearchTerm(term) {
 function trackGAEvent(eventName, eventParams = {}, req = null) {
     try {
         const measurementId = GA_MEASUREMENT_ID || "G-6P8M4DJNQL";
+        const apiSecret = getGaApiSecret();
+        if (!apiSecret) {
+            return;
+        }
 
         let clientId = "pb_server_client";
         if (req) {
@@ -153,7 +178,7 @@ function trackGAEvent(eventName, eventParams = {}, req = null) {
             } catch (_) { }
         }
 
-        const url = `https://www.google-analytics.com/mp/collect?measurement_id=${measurementId}`;
+        const url = `https://www.google-analytics.com/mp/collect?measurement_id=${encodeURIComponent(measurementId)}&api_secret=${encodeURIComponent(apiSecret)}`;
         const payload = {
             client_id: clientId,
             events: [
@@ -174,6 +199,7 @@ function trackGAEvent(eventName, eventParams = {}, req = null) {
                         url,
                         method: "POST",
                         body: JSON.stringify(payload),
+                        timeout: 3,
                         headers: {
                             "Content-Type": "application/json",
                         },
