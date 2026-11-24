@@ -30,7 +30,6 @@
             SiteFooter,
             NotFoundView,
             StaticPageView,
-            ClimbingStats,
         } = window.BlogComponents;
 
         const initialPayload = readJsonScript('initial-route-data', null);
@@ -66,7 +65,6 @@
                 SearchBar,
                 PaginationNav,
                 AppIcon,
-                ClimbingStats,
             },
             props: {
                 section: { type: String, required: true },
@@ -385,8 +383,6 @@
                                         @clear="clearSearch"
                                     />
                                     <div v-if="!hasSearchQuery" class="my-8 w-full">
-                                        <climbing-stats v-if="isClimbing && !isHomepage && currentPage === 1 && payload?.climbingStats"
-                                            :stats="payload.climbingStats" />
                                         <div class="flex justify-end w-full">
                                             <router-link to="/" class="btn btn-accent btn-sm gap-2 transition-all duration-200 rounded-xl">
                                                 <app-icon name="back" />
@@ -645,11 +641,21 @@
                     if (activeController) activeController.abort();
                 });
 
+                const adjacentCards = computed(() => {
+                    if (!post.value) return [];
+                    const noun = post.value.isClimbing ? 'Log' : 'Post';
+                    return [
+                        { key: 'prev', item: post.value.prevPost, label: `Older ${noun}`, isNext: false },
+                        { key: 'next', item: post.value.nextPost, label: `Newer ${noun}`, isNext: true },
+                    ];
+                });
+
                 return {
                     siteName: appConfig.siteName || 'The Justin Blog',
                     loading,
                     post,
                     notFound,
+                    adjacentCards,
                     goBack,
                     handleProseClick,
                 };
@@ -723,28 +729,23 @@
 
                         <!-- Previous & Next Post Navigation -->
                         <nav v-if="post.prevPost || post.nextPost" aria-label="Adjacent Posts" class="w-full mt-10 pt-8 border-t border-base-content/10 grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <router-link v-if="post.prevPost" :to="post.prevPost.link" class="card bg-base-100 hover:bg-base-200 border border-base-content/10 p-5 rounded-xl no-underline transition-all duration-200 group flex flex-col justify-between">
-                                <span class="text-xs font-semibold uppercase tracking-wider text-accent flex items-center gap-1.5 mb-2">
-                                    <app-icon name="back" />
-                                    Older {{ post.isClimbing ? 'Log' : 'Post' }}
-                                </span>
-                                <span class="text-base font-bold text-base-content group-hover:text-primary transition-colors duration-200 line-clamp-2">
-                                    {{ post.prevPost.title }}
-                                </span>
-                                <span class="text-xs text-base-content/60 mt-3">{{ post.prevPost.formattedDate }}</span>
-                            </router-link>
-                            <div v-else class="hidden sm:block"></div>
-
-                            <router-link v-if="post.nextPost" :to="post.nextPost.link" class="card bg-base-100 hover:bg-base-200 border border-base-content/10 p-5 rounded-xl no-underline transition-all duration-200 group flex flex-col justify-between sm:text-right">
-                                <span class="text-xs font-semibold uppercase tracking-wider text-accent flex items-center gap-1.5 sm:justify-end mb-2">
-                                    Newer {{ post.isClimbing ? 'Log' : 'Post' }}
-                                    <app-icon name="next" />
-                                </span>
-                                <span class="text-base font-bold text-base-content group-hover:text-primary transition-colors duration-200 line-clamp-2">
-                                    {{ post.nextPost.title }}
-                                </span>
-                                <span class="text-xs text-base-content/60 mt-3">{{ post.nextPost.formattedDate }}</span>
-                            </router-link>
+                            <template v-for="nav in adjacentCards" :key="nav.key">
+                                <router-link v-if="nav.item" :to="nav.item.link"
+                                    class="card bg-base-100 hover:bg-base-200 border border-base-content/10 p-5 rounded-xl no-underline transition-all duration-200 group flex flex-col justify-between"
+                                    :class="nav.isNext ? 'sm:text-right' : ''">
+                                    <span class="text-xs font-semibold uppercase tracking-wider text-accent flex items-center gap-1.5 mb-2"
+                                        :class="nav.isNext ? 'sm:justify-end' : ''">
+                                        <app-icon v-if="!nav.isNext" name="back" />
+                                        {{ nav.label }}
+                                        <app-icon v-if="nav.isNext" name="next" />
+                                    </span>
+                                    <span class="text-base font-bold text-base-content group-hover:text-primary transition-colors duration-200 line-clamp-2">
+                                        {{ nav.item.title }}
+                                    </span>
+                                    <span class="text-xs text-base-content/60 mt-3">{{ nav.item.formattedDate }}</span>
+                                </router-link>
+                                <div v-else-if="!nav.isNext" class="hidden sm:block"></div>
+                            </template>
                         </nav>
                     </div>
                 </div>
@@ -752,6 +753,17 @@
         };
 
         const siteTitle = appConfig.siteName || 'The Justin Blog';
+        const staticRoutes = [
+            { path: '/faq', name: 'faq', heading: 'Frequently Asked Questions', text: 'faq' },
+            { path: '/privacy', name: 'privacy', heading: 'Privacy Policy', text: 'privacy' },
+            { path: '/terms', name: 'terms', heading: 'Terms of Service', text: 'terms of service' },
+        ].map(({ path, name, heading, text }) => ({
+            path,
+            name,
+            component: StaticPageView,
+            props: { heading, text, siteName: siteTitle, onEnter: () => consumeInitialPayload('static-page') },
+        }));
+
         const routes = [
             { path: '/', name: 'home', component: BlogListView, props: { section: 'home' } },
             { path: '/blog', redirect: '/blog/posts' },
@@ -761,24 +773,7 @@
             { path: '/climbing', name: 'climbing-list', component: BlogListView, props: { section: 'climbing' } },
             { path: '/climbing/:title/:id', name: 'climbing-detail', component: BlogDetailView, props: { isClimbing: true } },
             { path: '/climbing/:title', name: 'climbing-legacy', component: BlogDetailView, props: { isClimbing: true } },
-            {
-                path: '/faq',
-                name: 'faq',
-                component: StaticPageView,
-                props: { heading: 'Frequently Asked Questions', text: 'faq', siteName: siteTitle, onEnter: () => consumeInitialPayload('static-page') },
-            },
-            {
-                path: '/privacy',
-                name: 'privacy',
-                component: StaticPageView,
-                props: { heading: 'Privacy Policy', text: 'privacy', siteName: siteTitle, onEnter: () => consumeInitialPayload('static-page') },
-            },
-            {
-                path: '/terms',
-                name: 'terms',
-                component: StaticPageView,
-                props: { heading: 'Terms of Service', text: 'terms of service', siteName: siteTitle, onEnter: () => consumeInitialPayload('static-page') },
-            },
+            ...staticRoutes,
             {
                 path: '/pagenotfound',
                 name: 'pagenotfound',

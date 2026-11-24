@@ -292,8 +292,6 @@ function buildBlogPostsPayload(isHomepage, isClimbing, params = {}, req = null, 
     const viewData = prepareBlogPostsViewData(rawBlogPosts, isHomepage, isClimbing, params, req, data);
     const pageTitle = isHomepage ? SITE_NAME : getPostTypeConfig(isClimbing).listTitle;
 
-    const climbingStats = isClimbing ? getClimbingStats() : null;
-
     return {
         type: "posts-list",
         isHomepage: !!isHomepage,
@@ -310,7 +308,6 @@ function buildBlogPostsPayload(isHomepage, isClimbing, params = {}, req = null, 
         pageTitle,
         heroPost: serializePostCard(viewData.heroPost),
         gridPosts: (viewData.gridPosts || []).map(serializePostCard),
-        climbingStats,
     };
 }
 

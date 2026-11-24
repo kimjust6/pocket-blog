@@ -309,12 +309,32 @@
         `,
     };
 
+    const HERO_CARDS = [
+        {
+            to: '/blog/posts',
+            cardClass: 'mockup-code text-primary',
+            prefixText: '$',
+            iconName: null,
+            description: 'read about the lessons I have learned (from the mistakes I have made).',
+        },
+        {
+            to: '/climbing',
+            cardClass: 'card text-secondary',
+            prefixText: null,
+            iconName: 'mountain',
+            description: 'read about my climbing progression, projects, and (hopefully) sends',
+        },
+    ];
+
     const HeroSection = {
         name: 'HeroSection',
         components: { AppIcon },
         props: {
             siteName: { type: String, default: 'The Justin Blog' },
             socials: { type: Array, default: () => [] },
+        },
+        setup() {
+            return { heroCards: HERO_CARDS };
         },
         template: `
             <div class="hero bg-base-100 not-prose bg-cover bg-center -mt-16">
@@ -342,27 +362,21 @@
                             </ul>
                         </nav>
                         <div class="flex flex-col lg:flex-row items-stretch justify-center w-full gap-2 lg:gap-0">
-                            <router-link to="/blog/posts" class="no-underline flex-1 flex flex-col w-full max-w-xl mx-auto group">
-                                <div class="mockup-code text-left glass-card px-4 sm:px-12 py-8 text-primary flex-1 flex flex-col justify-center blog-card-transition">
-                                    <div class="flex py-4 text-base transition-all text-base-content font-mono items-start">
-                                        <span class="mr-4 select-none text-accent font-bold">$</span>
-                                        <span class="text-wrap break-words">read about the lessons I have learned (from the mistakes I have made).</span>
+                            <template v-for="(card, idx) in heroCards" :key="card.to">
+                                <div v-if="idx > 0" class="divider lg:divider-horizontal my-0 lg:mx-4"></div>
+                                <router-link :to="card.to" class="no-underline flex-1 flex flex-col w-full max-w-xl mx-auto group">
+                                    <div :class="card.cardClass"
+                                        class="text-left glass-card px-4 sm:px-12 py-8 flex-1 flex flex-col justify-center blog-card-transition">
+                                        <div class="flex py-4 text-base transition-all text-base-content font-mono items-start">
+                                            <span v-if="card.prefixText" class="mr-4 select-none text-accent font-bold">{{ card.prefixText }}</span>
+                                            <span v-else-if="card.iconName" class="mr-4 select-none text-accent shrink-0 inline-flex items-center justify-center h-6">
+                                                <app-icon :name="card.iconName" icon-class="w-4 h-4 translate-y-1" />
+                                            </span>
+                                            <span class="text-wrap break-words">{{ card.description }}</span>
+                                        </div>
                                     </div>
-                                </div>
-                            </router-link>
-
-                            <div class="divider lg:divider-horizontal my-0 lg:mx-4"></div>
-
-                            <router-link to="/climbing" class="no-underline flex-1 flex flex-col w-full max-w-xl mx-auto group">
-                                <div class="card text-left glass-card px-4 sm:px-12 py-8 text-secondary flex-1 flex flex-col justify-center blog-card-transition">
-                                    <div class="flex py-4 text-base transition-all text-base-content font-mono items-start">
-                                        <span class="mr-4 select-none text-accent shrink-0 inline-flex items-center justify-center h-6">
-                                            <app-icon name="mountain" icon-class="w-4 h-4 translate-y-1" />
-                                        </span>
-                                        <span class="text-wrap break-words">read about my climbing progression, projects, and (hopefully) sends</span>
-                                    </div>
-                                </div>
-                            </router-link>
+                                </router-link>
+                            </template>
                         </div>
                     </div>
                 </div>
@@ -611,33 +625,6 @@
         `,
     };
 
-    const ClimbingStats = {
-        name: 'ClimbingStats',
-        props: {
-            stats: { type: Object, required: true },
-        },
-        template: `
-            <div class="mb-8 w-full grid grid-cols-2 sm:grid-cols-4 gap-3 text-left">
-                <div class="stat bg-base-200/70 backdrop-blur-md rounded-2xl p-4 border border-base-content/10">
-                    <div class="stat-title text-xs font-semibold text-base-content/70">Total Logs</div>
-                    <div class="stat-value text-2xl text-primary font-bold">{{ stats.totalClimbs }}</div>
-                </div>
-                <div class="stat bg-base-200/70 backdrop-blur-md rounded-2xl p-4 border border-base-content/10">
-                    <div class="stat-title text-xs font-semibold text-base-content/70">Sends</div>
-                    <div class="stat-value text-2xl text-accent font-bold">{{ stats.totalSends }}</div>
-                </div>
-                <div class="stat bg-base-200/70 backdrop-blur-md rounded-2xl p-4 border border-base-content/10">
-                    <div class="stat-title text-xs font-semibold text-base-content/70">Flashes & Onsights</div>
-                    <div class="stat-value text-2xl text-secondary font-bold">{{ (stats.flashes || 0) + (stats.onsights || 0) }}</div>
-                </div>
-                <div class="stat bg-base-200/70 backdrop-blur-md rounded-2xl p-4 border border-base-content/10">
-                    <div class="stat-title text-xs font-semibold text-base-content/70">Locations</div>
-                    <div class="stat-value text-2xl text-info font-bold">{{ stats.uniqueLocations }}</div>
-                </div>
-            </div>
-        `,
-    };
-
     function renderIconSvg(name, extraClass) {
         const def = ICON_DEFS[name];
         if (!def) return '';
@@ -699,7 +686,6 @@
         SiteFooter,
         NotFoundView,
         StaticPageView,
-        ClimbingStats,
     };
 })();
 

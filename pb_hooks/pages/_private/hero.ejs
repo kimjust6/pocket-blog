@@ -25,29 +25,27 @@
                 </ul>
             </nav>
             <div class="flex flex-col lg:flex-row items-stretch justify-center w-full gap-2 lg:gap-0">
-                <a href="/blog/posts" class="no-underline flex-1 flex flex-col w-full max-w-xl mx-auto group">
-                    <div
-                        class="mockup-code text-left glass-card px-4 sm:px-12 py-8 text-primary flex-1 flex flex-col justify-center blog-card-transition">
-                        <div class="flex py-4 text-base transition-all text-base-content font-mono items-start">
-                            <span class="mr-4 select-none text-accent font-bold">$</span>
-                            <span class="text-wrap break-words">read about the lessons I have learned (from the mistakes I have made).</span>
+                <% const heroCards = [
+                    { href: '/blog/posts', cardClass: 'mockup-code text-primary', prefixText: '$', iconName: null, description: 'read about the lessons I have learned (from the mistakes I have made).' },
+                    { href: '/climbing', cardClass: 'card text-secondary', prefixText: null, iconName: 'mountain', description: 'read about my climbing progression, projects, and (hopefully) sends' },
+                ]; %>
+                <% heroCards.forEach((card, idx) => { %>
+                    <% if (idx > 0) { %><div class="divider lg:divider-horizontal my-0 lg:mx-4"></div><% } %>
+                    <a href="<%= card.href %>" class="no-underline flex-1 flex flex-col w-full max-w-xl mx-auto group">
+                        <div class="<%= card.cardClass %> text-left glass-card px-4 sm:px-12 py-8 flex-1 flex flex-col justify-center blog-card-transition">
+                            <div class="flex py-4 text-base transition-all text-base-content font-mono items-start">
+                                <% if (card.prefixText) { %>
+                                    <span class="mr-4 select-none text-accent font-bold"><%= card.prefixText %></span>
+                                <% } else if (card.iconName) { %>
+                                    <span class="mr-4 select-none text-accent shrink-0 inline-flex items-center justify-center h-6">
+                                        <%- include('icon.ejs', { name: card.iconName, iconClass: 'w-4 h-4 translate-y-1' }) %>
+                                    </span>
+                                <% } %>
+                                <span class="text-wrap break-words"><%= card.description %></span>
+                            </div>
                         </div>
-                    </div>
-                </a>
-
-                <div class="divider lg:divider-horizontal my-0 lg:mx-4"></div>
-
-                <a href="/climbing" class="no-underline flex-1 flex flex-col w-full max-w-xl mx-auto group">
-                    <div
-                        class="card text-left glass-card px-4 sm:px-12 py-8 text-secondary flex-1 flex flex-col justify-center blog-card-transition">
-                        <div class="flex py-4 text-base transition-all text-base-content font-mono items-start">
-                            <span class="mr-4 select-none text-accent shrink-0 inline-flex items-center justify-center h-6">
-                                <%- include('icon.ejs', { name: 'mountain', iconClass: 'w-4 h-4 translate-y-1' }) %>
-                            </span>
-                            <span class="text-wrap break-words">read about my climbing progression, projects, and (hopefully) sends</span>
-                        </div>
-                    </div>
-                </a>
+                    </a>
+                <% }) %>
             </div>
         </div>
     </div>

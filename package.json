@@ -12,7 +12,7 @@
     "login": "npx phio login",
     "update": "pocketbase update",
     "typegen": "node scripts/typegen.mjs",
-    "check": "node -c pb_hooks/main.pb.js && node -c pb_hooks/pages/+middleware.js && node -c pb_hooks/pages/utils/blog.js && node -c pb_hooks/pages/utils/collection.js && node -c pb_hooks/pages/utils/common.js && node -c pb_hooks/pages/utils/constants.js && node -c pb_hooks/pages/utils/pocket.js && node -c pb_public/js/app.js && node -c pb_public/js/components.js",
+    "check": "node -c pb_hooks/main.pb.js && node -c pb_hooks/pages/+middleware.js && for f in pb_hooks/pages/utils/*.js pb_public/js/api.js pb_public/js/app.js pb_public/js/components.js pb_public/sw.js; do node -c \"$f\" || exit 1; done",
     "test": "node --test tests/*.test.js",
     "postinstall": "node scripts/patch-phio.mjs"
   },
